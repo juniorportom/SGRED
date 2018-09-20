@@ -14,7 +14,7 @@ import os
 import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from django.conf.global_settings import DATABASES
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -82,7 +82,20 @@ WSGI_APPLICATION = 'sgred.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 #Variable Heroku
 #DATABASES = {'default': dj_database_url.config()}
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
+    }
+}
+
+
 
 # DATABASES = {
 #     'default': {
@@ -153,8 +166,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Variables Correo Electronico
 
-#EMAIL_HOST = os.environ.get('smtp_host')
-#EMAIL_PORT = int(os.environ.get('smtp_port'))
-#EMAIL_HOST_USER = os.environ.get('smtp_user')
-#EMAIL_HOST_PASSWORD = os.environ.get('smtp_password')
-#EMAIL_USE_TLS = os.environ.get('smtp_use_tls')
+EMAIL_HOST = os.environ.get('smtp_host')
+EMAIL_PORT = int(os.environ.get('smtp_port'))
+EMAIL_HOST_USER = os.environ.get('smtp_user')
+EMAIL_HOST_PASSWORD = os.environ.get('smtp_password')
+EMAIL_USE_TLS = os.environ.get('smtp_use_tls')

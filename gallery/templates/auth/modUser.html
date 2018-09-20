@@ -1,0 +1,36 @@
+{# Load the tag library #}
+{% load bootstrap4 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile</title>
+</head>
+<body>
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="page-header">
+                    <h2>Editar Usuario</h2>
+                </div>
+                <form method="post" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    {% bootstrap_form customform %}
+                    {% buttons %}
+                        <input type="submit" value="Actualizar" class="btn btn-primary"/>
+                        <a href="{% url 'gallery:index' %}" class="btn btn-primary">Cancelar</a>
+                        <a href="{% url 'gallery:changePassword' %}" class="btn btn-primary">Cambiar clave</a>
+                    {% endbuttons %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adicionar Clips</title>
+</head>
+<body>
+{% block content %}
+    <form action="{% url 'clips:addClip' %}" enctype="multipart/form-data" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Agregar" />
+    </form>
+{% endblock %}
+</body>
+</html>

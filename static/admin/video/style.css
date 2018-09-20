@@ -1,0 +1,54 @@
+
+body {
+    background: white url("images/background.png");
+    padding-top: 40px;
+}
+
+.navbar {
+    border-radius: 0;
+}
+
+.navbar-brand {
+    font-family: 'Satisfy', cursive;
+}
+
+.modal-content-frame {
+    position: relative;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #999;
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    outline: 0;
+    -webkit-box-shadow: 0 3px 9px rgba(0, 0, 0, .5);
+    box-shadow: 0 3px 9px rgba(0, 0, 0, .5)
+}
+
+
+myAlert-top{
+    position: fixed;
+    top: 5px;
+    left:2%;
+    width: 96%;
+}
+
+.myAlert-bottom{
+    position: fixed;
+    bottom: 5px;
+    left:2%;
+    width: 96%;
+}
+
+div.fullscreen {
+  position: absolute;
+  width:100%;
+  height:960px;
+  top: 0;
+  left: 0;
+  background-color: lightblue;
+}
+
+.alert{
+    display: none;
+}

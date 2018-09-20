@@ -1,0 +1,188 @@
+{#Load bootstrap django resources#}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
+<script>
+
+
+    var tag = document.createElement('script');
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+
+    // 3. This function creates an <iframe> (and YouTube player)
+    //    after the API code downloads.
+    var player;
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '390',
+            width: '640',
+            videoId: '{{ video.get_yt_code }}',
+            events: {
+                'onReady': onPlayerReady,
+            }
+        });
+    }
+
+    // 4. The API will call this function when the video player is ready
+    function onPlayerReady(event) {
+        event.target.playVideo();
+    }
+
+    var clipTimer;
+
+    function playClip(starTime, endTime) {
+        callPlayer("idFrame", "playVideo");
+        // player.playVideo();
+        clearTimeout(clipTimer);
+        callPlayer("idFrame", "seekTo", [starTime]);
+
+        // player.seekTo(starTime, true);
+        clipTimer = setTimeout(pauseVideo, ((endTime - starTime) * 1000));
+    }
+
+    function pauseVideo() {
+        //player.pauseVideo();
+        callPlayer("idFrame", "pauseVideo");
+    }
+
+
+    function stopVideo() {
+        callPlayer("idFrame", "stopVideo");
+    }
+
+    function callPlayer(frame_id, func, args) {
+        if (window.jQuery && frame_id instanceof jQuery) frame_id = frame_id.get(0).id;
+        var iframe = document.getElementById(frame_id);
+        if (iframe && iframe.tagName.toUpperCase() != 'IFRAME') {
+            iframe = iframe.getElementsByTagName('iframe')[0];
+        }
+        if (iframe) {
+            // Frame exists,
+            iframe.contentWindow.postMessage(JSON.stringify({
+                "event": "command",
+                "func": func,
+                "args": args || [],
+                "id": frame_id
+            }), "*");
+        }
+    }
+
+
+    jQuery("#form-modal").on('hidden.bs.modal', function () {
+        stopVideo()
+    });
+
+</script>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <div id="idFrame">
+                        <iframe id="player" class="embed-responsive-item"
+                                src="https://www.youtube.com/embed/{{ video.get_yt_code }}?enablejsapi=1&autoplay=true"></iframe>
+                    </div>
+                    {#                <div id="player"></div>#}
+                </div>
+                <div class="card-body">
+                    <h4>Información</h4>
+
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item" role="presentation" class="active"><a href="#1" data-toggle="tab"
+                                                                                   class="nav-link active">Titulo</a>
+                        </li>
+                        <li class="nav-item" role="presentation"><a href="#2" data-toggle="tab" class="nav-link">Descripción</a>
+                        </li>
+                        <li class="nav-item" role="presentation"><a href="#3" data-toggle="tab"
+                                                                    class="nav-link">Tipo</a>
+                        </li>
+                        <li class="nav-item" role="presentation"><a href="#4" data-toggle="tab"
+                                                                    class="nav-link">Propietario</a></li>
+                        <li class="nav-item" role="presentation"><a href="#5" data-toggle="tab"
+                                                                    class="nav-link">Categoria</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="1">
+                            <h4>{{ video.title }}</h4>
+                        </div>
+                        <div class="tab-pane fade" id="2">
+                            <h5>{{ video.description }}</h5>
+                        </div>
+                        <div class="tab-pane fade" id="3">
+                            <h5>{{ video.mediaType }}</h5>
+                        </div>
+                        <div class="tab-pane fade" id="4">
+                            <h4>{{ video.user }}</h4>
+                        </div>
+                        <div class="tab-pane fade" id="5">
+                            <h4>{{ video.category }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="card-title">Clips Recomendados</h4>
+    </div>
+    <table class="table table-hover">
+        <tbody>
+        {% for clip in video.clips.all %}
+            <tr>
+                <td>Titulo: {{ clip.name }}</td>
+                <td>Inicio: {{ clip.seg_initial }}</td>
+                <td>Fin: {{ clip.seg_final }} </td>
+                <td>
+                    <i class="far fa-play-circle" onclick="playClip({{ clip.seg_initial }},{{ clip.seg_final }})"></i>
+                </td>
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+
+{% if user.is_authenticated %}
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Agregar clips</h4>
+        </div>
+        <form action="{{ video.get_absolute_url }}" enctype="multipart/form-data" method="post">
+            <div class="card-body">
+
+                <div class="form-group">
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                </div>
+
+            </div>
+            <div class="card-footer">
+
+                {% buttons %}
+                    <input type="submit" value="Añadir" class="btn btn-primary btn-block"/>
+
+                {% endbuttons %}
+
+            </div>
+
+
+        </form>
+    </div>
+
+{% endif %}
+</div>
+<div class="modal-footer">
+    <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-secondary">Cancelar</button>
+</div>

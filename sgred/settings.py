@@ -166,8 +166,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Variables Correo Electronico
 
-EMAIL_HOST = os.environ.get('smtp_host')
-EMAIL_PORT = int(os.environ.get('smtp_port'))
-EMAIL_HOST_USER = os.environ.get('smtp_user')
-EMAIL_HOST_PASSWORD = os.environ.get('smtp_password')
-EMAIL_USE_TLS = os.environ.get('smtp_use_tls')
+#EMAIL_HOST = os.environ.get('smtp_host')
+#EMAIL_PORT = int(os.environ.get('smtp_port'))
+#EMAIL_HOST_USER = os.environ.get('smtp_user')
+#EMAIL_HOST_PASSWORD = os.environ.get('smtp_password')
+#EMAIL_USE_TLS = os.environ.get('smtp_use_tls')

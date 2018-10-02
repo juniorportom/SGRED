@@ -20,8 +20,8 @@ from sgred import settings
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^videos/', include('gallery.urls')),
-    url(r'^', include('gallery.urls', namespace='gallery'))
+    url(r'^videos/', include('QueVideo.urls')),
+    url(r'^', include('QueVideo.urls', namespace='QueVideo'))
 ]
 
 

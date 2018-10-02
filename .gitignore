@@ -1,0 +1,14 @@
+Include
+Lib
+Scripts
+tcl
+pip-selfcheck.json
+.idea
+.DS_Store
+bin
+.idea/*
+.idea
+images
+migrations/*
+_trial_temp
+.pyc

@@ -172,3 +172,23 @@ class Media(models.Model):
 
     def soundCloud(self):
         return  self.url
+
+# ###################################################SGRED#######################################################
+CRUDO_TYPE = (
+    ('V', 'Video'),
+)
+
+
+class Crudo(models.Model):
+    IdCrudo = models.AutoField(primary_key=True)
+    Nombre = models.CharField(max_length=150, blank=False)
+    Tipo = models.CharField(max_length=50, choices=CRUDO_TYPE, default='V', blank=False)
+    Archivo = models.FileField(upload_to='crudos', null=True)
+    url = models.CharField(max_length=2000, blank=False, default=" ")
+
+
+class CrudoForm(ModelForm):
+    class Meta:
+        model = Crudo
+        fields = ["Nombre", "Tipo", "Archivo"]
+

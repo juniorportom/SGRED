@@ -9,9 +9,11 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
+from ftplib import FTP
+
 
 from .models import Media, ClipForm, UserForm, EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
-    PlanLogistica, Actividad
+    PlanLogistica, Actividad, CrudoForm
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, request
@@ -314,4 +316,22 @@ def add_actividad(request, planId, actId):
                              "lugar": lugar})
     else:
         return JsonResponse({"nombre": ''})
+
+
+def upload_crudo(request):
+    if request.method == 'POST':
+        form = CrudoForm(request.POST, request.FILES)
+        if form.is_valid():
+            crudo = form.save()
+            ftp = FTP('200.21.21.36')
+            ftp.login('miso|anonymous')
+            folder, name = crudo.Archivo.name.split("/")
+            with open(crudo.Archivo.path, 'rb') as f:
+                ftp.storbinary('STOR %s' % name, f)
+            ftp.quit()
+            return HttpResponseRedirect(reverse('QueVideo:agregarCrudo'))
+    else:
+        form = CrudoForm()
+    return render(request, 'crudos/create.html', {'form': form})
+
 

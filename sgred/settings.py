@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'sgred.wsgi.application'
 #DATABASES = {'default': dj_database_url.config()}
 
 
- DATABASES = {
+DATABASES = {
      'default': {
          'ENGINE': 'django.db.backends.postgresql_psycopg2',
          'NAME': os.environ.get('DATABASE_NAME'),

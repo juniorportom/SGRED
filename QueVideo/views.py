@@ -10,6 +10,8 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from ftplib import FTP
+import os
+from django.contrib import messages
 
 
 from .models import Media, ClipForm, UserForm, EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
@@ -326,15 +328,20 @@ def upload_crudo(request):
             ftp = FTP('200.21.21.36')
             ftp.login('miso|anonymous')
             folder, name = crudo.Archivo.name.split("/")
+            fileName, fileExtention = name.split(".")
+            stampedName = fileName + "-" + str(crudo.IdCrudo) + "." + fileExtention
             with open(crudo.Archivo.path, 'rb') as f:
-                ftp.storbinary('STOR %s' % name, f)
-                crudo.url = 'ftp://miso|anonymous@200.21.21.36/' + name
+                ftp.storbinary('STOR %s' % stampedName, f)
+                crudo.url = 'ftp://miso|anonymous@200.21.21.36/' + stampedName
                 crudo.save()
             ftp.quit()
+            if os.path.isfile(crudo.Archivo.path):
+                os.remove(crudo.Archivo.path)
+            messages.success(request, 'Archivo' + name + 'Guardado con Exito en el repositorio')
             return HttpResponseRedirect(reverse('QueVideo:agregarCrudo'))
     else:
         form = CrudoForm()
-        crudos = Crudo.objects.all()
+    crudos = Crudo.objects.all()
     return render(request, 'crudos/create.html', {'form': form, 'crudo_list': crudos})
 
 

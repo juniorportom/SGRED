@@ -181,7 +181,7 @@ CRUDO_TYPE = (
 
 class Crudo(models.Model):
     IdCrudo = models.AutoField(primary_key=True)
-    Nombre = models.CharField(max_length=150, blank=False)
+    Nombre = models.CharField(max_length=150, blank=False, unique=True)
     Tipo = models.CharField(max_length=50, choices=CRUDO_TYPE, default='V', blank=False)
     Archivo = models.FileField(upload_to='crudos', null=True)
     url = models.CharField(max_length=2000, blank=False, default=" ")

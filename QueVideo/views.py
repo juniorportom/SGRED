@@ -13,7 +13,7 @@ from ftplib import FTP
 
 
 from .models import Media, ClipForm, UserForm, EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
-    PlanLogistica, Actividad, CrudoForm
+    PlanLogistica, Actividad, CrudoForm, Crudo
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, request
@@ -328,10 +328,13 @@ def upload_crudo(request):
             folder, name = crudo.Archivo.name.split("/")
             with open(crudo.Archivo.path, 'rb') as f:
                 ftp.storbinary('STOR %s' % name, f)
+                crudo.url = 'ftp://miso|anonymous@200.21.21.36/' + name
+                crudo.save()
             ftp.quit()
             return HttpResponseRedirect(reverse('QueVideo:agregarCrudo'))
     else:
         form = CrudoForm()
-    return render(request, 'crudos/create.html', {'form': form})
+        crudos = Crudo.objects.all()
+    return render(request, 'crudos/create.html', {'form': form, 'crudo_list': crudos})
 
 

@@ -190,5 +190,10 @@ class Crudo(models.Model):
 class CrudoForm(ModelForm):
     class Meta:
         model = Crudo
+        widgets = {
+            'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'Tipo': forms.Select(attrs={'class': 'form-control'}),
+            'Archivo': forms.FileInput(attrs={'class': 'form-control-file'}),
+        }
         fields = ["Nombre", "Tipo", "Archivo"]
 

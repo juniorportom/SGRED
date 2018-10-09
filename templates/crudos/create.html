@@ -1,17 +1,95 @@
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Agregar Crudo</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
+
 {% block content %}
-    <form action="{% url 'QueVideo:agregarCrudo' %}" enctype="multipart/form-data" method="post">
+<form id="form_upload" action="{% url 'QueVideo:agregarCrudo' %}" enctype="multipart/form-data" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Agregar"  />
-    </form>
+{#        {{ form.as_p }}#}
+    {% for field in form %}
+        <div class="form-group col-md-6">
+            {{ field.label_tag }}
+            {{ field }}
+        </div>
+    {% endfor %}
+    <div class="form-group col-md-6">
+        <label for="time_upload">Select a time: </label>
+        <input class="form-control" id="time_upload" type="time" name="usr_time" value='now'>
+    </div>
+
+    <p>La transferencia se realizará automaticamente en:</p>
+    <p id="transferCountDown">-</p>
+
+    <input class="btn btn-primary" id="program_btn" type="button" value="Programar Transferencia" onclick="transferClick()">
+
+{#    <input type="submit" class="btn btn-primary" style="margin-left: 16px" value="Agregar"  />#}
+</form>
 {% endblock %}
+
+
+{% for archivo in crudo_list %}
+    {% if "ftp" in archivo.url%}
+        <a href="{{ archivo.url }}" target="_blank">{{ archivo.Nombre }}</a>
+    {% endif %}
+    {% empty %}
+        <p> no hay crudos registrados </p>
+    {% endfor %}
+
+<script type="text/javascript">
+$(function(){
+  var d = new Date(),
+      h = d.getHours(),
+      m = d.getMinutes();
+  if(h < 10) h = '0' + h;
+  if(m < 10) m = '0' + m;
+  $('input[type="time"][value="now"]').each(function(){
+    $(this).attr({'value': h + ':' + m});
+  });
+});
+
+var x = null;
+
+function transferClick(){
+    if (x != null)
+        clearInterval(x)
+    calculateRemainingTime();
+    x = setInterval(calculateRemainingTime, 10000);
+}
+
+function calculateRemainingTime(){
+    var d = new Date(),
+          h = d.getHours(),
+          m = d.getMinutes();
+        var p = $('#time_upload').val().split(':');
+        var hp = p[0], mp = p[1];
+
+        $('#transferCountDown').text('la tranferencia iniciará en: ' +
+            (hp - h).toString() + " horas y " + (mp-m).toString() + " minutos"   );
+
+        if ((hp - h) <= 0 && (mp - m ) <= 0){
+            console.log("tiempo completado!!")
+            $('#transferCountDown').text("Tranferencia Iniciada")
+            clearInterval(x)
+            $("#program_btn").attr("disabled", true);
+            $("#form_upload").submit();
+            return true;
+        }
+        else{
+            console.log("evaluando el tiempo")
+            return false;
+        }
+}
+</script>
 
 </body>
 </html>

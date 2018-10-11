@@ -13,9 +13,9 @@ from ftplib import FTP
 
 
 from .models import Media, ClipForm, UserForm, EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
-    PlanLogistica, Actividad, CrudoForm
+    PlanLogistica, Actividad, CrudoForm, ActividadEditForm
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, request
 from django.shortcuts import render_to_response
 
@@ -316,6 +316,25 @@ def add_actividad(request, planId, actId):
                              "lugar": lugar})
     else:
         return JsonResponse({"nombre": ''})
+
+
+@csrf_exempt
+def edit_actividad(request, id):
+    instance = get_object_or_404(Actividad, IdActividad=id)
+
+    if request.method == 'POST':
+        form = ActividadEditForm(data=request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+        return HttpResponseRedirect(reverse('QueVideo:index'))
+    else:
+        #actividad = Actividad.objects.get(IdActividad=request.actividad.IdActividad)
+        actividad = Actividad.objects.all().first()
+        actividadEditform = ActividadEditForm(instance=actividad)
+    context = {"actividadEditform": actividadEditform}
+
+    return render(request, 'videos/editActividad.html', context)
+
 
 
 def upload_crudo(request):

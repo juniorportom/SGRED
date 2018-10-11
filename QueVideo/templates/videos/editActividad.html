@@ -1,0 +1,32 @@
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Actividad</title>
+</head>
+<body>
+{% block content %}
+    <div class="row">
+    <div class="col-md-6 col-sm-offset-3">
+        <div class="page-header">
+            <h2>Editar Actividad</h2>
+        </div>
+        <form method="POST" action ="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form actividadEditform %}
+        {% buttons %}
+        <input type="submit" value="Actualizar" class="btn btn-primary"/>
+        <a href="{% url 'QueVideo:index' %}" class="btn btn-primary">Cancelar</a>
+        {% endbuttons %}
+        </form>
+    </div>
+</div>
+{% endblock %}
+</body>
+</html>

@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^planLogistica/(?P<planId>\d+)/actividades/$', views.get_actividades, name='actividades'),
     url(r'^planLogistica/(?P<planId>\d+)/actividad/(?P<actId>\d+)$', views.add_actividad, name='agregarActividad'),
+    url(r'editarActividad/(?P<id>\d+)$', views.edit_actividad, name='editarActividad'),
 
 
 

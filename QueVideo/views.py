@@ -273,6 +273,10 @@ def mail_sender(idClip):
 
 
 # ###################################################SGRED#######################################################
+def ver_proyecto(request):
+    return render(request, 'videos/proyecto.html')
+
+
 def get_plan_logistica(request, planId):
     plan = PlanLogistica.objects.filter(pk=planId)
 
@@ -293,29 +297,30 @@ def get_actividades(request, planId):
 
 
 @csrf_exempt
-def add_actividad(request, planId, actId):
+def add_actividad(request, planId):
+    plan = PlanLogistica.objects.get(pk=planId)
     if request.method == 'POST':
+        print('json' + request.body)
         jact = json.loads(request.body)
         fecha = jact['fecha']
         video = jact['video']
         observaciones = jact['observaciones']
         lugar = jact['lugar']
-        plan = PlanLogistica.objects.get(pk=planId)
-        actividad_model = Actividad(IdActividad=actId,
-                                    Fecha=fecha,
+        actividad_model = Actividad(Fecha=fecha,
                                     Video=video,
                                     Observaciones=observaciones,
                                     Lugar=lugar,
                                     PlanLogistica=plan)
 
         actividad_model.save()
-        return JsonResponse({"IdActividad": actId,
-                            "fecha": fecha,
-                            "video": video,
+        return JsonResponse({"ActividadId": actividad_model.pk,
+                             "fecha": fecha,
+                             "video": video,
                              "observaciones": observaciones,
                              "lugar": lugar})
     else:
-        return JsonResponse({"nombre": ''})
+        context = {'planLogistica': plan}
+        return render(request, 'videos/addActividad.html', context)
 
 
 def upload_crudo(request):

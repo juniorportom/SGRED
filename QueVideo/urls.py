@@ -20,10 +20,11 @@ urlpatterns = [
     url(r'^ingresar', views.ingresar, name='ingresar'),
     url(r'^agregarUsuario', views.agregar_usuario, name='agregarUsuario'),
 
+    url(r'^proyecto', views.ver_proyecto, name='proyecto'),
     url(r'^agregarCrudo', views.upload_crudo, name='agregarCrudo'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^planLogistica/(?P<planId>\d+)/actividades/$', views.get_actividades, name='actividades'),
-    url(r'^planLogistica/(?P<planId>\d+)/actividad/(?P<actId>\d+)$', views.add_actividad, name='agregarActividad'),
+    url(r'^planLogistica/(?P<planId>\d+)/actividad/$', views.add_actividad, name='agregarActividad'),
 
 
 

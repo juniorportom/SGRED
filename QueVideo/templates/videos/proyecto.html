@@ -1,0 +1,140 @@
+{# Load the tag library #}
+{% load bootstrap4 %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Proyecto dummy</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    {# Load CSS and JavaScript #}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/video/style.css' %}"/>
+    <link href='https://fonts.googleapis.com/css?family=Satisfy' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+    <script>
+        (function()
+        {
+            $.getJSON("http://localhost:8000/planLogistica/1/actividades/").done(function (data)
+            {
+                var num = 0;
+                $.each(data, function (i, item)
+                {
+                    num = num +1;
+                    $("#actividades_tbody").append(
+                        '<tr>\n' +
+                        '   <th scope="row">' + num + '</th>\n' +
+                        '   <td>' + item.fields.Fecha + '</td>\n' +
+                        '   <td>' + item.fields.Video + '</td>\n' +
+                        '   <td>' + item.fields.Observaciones + '</td>\n' +
+                        '   <td>' + item.fields.Lugar + '</td>\n' +
+                        '   <td><a href="http://localhost:8000/editarActividad/' + item.pk + '" ><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></td>\n' +
+                        '</tr>');
+                });
+            });
+        })();
+    </script>
+</head>
+<body>
+<div class="panel panel-default">
+    <div class="panel-heading">Proyecto</div>
+    <div class="panel-body">
+        Pry 001 Procesos Agiles
+        <br/>
+        <br/>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Detalles</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm">
+                        Recurso
+                    </div>
+                    <div class="col-sm">
+                        <input type="text" name="recurso" value="VideoClase" disabled="true"><br></textarea>
+                    </div>
+                    <div class="col-sm">
+                        Fase Siguiente
+                    </div>
+                    <div class="col-sm">
+                        <button type="button" class="btn btn-default" disabled="true">Producción</button>
+                    </div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div class="col-sm">
+                        Fase Actual
+                    </div>
+                    <div class="col-sm">
+                        <input type="text" name="faseAct" value="Pre-produccion" disabled="true"><br></textarea>
+                    </div>
+                    <div class="col-sm">
+                        tipo
+                    </div>
+                    <div class="col-sm">
+                        <input type="text" name="faseAct" value="video" disabled="true"><br></textarea>
+                    </div>
+                    <div class="col-sm">
+                        <a href="#"><span class="glyphicon glyphicon-plus"> Tags</span></a>
+                    </div>
+                    <div class="col-sm">
+                        <input type="text" name="tags" value="Metodología" disabled="true"><br></textarea>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#produccion_tab">Producción</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#elementos_tab">Elementos</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#equipo_tab">Equipo</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#crudo_tab">Crudos</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane container active" id="produccion_tab">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Plan de logistica</h3>
+                            </div>
+                            <div class="panel-body">
+                                <a href="http://localhost:8000/planLogistica/1/actividad/"><span class="glyphicon glyphicon-plus">&nbsp; Agregar actividad</span></a>
+                                <br/>
+                                <table class="table table-striped" style="width: 100%">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Fecha</th>
+                                        <th>Video</th>
+                                        <th>Observaciones</th>
+                                        <th>Lugar</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="actividades_tbody">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane container fade" id="elementos_tab">
+                        <h3>Elementos...</h3>
+                    </div>
+                    <div class="tab-pane container fade" id="equipo_tab">
+                        <h3>Equipo...</h3>
+                    </div>
+                    <div class="tab-pane container " id="crudo_tab">
+                        <h3>Crudos</h3>
+                        <a target="_blank" href="{% url 'QueVideo:agregarCrudo' %}"><span class="glyphicon glyphicon-plus">&nbsp; Agregar Crudo</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

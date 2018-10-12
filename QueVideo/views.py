@@ -15,9 +15,10 @@ from django.contrib import messages
 
 
 from .models import Media, ClipForm, UserForm, EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
-    PlanLogistica, Actividad, CrudoForm, Crudo
+PlanLogistica, Actividad, CrudoForm, Crudo, ActividadEditForm
 
-from django.shortcuts import render, redirect
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, request
 from django.shortcuts import render_to_response
 
@@ -275,6 +276,10 @@ def mail_sender(idClip):
 
 
 # ###################################################SGRED#######################################################
+def ver_proyecto(request):
+    return render(request, 'videos/proyecto.html')
+
+
 def get_plan_logistica(request, planId):
     plan = PlanLogistica.objects.filter(pk=planId)
 
@@ -295,29 +300,49 @@ def get_actividades(request, planId):
 
 
 @csrf_exempt
-def add_actividad(request, planId, actId):
+def add_actividad(request, planId):
+    plan = PlanLogistica.objects.get(pk=planId)
     if request.method == 'POST':
+        print('json' + request.body)
         jact = json.loads(request.body)
         fecha = jact['fecha']
         video = jact['video']
         observaciones = jact['observaciones']
         lugar = jact['lugar']
-        plan = PlanLogistica.objects.get(pk=planId)
-        actividad_model = Actividad(IdActividad=actId,
-                                    Fecha=fecha,
+        actividad_model = Actividad(Fecha=fecha,
                                     Video=video,
                                     Observaciones=observaciones,
                                     Lugar=lugar,
                                     PlanLogistica=plan)
 
         actividad_model.save()
-        return JsonResponse({"IdActividad": actId,
-                            "fecha": fecha,
-                            "video": video,
+        return JsonResponse({"ActividadId": actividad_model.pk,
+                             "fecha": fecha,
+                             "video": video,
                              "observaciones": observaciones,
                              "lugar": lugar})
     else:
-        return JsonResponse({"nombre": ''})
+        context = {'planLogistica': plan}
+        return render(request, 'videos/addActividad.html', context)
+
+
+@csrf_exempt
+def edit_actividad(request, id):
+    instance = get_object_or_404(Actividad, IdActividad=id)
+
+    if request.method == 'POST':
+        form = ActividadEditForm(data=request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+        return HttpResponseRedirect(reverse('QueVideo:index'))
+    else:
+        #actividad = Actividad.objects.get(IdActividad=request.actividad.IdActividad)
+        actividad = Actividad.objects.all().first()
+        actividadEditform = ActividadEditForm(instance=actividad)
+    context = {"actividadEditform": actividadEditform}
+
+    return render(request, 'videos/editActividad.html', context)
+
 
 
 def upload_crudo(request):

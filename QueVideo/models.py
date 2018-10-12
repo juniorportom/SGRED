@@ -130,17 +130,6 @@ class Actividad(models.Model):
     PlanLogistica = models.ForeignKey(PlanLogistica)
 
 
-class ActividadEditForm(ModelForm):
-    Fecha = forms.DateTimeField()
-    Video = forms.CharField(max_length=20)
-    Observaciones = forms.CharField(max_length=20)
-    Lugar = forms.CharField(max_length=20)
-
-    class Meta:
-        model = Actividad
-        fields = ['Fecha', 'Video', 'Observaciones', 'Lugar']
-
-
 class Media(models.Model):
     idMedia = models.AutoField(primary_key=True)
     mediaType = models.CharField(max_length=255, choices=MEDIA_TYPE, default='V')
@@ -192,7 +181,7 @@ CRUDO_TYPE = (
 
 class Crudo(models.Model):
     IdCrudo = models.AutoField(primary_key=True)
-    Nombre = models.CharField(max_length=150, blank=False, unique=True)
+    Nombre = models.CharField(max_length=150, blank=False)
     Tipo = models.CharField(max_length=50, choices=CRUDO_TYPE, default='V', blank=False)
     Archivo = models.FileField(upload_to='crudos', null=True)
     url = models.CharField(max_length=2000, blank=False, default=" ")
@@ -201,12 +190,5 @@ class Crudo(models.Model):
 class CrudoForm(ModelForm):
     class Meta:
         model = Crudo
-        widgets = {
-            'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'Tipo': forms.Select(attrs={'class': 'form-control'}),
-            'Archivo': forms.FileInput(attrs={'class': 'form-control-file'}),
-        }
         fields = ["Nombre", "Tipo", "Archivo"]
-
-
 

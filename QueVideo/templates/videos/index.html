@@ -103,8 +103,15 @@
                     Login</a>
                 </li-->
                 <li class="nav-item" id="proyecto">
-                    <a class="navbar-link" href="http://localhost:8000/proyecto"> Proyecto temp</a>
+                    <a class="nav-link" href="http://localhost:8000/proyecto"> Proyecto temp</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:8000/agregarInsumoRecurso">Agregar Insumo de Diseño al Recurso (HU46)</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="http://localhost:8000/agregarPlanLogistica">Agregar Plan de Logistica (HU47)</a>
+                </li>
+
             </ul>
         </div>
     </div>
@@ -123,28 +130,29 @@
     </div>{% endcomment %}
 
     <div class="row">
-{#        <div class="col-lg-3">#}
-{#            <form class="form-inline" method="post">#}
-{#                <div class="form-group">#}
-{#                    {% csrf_token %}#}
-{#                    <select onchange="form.submit()" id="idSelTipo" name="idSelTipo">#}
-{#                        <option value="0" {% if selected_type == 0 %}selected{% endif %}>Todos</option>#}
-{#                        {% for type in type_list %}#}
-{#                            <option value="{{ type.idType }}"#}
-{#                                    {% if type.idType == selected_type %}selected{% endif %}>{{ type.name }}</option>#}
-{#                        {% endfor %}#}
-{#                    </select>#}
-{#                    <select onchange="form.submit()" id="idSelCategorias" name="idSelCategorias">#}
-{#                        <option value="0" {% if selected_category == 0 %}selected{% endif %}>Categorias</option>#}
-{#                        {% for categoria in categoria_list %}#}
-{#                            <option value="{{ categoria.idCategory }}"#}
-{#                                    {% if categoria.idCategory == selected_category %}selected{% endif %}>{{ categoria.name }}</option>#}
-{#                        {% endfor %}#}
-{#                    </select>#}
-{#                </div>#}
-{#            </form>#}
-{#        </div>#}
+        {#        <div class="col-lg-3">#}
+        {#            <form class="form-inline" method="post">#}
+        {#                <div class="form-group">#}
+        {#                    {% csrf_token %}#}
+        {#                    <select onchange="form.submit()" id="idSelTipo" name="idSelTipo">#}
+        {#                        <option value="0" {% if selected_type == 0 %}selected{% endif %}>Todos</option>#}
+        {#                        {% for type in type_list %}#}
+        {#                            <option value="{{ type.idType }}"#}
+        {#                                    {% if type.idType == selected_type %}selected{% endif %}>{{ type.name }}</option>#}
+        {#                        {% endfor %}#}
+        {#                    </select>#}
+        {#                    <select onchange="form.submit()" id="idSelCategorias" name="idSelCategorias">#}
+        {#                        <option value="0" {% if selected_category == 0 %}selected{% endif %}>Categorias</option>#}
+        {#                        {% for categoria in categoria_list %}#}
+        {#                            <option value="{{ categoria.idCategory }}"#}
+        {#                                    {% if categoria.idCategory == selected_category %}selected{% endif %}>{{ categoria.name }}</option>#}
+        {#                        {% endfor %}#}
+        {#                    </select>#}
+        {#                </div>#}
+        {#            </form>#}
+        {#        </div>#}
         <div class="col-lg-9">
+
 
         </div>
     </div>
@@ -152,42 +160,42 @@
 
 
     <div class="row">
-{#        {% for video in video_list %}#}
-{##}
-{#            <div class="col-sm-4 col-lg-4">#}
-{#                <div class="thumbnail">#}
-{##}
-{#                    {% if 'youtube' in  video.soundCloud %}#}
-{#                        <div class="embed-responsive embed-responsive-16by9">#}
-{#                            <iframe class="embed-responsive-item" src="{{ video.youTube }}"></iframe>#}
-{#                        </div>#}
-{#                    {% else %}#}
-{#                        <div class="embed-responsive embed-responsive-16by9">#}
-{#                            <iframe class="embed-responsive-item" src="{{ video.soundCloud }}"></iframe>#}
-{#                        </div>#}
-{#                    {% endif %}#}
-{##}
-{#                    <div class="caption">#}
-{#                        <h4>{{ video.title }}</h4>#}
-{#                        <h5>Autor: {{ video.author }}</h5>#}
-{#                        {% if 'youtube' in  video.soundCloud %}#}
-{#                            <button type="button" class="btn btn-primary btn-lg btn-block"#}
-{#                                    onclick="return abrir_modal_bootstrap('{{ video.get_absolute_url }}', 'Video')">#}
-{#                                Detalle#}
-{#                                Video#}
-{#                            </button>#}
-{#                        {% else %}#}
-{#                            <button type="button" class="btn btn-primary btn-lg btn-block"#}
-{#                                    onclick="return abrir_modal_bootstrap('{{ video.get_absolute_SC_url }}','Audio')">#}
-{#                                Detalle#}
-{#                                Audio#}
-{#                            </button>#}
-{#                        {% endif %}#}
-{#                    </div>#}
-{##}
-{#                </div>#}
-{#            </div>#}
-{#        {% endfor %}#}
+        {#        {% for video in video_list %}#}
+        {##}
+        {#            <div class="col-sm-4 col-lg-4">#}
+        {#                <div class="thumbnail">#}
+        {##}
+        {#                    {% if 'youtube' in  video.soundCloud %}#}
+        {#                        <div class="embed-responsive embed-responsive-16by9">#}
+        {#                            <iframe class="embed-responsive-item" src="{{ video.youTube }}"></iframe>#}
+        {#                        </div>#}
+        {#                    {% else %}#}
+        {#                        <div class="embed-responsive embed-responsive-16by9">#}
+        {#                            <iframe class="embed-responsive-item" src="{{ video.soundCloud }}"></iframe>#}
+        {#                        </div>#}
+        {#                    {% endif %}#}
+        {##}
+        {#                    <div class="caption">#}
+        {#                        <h4>{{ video.title }}</h4>#}
+        {#                        <h5>Autor: {{ video.author }}</h5>#}
+        {#                        {% if 'youtube' in  video.soundCloud %}#}
+        {#                            <button type="button" class="btn btn-primary btn-lg btn-block"#}
+        {#                                    onclick="return abrir_modal_bootstrap('{{ video.get_absolute_url }}', 'Video')">#}
+        {#                                Detalle#}
+        {#                                Video#}
+        {#                            </button>#}
+        {#                        {% else %}#}
+        {#                            <button type="button" class="btn btn-primary btn-lg btn-block"#}
+        {#                                    onclick="return abrir_modal_bootstrap('{{ video.get_absolute_SC_url }}','Audio')">#}
+        {#                                Detalle#}
+        {#                                Audio#}
+        {#                            </button>#}
+        {#                        {% endif %}#}
+        {#                    </div>#}
+        {##}
+        {#                </div>#}
+        {#            </div>#}
+        {#        {% endfor %}#}
 
     </div>
 

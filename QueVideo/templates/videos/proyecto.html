@@ -91,6 +91,7 @@
                     <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#produccion_tab">Producción</a></li>
                     <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#elementos_tab">Elementos</a></li>
                     <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#equipo_tab">Equipo</a></li>
+                    <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#crudo_tab">Crudos</a></li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane container active" id="produccion_tab">
@@ -122,6 +123,10 @@
                     </div>
                     <div class="tab-pane container fade" id="equipo_tab">
                         <h3>Equipo...</h3>
+                    </div>
+                    <div class="tab-pane container " id="crudo_tab">
+                        <h3>Crudos</h3>
+                        <a target="_blank" href="{% url 'QueVideo:agregarCrudo' %}"><span class="glyphicon glyphicon-plus">&nbsp; Agregar Crudo</span></a>
                     </div>
                 </div>
             </div>

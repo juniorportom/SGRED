@@ -20,6 +20,8 @@ urlpatterns = [
     url(r'^ingresar', views.ingresar, name='ingresar'),
     url(r'^agregarUsuario', views.agregar_usuario, name='agregarUsuario'),
 
+    url(r'^agregarInsumoRecurso', views.agregarInsumoRecurso, name='agregarInsumoRecurso'),
+    url(r'^agregarPlanLogistica', views.agregarPlanLogistica, name='agregarPlanLogistica'),
     url(r'^agregarCrudo', views.upload_crudo, name='agregarCrudo'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^planLogistica/(?P<planId>\d+)/actividades/$', views.get_actividades, name='actividades'),

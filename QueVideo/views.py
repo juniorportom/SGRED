@@ -8,10 +8,11 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib import messages
 
 from ftplib import FTP
 
-
+from QueVideo.forms import PlanLogisticaForm, InsumoRecursoForm
 from .models import Media, ClipForm, UserForm, EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
     PlanLogistica, Actividad, CrudoForm
 
@@ -33,19 +34,20 @@ def index(request):
     type_list = [{'idType': '1', 'name': 'Videos'}, {'idType': '2', 'name': 'Audios'}]
 
     if request.method == 'POST':
-        selected_category = int(request.POST.get("idSelCategorias",0))
-        arg = request.POST.get("idSelTipo",0)
-        selected_type =int(arg)
+        selected_category = int(request.POST.get("idSelCategorias", 0))
+        arg = request.POST.get("idSelTipo", 0)
+        selected_type = int(arg)
         if selected_category != 0:
             video_list = Media.objects.filter(category=selected_category)
         if selected_type != 0:
-            if selected_type==1:
+            if selected_type == 1:
                 video_list = Media.objects.filter(mediaType='V')
             else:
-                if selected_type==2:
+                if selected_type == 2:
                     video_list = Media.objects.filter(mediaType='A')
 
-    context = {'video_list': video_list, 'categoria_list': categoria_list, 'selected_category': selected_category, 'selected_type':selected_type,'type_list':type_list}
+    context = {'video_list': video_list, 'categoria_list': categoria_list, 'selected_category': selected_category,
+               'selected_type': selected_type, 'type_list': type_list}
     return render(request, 'videos/index.html', context)
 
 
@@ -111,7 +113,7 @@ def detailSC(request, videoid):
                 clip = form.save()
                 video = Media.objects.get(pk=videoid)
                 current_user = request.user
-                media_clip = Clip_Media(clip= clip, media=video, user=current_user)
+                media_clip = Clip_Media(clip=clip, media=video, user=current_user)
                 media_clip.save()
         return HttpResponseRedirect(reverse('gallery:detailsSC', args=videoid))
     else:
@@ -126,10 +128,12 @@ def all_media(request):
 
     return HttpResponse(jsonserializer.serialize("json", all_media_objects))
 
+
 @csrf_exempt
 def media_detail(request, videoid):
     video = Media.objects.filter(pk=videoid)
     return HttpResponse(jsonserializer.serialize("json", video))
+
 
 def all_users(request):
     all_users_objects = User.objects.all()
@@ -231,7 +235,6 @@ def login_view(request):
     return JsonResponse({"mensaje": mensaje})
 
 
-
 @csrf_exempt
 def logout_view(request):
     logout(request)
@@ -310,8 +313,8 @@ def add_actividad(request, planId, actId):
 
         actividad_model.save()
         return JsonResponse({"IdActividad": actId,
-                            "fecha": fecha,
-                            "video": video,
+                             "fecha": fecha,
+                             "video": video,
                              "observaciones": observaciones,
                              "lugar": lugar})
     else:
@@ -335,3 +338,25 @@ def upload_crudo(request):
     return render(request, 'crudos/create.html', {'form': form})
 
 
+def agregarPlanLogistica(request):
+    if request.method == 'POST':
+        form = PlanLogisticaForm(request.POST, request.FILES)
+        if form.is_valid():
+            plan = form.save()
+            messages.success(request, "Se Agrego el Plan de Logistica Correctamente", extra_tags="alert-success")
+        return HttpResponseRedirect(reverse('QueVideo:agregarPlanLogistica'))
+    else:
+        form = PlanLogisticaForm(request.POST)
+    return render(request, 'recursos/planLogistica.html', {'form': form})
+
+
+def agregarInsumoRecurso(request):
+    if request.method == 'POST':
+        form = InsumoRecursoForm(request.POST, request.FILES)
+        if form.is_valid():
+            insumo = form.save()
+            messages.success(request, "Se Agrego Insumo de Diseño Correctamente", extra_tags="alert-success")
+        return HttpResponseRedirect(reverse('QueVideo:agregarInsumoRecurso'))
+    else:
+        form = InsumoRecursoForm()
+    return render(request, 'recursos/insumo.html', {'form': form})

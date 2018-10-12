@@ -107,18 +107,36 @@ class Clip_Media(models.Model):
     user = models.ForeignKey(User)
 
 
-MEDIA_TYPE = (
-    ('V', 'Video'),
-    ('A', 'Audio'),
+
+TIPO_INSUMO = (
+    ('E', 'Escaleta'),
+    ('SB', 'StoryBoard'),
+    ('GT', 'Guion Tecnico'),
+    ('REU', 'Reunion'),
+    ('REF', 'Referente'),
+
 )
+
+class Insumo(models.Model):
+    IdInsumo = models.AutoField(primary_key=True)
+    Nombre = models.CharField(max_length=64)
+    Descripcion = models.CharField(max_length=255)
+    Tipo = models.CharField(max_length=255, choices=TIPO_INSUMO, default='E')
+    Archivo = models.FileField(upload_to='insumos/', null=True)
+
+
+class ArchivoInsumo(models.Model):
+    IdArchivo = models.AutoField(primary_key=True)
+    Nombre = models.CharField(max_length=64)
+    Ubicacion = models.CharField(max_length=255)
+    valor = models.CharField(max_length=64)
+
 
 
 class PlanLogistica(models.Model):
     IdPlanLogistica = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=64)
     Descripcion = models.CharField(max_length=255)
-    Escaleta = models.CharField(max_length=255)
-    GuionTecnico = models.CharField(max_length=255)
 
 
 class Actividad(models.Model):
@@ -129,6 +147,11 @@ class Actividad(models.Model):
     Lugar = models.CharField(max_length=255)
     PlanLogistica = models.ForeignKey(PlanLogistica)
 
+
+MEDIA_TYPE = (
+    ('V', 'Video'),
+    ('A', 'Audio'),
+)
 
 class Media(models.Model):
     idMedia = models.AutoField(primary_key=True)
@@ -154,7 +177,6 @@ class Media(models.Model):
     def get_absolute_SC_url(self):
         return reverse('detailsSC', args=[str(self.idMedia)])
 
-
     def get_yt_code(self):
         """Returns the ID code of a youtube video, """
         # this is specific to youtube, for other services please implement that
@@ -163,15 +185,15 @@ class Media(models.Model):
         if "embed" not in self.url:
             return self.url.split('?v=')[1]
         else:
-            return self.url[self.url.find("embed/")+6:self.url.find("embed/")+17]
+            return self.url[self.url.find("embed/") + 6:self.url.find("embed/") + 17]
 
     def youTube(self):
         yt = 'https://youtube.com/embed/'
-        return yt+self.get_yt_code()
-
+        return yt + self.get_yt_code()
 
     def soundCloud(self):
-        return  self.url
+        return self.url
+
 
 # ###################################################SGRED#######################################################
 CRUDO_TYPE = (
@@ -191,4 +213,3 @@ class CrudoForm(ModelForm):
     class Meta:
         model = Crudo
         fields = ["Nombre", "Tipo", "Archivo"]
-

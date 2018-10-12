@@ -93,6 +93,15 @@ DATABASES = {
          'HOST': os.environ.get('DATABASE_HOST'),
          'PORT': os.environ.get('DATABASE_PORT'),
      }
+    # nestor PC DB parameters
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'QueVideo',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'admin',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
  }
 
 

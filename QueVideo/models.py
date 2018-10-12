@@ -192,7 +192,7 @@ CRUDO_TYPE = (
 
 class Crudo(models.Model):
     IdCrudo = models.AutoField(primary_key=True)
-    Nombre = models.CharField(max_length=150, blank=False)
+    Nombre = models.CharField(max_length=150, blank=False, unique=True)
     Tipo = models.CharField(max_length=50, choices=CRUDO_TYPE, default='V', blank=False)
     Archivo = models.FileField(upload_to='crudos', null=True)
     url = models.CharField(max_length=2000, blank=False, default=" ")
@@ -201,6 +201,11 @@ class Crudo(models.Model):
 class CrudoForm(ModelForm):
     class Meta:
         model = Crudo
+        widgets = {
+            'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'Tipo': forms.Select(attrs={'class': 'form-control'}),
+            'Archivo': forms.FileInput(attrs={'class': 'form-control-file'}),
+        }
         fields = ["Nombre", "Tipo", "Archivo"]
 
 

@@ -18,7 +18,7 @@
     <script>
         (function()
         {
-            $.getJSON("http://localhost:8000/planLogistica/1/actividades/").done(function (data)
+            $.getJSON("https://sgred.herokuapp.com/planLogistica/1/actividades/").done(function (data)
             {
                 var num = 0;
                 $.each(data, function (i, item)
@@ -31,7 +31,7 @@
                         '   <td>' + item.fields.Video + '</td>\n' +
                         '   <td>' + item.fields.Observaciones + '</td>\n' +
                         '   <td>' + item.fields.Lugar + '</td>\n' +
-                        '   <td><a href="http://localhost:8000/editarActividad/' + item.pk + '" ><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></td>\n' +
+                        '   <td><a href="https://sgred.herokuapp.com/editarActividad/' + item.pk + '" ><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a></td>\n' +
                         '</tr>');
                 });
             });
@@ -100,7 +100,7 @@
                                 <h3 class="panel-title">Plan de logistica</h3>
                             </div>
                             <div class="panel-body">
-                                <a href="http://localhost:8000/planLogistica/1/actividad/"><span class="glyphicon glyphicon-plus">&nbsp; Agregar actividad</span></a>
+                                <a href="https://sgred.herokuapp.com/planLogistica/1/actividad/"><span class="glyphicon glyphicon-plus">&nbsp; Agregar actividad</span></a>
                                 <br/>
                                 <table class="table table-striped" style="width: 100%">
                                     <thead>

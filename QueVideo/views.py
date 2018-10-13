@@ -653,3 +653,11 @@ def agregarInsumoRecurso(request):
     else:
         form = InsumoRecursoForm()
     return render(request, 'recursos/insumo.html', {'form': form})
+
+from django_tables2 import RequestConfig
+from .tables import SolicitudesTable
+
+def getNotifications(request):
+    table = SolicitudesTable(Solicitud_CambioEstado.objects.all())
+    RequestConfig(request).configure(table)
+    return render(request, 'videos/solicitudes.html', {'table': table})

@@ -43,4 +43,6 @@ urlpatterns = [
     url(r'^cambioEstadoEtapa/(?P<pk>[0-9]+)/$', views.cambioEstadoEtapa),
     url(r'^avanzarEtapa/(?P<pk>[0-9]+)/solicitud/(?P<pk2>[0-9]+)$', views.realizarAvanceEtapa),
 
+    url(r'^getNotifications/$', views.getNotifications)
+
 ]

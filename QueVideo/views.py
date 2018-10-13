@@ -13,6 +13,8 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from ftplib import FTP
+
+from QueVideo.forms import PlanLogisticaForm, InsumoRecursoForm
 from .models import Media, ClipForm,  EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
     PlanLogistica, Actividad, CrudoForm, Etapa, Solicitud_CambioEstado, ActividadEditForm, Crudo
 from django.shortcuts import render, redirect, get_object_or_404
@@ -626,3 +628,25 @@ def realizarAvanceEtapa(request, pk, pk2):
 #
 #         logging.config.dictConfig(LOGGING)
 #         logging.info('' + etapa.estado)
+
+def agregarPlanLogistica(request):
+    if request.method == 'POST':
+        form = PlanLogisticaForm(request.POST, request.FILES)
+        if form.is_valid():
+            plan = form.save()
+            messages.success(request, "Se Agrego el Plan de Logistica Correctamente", extra_tags="alert-success")
+        return HttpResponseRedirect(reverse('QueVideo:agregarPlanLogistica'))
+    else:
+        form = PlanLogisticaForm(request.POST)
+    return render(request, 'recursos/planLogistica.html', {'form': form})
+
+def agregarInsumoRecurso(request):
+    if request.method == 'POST':
+        form = InsumoRecursoForm(request.POST, request.FILES)
+        if form.is_valid():
+            insumo = form.save()
+            messages.success(request, "Se Agrego Insumo de Diseño Correctamente", extra_tags="alert-success")
+        return HttpResponseRedirect(reverse('QueVideo:agregarInsumoRecurso'))
+    else:
+        form = InsumoRecursoForm()
+    return render(request, 'recursos/insumo.html', {'form': form})

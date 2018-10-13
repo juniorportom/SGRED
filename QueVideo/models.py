@@ -125,8 +125,7 @@ class PlanLogistica(models.Model):
     IdPlanLogistica = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=64)
     Descripcion = models.CharField(max_length=255)
-    Escaleta = models.CharField(max_length=255)
-    GuionTecnico = models.CharField(max_length=255)
+
 
 
 class Actividad(models.Model):
@@ -274,3 +273,25 @@ class Solicitud_CambioEstado(models.Model):
 
     def was_requested_recently(self):
         return self.fecha_solicitud >= timezone.now() - datetime.timedelta(days=1)
+
+
+TIPO_INSUMO = (
+    ('E', 'Escaleta'),
+    ('SB', 'StoryBoard'),
+    ('GT', 'Guion Tecnico'),
+    ('REU', 'Reunion'),
+    ('REF', 'Referente'),
+)
+
+class Insumo(models.Model):
+    IdInsumo = models.AutoField(primary_key=True)
+    Nombre = models.CharField(max_length=64)
+    Descripcion = models.CharField(max_length=255)
+    Tipo = models.CharField(max_length=255, choices=TIPO_INSUMO, default='E')
+    Archivo = models.FileField(upload_to='insumos/', null=True)
+
+class ArchivoInsumo(models.Model):
+    IdArchivo = models.AutoField(primary_key=True)
+    Nombre = models.CharField(max_length=64)
+    Ubicacion = models.CharField(max_length=255)
+    valor = models.CharField(max_length=64)

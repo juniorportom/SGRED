@@ -304,7 +304,7 @@ def get_actividades(request, planId):
 
 
 @csrf_exempt
-def add_actividad(request, planId, actId):
+def add_actividad(request, planId):
     plan = PlanLogistica.objects.get(pk=planId)
     if request.method == 'POST':
         print('json' + request.body)

@@ -8,22 +8,21 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-
 from ftplib import FTP
-
-
 from .models import Media, ClipForm, UserForm, EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
-    PlanLogistica, Actividad, CrudoForm
-
+    PlanLogistica, Actividad, CrudoForm, Etapa , Solicitud_CambioEstado
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, request
 from django.shortcuts import render_to_response
-
 from django.contrib import auth
 from django.template.context_processors import csrf
-
 from django.core import serializers as jsonserializer, serializers
-
+from django.utils.datetime_safe import datetime
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from .Serializers_Generales import EtapaSerializer,Solicitud_CambioEstado_Serializer
 
 def index(request):
     video_list = Media.objects.all()
@@ -335,3 +334,250 @@ def upload_crudo(request):
     return render(request, 'crudos/create.html', {'form': form})
 
 
+## Methods of etapa, solicitud cambio etapa CRUD
+
+## Json class response for handle httpResponse
+class JSONResponse(HttpResponse):
+    """
+    An HttpResponse that renders its content into JSON.
+    """
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
+
+## GET  >> all list of etapa
+## POST >> a new etapa
+
+@csrf_exempt
+def etapa_list(request):
+    """
+    List all code etapas, or create a new etapa.
+    """
+    if request.method == 'GET':
+        etapas = Etapa.objects.all()
+        serializer = EtapaSerializer(etapas, many=True)
+        return JSONResponse(serializer.data)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = EtapaSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data, status=201)
+        return JSONResponse(serializer.errors, status=400)
+
+## GET >> detail etapa
+## PUT >> update etapa
+## DELETE >> delete etapa
+@csrf_exempt
+def etapa_detail(request, pk):
+    """
+    Retrieve, update or delete a etapa.
+    """
+    try:
+        etapa = Etapa.objects.get(idEtapa=pk)
+    except Etapa.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = EtapaSerializer(etapa)
+        return JSONResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = EtapaSerializer(etapa, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data)
+        return JSONResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        etapa.delete()
+        return HttpResponse(status=204)
+
+## GET  >> all list of solicitud cambio estado
+## POST >> a new solicitud cambio de estado
+
+@csrf_exempt
+def solicitud_cambio_estado_list(request):
+
+    if request.method == 'GET':
+        solicitudes = Solicitud_CambioEstado.objects.all()
+        serializer = Solicitud_CambioEstado_Serializer(solicitudes, many=True)
+        return JSONResponse(serializer.data)
+
+    elif request.method == 'POST':
+
+        nuevoEstado = json.loads(request.body)
+        solicitadoPor = nuevoEstado['solicitadoPor']
+        aprobadoPor = 'Sin aprobar'
+        dt = datetime.now
+        fecha_solicitud = dt
+        fecha_aprobacion = dt
+
+        solicitud_model = Solicitud_CambioEstado(
+                                    solicitadoPor=solicitadoPor,
+                                    aprobadoPor=aprobadoPor,
+                                    fecha_solicitud=fecha_solicitud,
+                                    fecha_aprobacion=fecha_aprobacion,
+                                    )
+        solicitud_model.save()
+        return JsonResponse({"solicitadoPor":solicitadoPor,
+                                "aprobadoPor":aprobadoPor,
+                                "fecha_solicitud":fecha_solicitud,
+                                "fecha_aprobacion":fecha_aprobacion}, status=201)
+
+        return HttpResponse(status=404)
+
+
+        ###########
+        #data = JSONParser().parse(request)
+       # serializer = Solicitud_CambioEstado_Serializer(data=data)
+        #if serializer.is_valid():
+         #   serializer.save()
+         #   return JSONResponse(serializer.data, status=201)
+        #return JSONResponse(serializer.errors, status=400)
+
+
+
+## GET >> detail solicitud cambio estado
+## PUT >> update detail solicitud
+## DELETE >> delete detail solicitud
+
+@csrf_exempt
+def solicitud_cambio_estado_detail(request, pk):
+
+    try:
+        solicitud = Solicitud_CambioEstado.objects.get(idSolicitud=pk)
+    except Solicitud_CambioEstado.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = Solicitud_CambioEstado_Serializer(solicitud)
+        return JSONResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = Solicitud_CambioEstado_Serializer(solicitud, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data)
+        return JSONResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        solicitud.delete()
+        return HttpResponse(status=204)
+
+#---------------------------- SGRD-19 -----------------------------
+# Como  Asesor/Gestor RED debo poder ver el listado de notificaciones
+# para cambio de fase del recurso para saber el avance de trabajo del recurso.
+
+
+
+
+#---------------------------- SGRD-23 -----------------------------
+# Como miembro de grupo debo poder marcar la etapa
+# como completada para solicitar avance de etapa.
+
+# 1. Registro el cambio de Estado de etapa DONE, WAITING, PROCESS>> Registro el DONE
+## DONE >> el estado actual del recurso esta completado
+## WAITING >> el estado actual del recurso esta en espera de ser comenzado
+## PROCESS >> el estado actual del recurso esta en desarrollo
+
+@csrf_exempt
+def cambioEstadoEtapa(request, pk):
+    try:
+        etapa = Etapa.objects.get(idEtapa=pk)
+    except Etapa.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'PUT':
+        nuevoEstado = json.loads(request.body)
+        estado = nuevoEstado['estado']
+        etapa.estado=estado
+        etapa.save()
+        return JsonResponse({"idEtapa": etapa.idEtapa,
+                             "nombre": etapa.nombre,
+                             "estado": etapa.estado,
+                             "fecha_inicio": etapa.fecha_inicio,
+                             "fecha_fin": etapa.fecha_fin,
+                             "etapa_type":etapa.etapa_type}, status=201)
+        return HttpResponse(status=404)
+
+
+#---------------------------- SGRD-18 -----------------------------
+    #     Como Asesor/Gestor RED debo poder realizar un avance
+    #     en la etapa del recurso para informar a todos los interesados
+    #     que la etapa actual se completa y el cambio de etapa se realiza.
+
+# 2. Se cambia la solicitud a aprobada y se realiza el cambio de estado
+# 3. Se cambia el estado de la etapa y se avanza
+
+@csrf_exempt
+def realizarAvanceEtapa(request, pk, pk2):
+    try:
+        etapa = Etapa.objects.get(idEtapa=pk)
+        solicitud = Solicitud_CambioEstado.objects.get(idSolicitud=pk2)
+    except Etapa.DoesNotExist:
+        return HttpResponse(status=404)
+    except Solicitud_CambioEstado.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'POST':
+
+        ## Cambio en la solicitud
+        jbody = json.loads(request.body)
+        aprobadoPor = jbody['aprobadoPor']
+        solicitud.aprobadoPor = aprobadoPor
+        solicitud.fecha_aprobacion = datetime.now
+        solicitud.save()
+
+        ## Cambio en la etapa
+        act = etapa.etapa_type
+        if act == 'Pre':
+            etapa.etapa_type='Pro'
+            etapa.nombre='Produccion'
+        elif act == 'Pro':
+            etapa.etapa_type = 'Pos'
+            etapa.nombre = 'Post-Produccion'
+        elif act == 'Pos':
+            etapa.etapa_type = 'CC'
+            etapa.nombre = 'Control de calidad'
+        elif act == 'CC':
+            etapa.etapa_type = 'CP'
+            etapa.nombre = 'Cierre de proyecto'
+        elif act == 'CP':
+            etapa.etapa_type = 'SR'
+            etapa.nombre = 'Sistematizacion y resguardo'
+        etapa.save()
+
+
+        return JsonResponse({"idEtapa": etapa.idEtapa,
+                             "nombre": etapa.nombre,
+                             "estado": etapa.estado,
+                             "fecha_inicio": etapa.fecha_inicio,
+                             "fecha_fin": etapa.fecha_fin,
+                             "etapa_type": etapa.etapa_type}, status=201)
+        return HttpResponse(status=404)
+
+
+## CONSOLE LOG CODE
+# import logging, logging.config
+# import sys
+# LOGGING = {
+#             'version': 1,
+#             'handlers': {
+#                 'console': {
+#                     'class': 'logging.StreamHandler',
+#                     'stream': sys.stdout,
+#                 }
+#             },
+#             'root': {
+#                 'handlers': ['console'],
+#                 'level': 'INFO'
+#             }
+#         }
+#
+#         logging.config.dictConfig(LOGGING)
+#         logging.info('' + etapa.estado)

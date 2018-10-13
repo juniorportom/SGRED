@@ -8,6 +8,7 @@ from django.forms import ModelForm
 from django.urls import reverse
 from django import forms
 from django.utils.datetime_safe import datetime
+from django.utils import timezone
 
 
 class CustomUser(models.Model):
@@ -191,4 +192,63 @@ class CrudoForm(ModelForm):
     class Meta:
         model = Crudo
         fields = ["Nombre", "Tipo", "Archivo"]
+
+#---------------------------- SGRD-18-----------------------------
+    #     Como Asesor/Gestor RED debo poder realizar un avance
+    #     en la etapa del recurso para informar a todos los interesados
+    #     que la etapa actual se completa y el cambio de etapa se realiza.
+
+#---------------------------- SGRD-19-----------------------------
+    #   Como  Asesor/Gestor RED debo poder ver el listado de notificaciones
+    #   para cambio de fase del recurso para saber el avance de trabajo del recurso.
+
+# class Recurso(models.Model):
+#     etapa = models.ForeignKey(Etapa, on_delete=models.CASCADE)
+#     solicitud_cambio = models.ForeignKey(Solicitud_CambioEstado, on_delete=models.CASCADE)
+#     idRecurso = models.AutoField(primary_key=True)
+#     nombre  = models.CharField(max_length=255)
+#     estado  = models.CharField(max_length=255, choices=ESTADO_TYPE)
+#     def __unicode__(self):
+#         return self.nombre
+
+
+class Etapa(models.Model):
+
+    ETAPA_TYPE = (
+        ('Pre', 'Pre-Produccion'),
+        ('Pro', 'Produccion'),
+        ('Pos', 'Post-Produccion'),
+        ('CC', 'Control de calidad'),
+        ('CP', 'Cierre de proyecto'),
+        ('SR', 'Sistematizacion y resguardo'),
+    )
+
+    ESTADO_TYPE = (
+        ('WAITING', 'Pendiente'),
+        ('PROCESS', 'En Proceso'),
+        ('DONE', 'Terminado'),
+    )
+
+    idEtapa = models.AutoField(primary_key=True)
+    nombre  = models.CharField(max_length=255)
+    estado  = models.CharField(max_length=255, choices=ESTADO_TYPE)
+    fecha_inicio =  models.DateTimeField(default=datetime.now)
+    fecha_fin =  models.DateTimeField('fecha de finalizacion no definida')
+    etapa_type = models.CharField(max_length=255, choices=ETAPA_TYPE)
+
+    def __unicode__(self):
+        return self.nombre
+
+
+class Solicitud_CambioEstado(models.Model):
+    idSolicitud = models.AutoField(primary_key=True)
+    solicitadoPor = models.CharField(max_length=255)
+    aprobadoPor = models.CharField(max_length=255, default='No se ha aprobado')
+    fecha_solicitud = models.DateTimeField(default=datetime.now)
+    fecha_aprobacion = models.DateTimeField('fecha de aprobacion no definida')
+    def __unicode__(self):
+        return self.nombre
+
+    def was_requested_recently(self):
+        return self.fecha_solicitud >= timezone.now() - datetime.timedelta(days=1)
 

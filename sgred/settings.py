@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'django_tables2',
     'bootstrap4',
     'corsheaders',
     'QueVideo'
@@ -67,6 +69,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.request',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -85,15 +88,26 @@ WSGI_APPLICATION = 'sgred.wsgi.application'
 
 
 DATABASES = {
-     'default': {
+     # 'default': {
+     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+     #     'NAME': os.environ.get('DATABASE_NAME'),
+     #     'USER': os.environ.get('DATABASE_USER'),
+     #     'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+     #     'HOST': os.environ.get('DATABASE_HOST'),
+     #     'PORT': os.environ.get('DATABASE_PORT'),
+     # }
+
+    'default': {
          'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': os.environ.get('DATABASE_NAME'),
-         'USER': os.environ.get('DATABASE_USER'),
-         'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-         'HOST': os.environ.get('DATABASE_HOST'),
-         'PORT': os.environ.get('DATABASE_PORT'),
+         'NAME': 'd5tbu8odhi1pi1',
+         'USER': 'knzzpkvqbalhxe',
+         'PASSWORD': 'cafb5c11e51421177bbc287bc4467688b83f1d6ca9d9f45b47af67673b495a71',
+         'HOST': 'ec2-54-225-110-152.compute-1.amazonaws.com',
+         'PORT': '5432',
      }
  }
+
+
 
 
 

@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 import json
+import os
+from django.contrib import messages
 
 
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -11,9 +13,9 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from ftplib import FTP
-from .models import Media, ClipForm, UserForm, EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
-    PlanLogistica, Actividad, CrudoForm, Etapa , Solicitud_CambioEstado
-from django.shortcuts import render, redirect
+from .models import Media, ClipForm,  EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
+    PlanLogistica, Actividad, CrudoForm, Etapa, Solicitud_CambioEstado, ActividadEditForm, Crudo
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, request
 from django.shortcuts import render_to_response
 from django.contrib import auth
@@ -24,7 +26,8 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from .Serializers_Generales import EtapaSerializer,Solicitud_CambioEstado_Serializer
+from .Serializers_Generales import EtapaSerializer, Solicitud_CambioEstado_Serializer
+
 
 def index(request):
     video_list = Media.objects.all()
@@ -34,19 +37,20 @@ def index(request):
     type_list = [{'idType': '1', 'name': 'Videos'}, {'idType': '2', 'name': 'Audios'}]
 
     if request.method == 'POST':
-        selected_category = int(request.POST.get("idSelCategorias",0))
-        arg = request.POST.get("idSelTipo",0)
-        selected_type =int(arg)
+        selected_category = int(request.POST.get("idSelCategorias", 0))
+        arg = request.POST.get("idSelTipo", 0)
+        selected_type = int(arg)
         if selected_category != 0:
             video_list = Media.objects.filter(category=selected_category)
         if selected_type != 0:
-            if selected_type==1:
+            if selected_type == 1:
                 video_list = Media.objects.filter(mediaType='V')
             else:
-                if selected_type==2:
+                if selected_type == 2:
                     video_list = Media.objects.filter(mediaType='A')
 
-    context = {'video_list': video_list, 'categoria_list': categoria_list, 'selected_category': selected_category, 'selected_type':selected_type,'type_list':type_list}
+    context = {'video_list': video_list, 'categoria_list': categoria_list, 'selected_category': selected_category,
+               'selected_type': selected_type, 'type_list': type_list}
     return render(request, 'videos/index.html', context)
 
 
@@ -112,7 +116,7 @@ def detailSC(request, videoid):
                 clip = form.save()
                 video = Media.objects.get(pk=videoid)
                 current_user = request.user
-                media_clip = Clip_Media(clip= clip, media=video, user=current_user)
+                media_clip = Clip_Media(clip=clip, media=video, user=current_user)
                 media_clip.save()
         return HttpResponseRedirect(reverse('gallery:detailsSC', args=videoid))
     else:
@@ -127,10 +131,12 @@ def all_media(request):
 
     return HttpResponse(jsonserializer.serialize("json", all_media_objects))
 
+
 @csrf_exempt
 def media_detail(request, videoid):
     video = Media.objects.filter(pk=videoid)
     return HttpResponse(jsonserializer.serialize("json", video))
+
 
 def all_users(request):
     all_users_objects = User.objects.all()
@@ -232,7 +238,6 @@ def login_view(request):
     return JsonResponse({"mensaje": mensaje})
 
 
-
 @csrf_exempt
 def logout_view(request):
     logout(request)
@@ -274,6 +279,9 @@ def mail_sender(idClip):
 
 
 # ###################################################SGRED#######################################################
+def ver_proyecto(request):
+    return render(request, 'videos/proyecto.html')
+
 def get_plan_logistica(request, planId):
     plan = PlanLogistica.objects.filter(pk=planId)
 
@@ -294,29 +302,47 @@ def get_actividades(request, planId):
 
 
 @csrf_exempt
-def add_actividad(request, planId, actId):
+def add_actividad(request, planId):
+    plan = PlanLogistica.objects.get(pk=planId)
     if request.method == 'POST':
+        print('json' + request.body)
         jact = json.loads(request.body)
         fecha = jact['fecha']
         video = jact['video']
         observaciones = jact['observaciones']
         lugar = jact['lugar']
         plan = PlanLogistica.objects.get(pk=planId)
-        actividad_model = Actividad(IdActividad=actId,
-                                    Fecha=fecha,
+        actividad_model = Actividad(Fecha=fecha,
                                     Video=video,
                                     Observaciones=observaciones,
                                     Lugar=lugar,
                                     PlanLogistica=plan)
 
         actividad_model.save()
-        return JsonResponse({"IdActividad": actId,
-                            "fecha": fecha,
-                            "video": video,
+        return JsonResponse({"ActividadId": actividad_model.pk,
+                             "fecha": fecha,
+                             "video": video,
                              "observaciones": observaciones,
                              "lugar": lugar})
     else:
-        return JsonResponse({"nombre": ''})
+        context = {'planLogistica': plan}
+        return render(request, 'videos/addActividad.html', context)
+
+
+@csrf_exempt
+def edit_actividad(request, id):
+    instance = get_object_or_404(Actividad, IdActividad=id)
+    if request.method == 'POST':
+        form = ActividadEditForm(data=request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+        return HttpResponseRedirect(reverse('QueVideo:index'))
+    else:
+        #actividad = Actividad.objects.get(IdActividad=request.actividad.IdActividad)
+        actividad = Actividad.objects.all().first()
+        actividadEditform = ActividadEditForm(instance=actividad)
+    context = {"actividadEditform": actividadEditform}
+    return render(request, 'videos/editActividad.html', context)
 
 
 def upload_crudo(request):
@@ -327,13 +353,22 @@ def upload_crudo(request):
             ftp = FTP('200.21.21.36')
             ftp.login('miso|anonymous')
             folder, name = crudo.Archivo.name.split("/")
+            fileName, fileExtention = name.split(".")
+            stampedName = fileName + "-" + str(crudo.IdCrudo) + "." + fileExtention
             with open(crudo.Archivo.path, 'rb') as f:
-                ftp.storbinary('STOR %s' % name, f)
+                ftp.storbinary('STOR %s' % stampedName, f)
+                crudo.url = 'ftp://miso|anonymous@200.21.21.36/' + stampedName
+                crudo.save()
             ftp.quit()
+            if os.path.isfile(crudo.Archivo.path):
+                os.remove(crudo.Archivo.path)
+            messages.success(request, 'Archivo' + name + 'Guardado con Exito en el repositorio')
             return HttpResponseRedirect(reverse('QueVideo:agregarCrudo'))
     else:
         form = CrudoForm()
-    return render(request, 'crudos/create.html', {'form': form})
+        crudos = Crudo.objects.all()
+        return render(request, 'crudos/create.html', {'form': form, 'crudo_list': crudos})
+
 
 
 ## Methods of etapa, solicitud cambio etapa CRUD
@@ -343,10 +378,12 @@ class JSONResponse(HttpResponse):
     """
     An HttpResponse that renders its content into JSON.
     """
+
     def __init__(self, data, **kwargs):
         content = JSONRenderer().render(data)
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
+
 
 ## GET  >> all list of etapa
 ## POST >> a new etapa
@@ -368,6 +405,7 @@ def etapa_list(request):
             serializer.save()
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
+
 
 ## GET >> detail etapa
 ## PUT >> update etapa
@@ -398,12 +436,12 @@ def etapa_detail(request, pk):
         etapa.delete()
         return HttpResponse(status=204)
 
+
 ## GET  >> all list of solicitud cambio estado
 ## POST >> a new solicitud cambio de estado
 
 @csrf_exempt
 def solicitud_cambio_estado_list(request):
-
     if request.method == 'GET':
         solicitudes = Solicitud_CambioEstado.objects.all()
         serializer = Solicitud_CambioEstado_Serializer(solicitudes, many=True)
@@ -421,10 +459,10 @@ def solicitud_cambio_estado_list(request):
         fecha_solicitud = format_iso_now
         fecha_aprobacion = format_iso_now
 
-        eljson={"solicitadoPor":solicitadoPor,
-                                "aprobadoPor":aprobadoPor,
-                                "fecha_solicitud":fecha_solicitud,
-                                "fecha_aprobacion":fecha_aprobacion}
+        eljson = {"solicitadoPor": solicitadoPor,
+                  "aprobadoPor": aprobadoPor,
+                  "fecha_solicitud": fecha_solicitud,
+                  "fecha_aprobacion": fecha_aprobacion}
 
         serializer = Solicitud_CambioEstado_Serializer(data=eljson)
         if serializer.is_valid():
@@ -446,12 +484,8 @@ def solicitud_cambio_estado_list(request):
         #
         # return HttpResponse(status=404)
 
-
         ###########
-        #data = JSONParser().parse(request)
-
-
-
+        # data = JSONParser().parse(request)
 
 
 ## GET >> detail solicitud cambio estado
@@ -460,7 +494,6 @@ def solicitud_cambio_estado_list(request):
 
 @csrf_exempt
 def solicitud_cambio_estado_detail(request, pk):
-
     try:
         solicitud = Solicitud_CambioEstado.objects.get(idSolicitud=pk)
     except Solicitud_CambioEstado.DoesNotExist:
@@ -482,14 +515,13 @@ def solicitud_cambio_estado_detail(request, pk):
         solicitud.delete()
         return HttpResponse(status=204)
 
-#---------------------------- SGRD-19 -----------------------------
+
+# ---------------------------- SGRD-19 -----------------------------
 # Como  Asesor/Gestor RED debo poder ver el listado de notificaciones
 # para cambio de fase del recurso para saber el avance de trabajo del recurso.
 
 
-
-
-#---------------------------- SGRD-23 -----------------------------
+# ---------------------------- SGRD-23 -----------------------------
 # Como miembro de grupo debo poder marcar la etapa
 # como completada para solicitar avance de etapa.
 
@@ -508,21 +540,21 @@ def cambioEstadoEtapa(request, pk):
     if request.method == 'PUT':
         nuevoEstado = json.loads(request.body)
         estado = nuevoEstado['estado']
-        etapa.estado=estado
+        etapa.estado = estado
         etapa.save()
         return JsonResponse({"idEtapa": etapa.idEtapa,
                              "nombre": etapa.nombre,
                              "estado": etapa.estado,
                              "fecha_inicio": etapa.fecha_inicio,
                              "fecha_fin": etapa.fecha_fin,
-                             "etapa_type":etapa.etapa_type}, status=201)
+                             "etapa_type": etapa.etapa_type}, status=201)
         return HttpResponse(status=404)
 
 
-#---------------------------- SGRD-18 -----------------------------
-    #     Como Asesor/Gestor RED debo poder realizar un avance
-    #     en la etapa del recurso para informar a todos los interesados
-    #     que la etapa actual se completa y el cambio de etapa se realiza.
+# ---------------------------- SGRD-18 -----------------------------
+#     Como Asesor/Gestor RED debo poder realizar un avance
+#     en la etapa del recurso para informar a todos los interesados
+#     que la etapa actual se completa y el cambio de etapa se realiza.
 
 # 2. Se cambia la solicitud a aprobada y se realiza el cambio de estado
 # 3. Se cambia el estado de la etapa y se avanza
@@ -551,8 +583,8 @@ def realizarAvanceEtapa(request, pk, pk2):
         ## Cambio en la etapa
         act = etapa.etapa_type
         if act == 'Pre':
-            etapa.etapa_type='Pro'
-            etapa.nombre='Produccion'
+            etapa.etapa_type = 'Pro'
+            etapa.nombre = 'Produccion'
         elif act == 'Pro':
             etapa.etapa_type = 'Pos'
             etapa.nombre = 'Post-Produccion'
@@ -567,7 +599,6 @@ def realizarAvanceEtapa(request, pk, pk2):
             etapa.nombre = 'Sistematizacion y resguardo'
         etapa.save()
 
-
         return JsonResponse({"idEtapa": etapa.idEtapa,
                              "nombre": etapa.nombre,
                              "estado": etapa.estado,
@@ -575,7 +606,6 @@ def realizarAvanceEtapa(request, pk, pk2):
                              "fecha_fin": etapa.fecha_fin,
                              "etapa_type": etapa.etapa_type}, status=201)
         return HttpResponse(status=404)
-
 
 ## CONSOLE LOG CODE
 # import logging, logging.config

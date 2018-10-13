@@ -22,9 +22,12 @@ urlpatterns = [
 
     url(r'^agregarCrudo', views.upload_crudo, name='agregarCrudo'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
+    url(r'^proyecto', views.ver_proyecto, name='proyecto'),
+    url(r'^agregarCrudo', views.upload_crudo, name='agregarCrudo'),
+    url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^planLogistica/(?P<planId>\d+)/actividades/$', views.get_actividades, name='actividades'),
     url(r'^planLogistica/(?P<planId>\d+)/actividad/(?P<actId>\d+)$', views.add_actividad, name='agregarActividad'),
-
+    url(r'editarActividad/(?P<id>\d+)$', views.edit_actividad, name='editarActividad'),
 
     url(r'^etapas/$', views.etapa_list),
     url(r'^etapas/(?P<pk>[0-9]+)/$', views.etapa_detail),
@@ -35,4 +38,3 @@ urlpatterns = [
     url(r'^avanzarEtapa/(?P<pk>[0-9]+)/solicitud/(?P<pk2>[0-9]+)$', views.realizarAvanceEtapa),
 
 ]
-

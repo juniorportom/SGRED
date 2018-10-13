@@ -18,39 +18,46 @@ class CustomUser(models.Model):
     auth_user_id = models.ForeignKey(User, null=False)
 
 
-class UserForm(ModelForm):
-    usuario = forms.CharField(max_length=50)
-    nombre = forms.CharField(max_length=20)
-    apellido = forms.CharField(max_length=20)
-    email = forms.EmailField()
-    contrasena = forms.CharField(widget=forms.PasswordInput())
-    contrasena2 = forms.CharField(widget=forms.PasswordInput())
 
-    class Meta:
-        model = CustomUser
-        fields = ['pais', 'ciudad', 'imagen']
 
-    def clean_username(self):
-        username = self.cleaned_data['usuario']
-        if User.objects.filter(username=username):
-            raise forms.ValidationError('Nombre de usuario ya registrado.')
-        return username
 
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        if User.objects.filter(email=email):
-            raise forms.ValidationError('Ya existe un email igual registrado.')
-        return email
+usuario = forms.CharField(max_length=50)
+nombre = forms.CharField(max_length=20)
+apellido = forms.CharField(max_length=20)
+email = forms.EmailField()
+contrasena = forms.CharField(widget=forms.PasswordInput())
+contrasena2 = forms.CharField(widget=forms.PasswordInput())
 
-    def clean_password2(self):
-        password = self.cleaned_data['contrasena']
-        password2 = self.cleaned_data['contrasena']
-        if password != password2:
-            raise forms.ValidationError('Las claves no coinciden')
-        return password2
 
-    def __unicode__(self):
-        return self.name
+class Meta:
+    model = CustomUser
+    fields = ['pais', 'ciudad', 'imagen']
+
+
+def clean_username(self):
+    username = self.cleaned_data['usuario']
+    if User.objects.filter(username=username):
+        raise forms.ValidationError('Nombre de usuario ya registrado.')
+    return username
+
+
+def clean_email(self):
+    email = self.cleaned_data['email']
+    if User.objects.filter(email=email):
+        raise forms.ValidationError('Ya existe un email igual registrado.')
+    return email
+
+
+def clean_password2(self):
+    password = self.cleaned_data['contrasena']
+    password2 = self.cleaned_data['contrasena']
+    if password != password2:
+        raise forms.ValidationError('Las claves no coinciden')
+    return password2
+
+
+def __unicode__(self):
+    return self.name
 
 
 class EditCustomUserForm(ModelForm):
@@ -131,6 +138,17 @@ class Actividad(models.Model):
     PlanLogistica = models.ForeignKey(PlanLogistica)
 
 
+class ActividadEditForm(ModelForm):
+    Fecha = forms.DateTimeField()
+    Video = forms.CharField(max_length=20)
+    Observaciones = forms.CharField(max_length=20)
+    Lugar = forms.CharField(max_length=20)
+
+    class Meta:
+        model = Actividad
+        fields = ['Fecha', 'Video', 'Observaciones', 'Lugar']
+
+
 class Media(models.Model):
     idMedia = models.AutoField(primary_key=True)
     mediaType = models.CharField(max_length=255, choices=MEDIA_TYPE, default='V')
@@ -155,7 +173,6 @@ class Media(models.Model):
     def get_absolute_SC_url(self):
         return reverse('detailsSC', args=[str(self.idMedia)])
 
-
     def get_yt_code(self):
         """Returns the ID code of a youtube video, """
         # this is specific to youtube, for other services please implement that
@@ -164,15 +181,15 @@ class Media(models.Model):
         if "embed" not in self.url:
             return self.url.split('?v=')[1]
         else:
-            return self.url[self.url.find("embed/")+6:self.url.find("embed/")+17]
+            return self.url[self.url.find("embed/") + 6:self.url.find("embed/") + 17]
 
     def youTube(self):
         yt = 'https://youtube.com/embed/'
-        return yt+self.get_yt_code()
-
+        return yt + self.get_yt_code()
 
     def soundCloud(self):
-        return  self.url
+        return self.url
+
 
 # ###################################################SGRED#######################################################
 CRUDO_TYPE = (
@@ -182,7 +199,7 @@ CRUDO_TYPE = (
 
 class Crudo(models.Model):
     IdCrudo = models.AutoField(primary_key=True)
-    Nombre = models.CharField(max_length=150, blank=False)
+    Nombre = models.CharField(max_length=150, blank=False, unique=True)
     Tipo = models.CharField(max_length=50, choices=CRUDO_TYPE, default='V', blank=False)
     Archivo = models.FileField(upload_to='crudos', null=True)
     url = models.CharField(max_length=2000, blank=False, default=" ")
@@ -191,16 +208,22 @@ class Crudo(models.Model):
 class CrudoForm(ModelForm):
     class Meta:
         model = Crudo
+        widgets = {
+            'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'Tipo': forms.Select(attrs={'class': 'form-control'}),
+            'Archivo': forms.FileInput(attrs={'class': 'form-control-file'}),
+        }
         fields = ["Nombre", "Tipo", "Archivo"]
 
-#---------------------------- SGRD-18-----------------------------
-    #     Como Asesor/Gestor RED debo poder realizar un avance
-    #     en la etapa del recurso para informar a todos los interesados
-    #     que la etapa actual se completa y el cambio de etapa se realiza.
 
-#---------------------------- SGRD-19-----------------------------
-    #   Como  Asesor/Gestor RED debo poder ver el listado de notificaciones
-    #   para cambio de fase del recurso para saber el avance de trabajo del recurso.
+# ---------------------------- SGRD-18-----------------------------
+#     Como Asesor/Gestor RED debo poder realizar un avance
+#     en la etapa del recurso para informar a todos los interesados
+#     que la etapa actual se completa y el cambio de etapa se realiza.
+
+# ---------------------------- SGRD-19-----------------------------
+#   Como  Asesor/Gestor RED debo poder ver el listado de notificaciones
+#   para cambio de fase del recurso para saber el avance de trabajo del recurso.
 
 # class Recurso(models.Model):
 #     etapa = models.ForeignKey(Etapa, on_delete=models.CASCADE)
@@ -213,7 +236,6 @@ class CrudoForm(ModelForm):
 
 
 class Etapa(models.Model):
-
     ETAPA_TYPE = (
         ('Pre', 'Pre-Produccion'),
         ('Pro', 'Produccion'),
@@ -230,10 +252,10 @@ class Etapa(models.Model):
     )
 
     idEtapa = models.AutoField(primary_key=True)
-    nombre  = models.CharField(max_length=255)
-    estado  = models.CharField(max_length=255, choices=ESTADO_TYPE)
-    fecha_inicio =  models.DateTimeField(default=datetime.now)
-    fecha_fin =  models.DateTimeField('fecha de finalizacion no definida')
+    nombre = models.CharField(max_length=255)
+    estado = models.CharField(max_length=255, choices=ESTADO_TYPE)
+    fecha_inicio = models.DateTimeField(default=datetime.now)
+    fecha_fin = models.DateTimeField('fecha de finalizacion no definida')
     etapa_type = models.CharField(max_length=255, choices=ETAPA_TYPE)
 
     def __unicode__(self):
@@ -246,9 +268,9 @@ class Solicitud_CambioEstado(models.Model):
     aprobadoPor = models.CharField(max_length=255, default='No se ha aprobado')
     fecha_solicitud = models.DateTimeField(default=datetime.now)
     fecha_aprobacion = models.DateTimeField('fecha de aprobacion no definida')
+
     def __unicode__(self):
         return self.nombre
 
     def was_requested_recently(self):
         return self.fecha_solicitud >= timezone.now() - datetime.timedelta(days=1)
-

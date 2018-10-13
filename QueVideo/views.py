@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 import json
+
+
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
@@ -412,32 +414,43 @@ def solicitud_cambio_estado_list(request):
         nuevoEstado = json.loads(request.body)
         solicitadoPor = nuevoEstado['solicitadoPor']
         aprobadoPor = 'Sin aprobar'
-        dt = datetime.now
-        fecha_solicitud = dt
-        fecha_aprobacion = dt
 
-        solicitud_model = Solicitud_CambioEstado(
-                                    solicitadoPor=solicitadoPor,
-                                    aprobadoPor=aprobadoPor,
-                                    fecha_solicitud=fecha_solicitud,
-                                    fecha_aprobacion=fecha_aprobacion,
-                                    )
-        solicitud_model.save()
-        return JsonResponse({"solicitadoPor":solicitadoPor,
+        now = datetime.now()
+        format_iso_now = now.isoformat()
+
+        fecha_solicitud = format_iso_now
+        fecha_aprobacion = format_iso_now
+
+        eljson={"solicitadoPor":solicitadoPor,
                                 "aprobadoPor":aprobadoPor,
                                 "fecha_solicitud":fecha_solicitud,
-                                "fecha_aprobacion":fecha_aprobacion}, status=201)
+                                "fecha_aprobacion":fecha_aprobacion}
 
-        return HttpResponse(status=404)
+        serializer = Solicitud_CambioEstado_Serializer(data=eljson)
+        if serializer.is_valid():
+            serializer.save()
+            return JSONResponse(serializer.data, status=201)
+        return JSONResponse(serializer.errors, status=400)
+
+        # solicitud_model = Solicitud_CambioEstado(
+        #                             solicitadoPor=solicitadoPor,
+        #                             aprobadoPor=aprobadoPor,
+        #                             fecha_solicitud=fecha_solicitud,
+        #                             fecha_aprobacion=fecha_aprobacion,
+        #                             )
+        # solicitud_model.save()
+        # return JsonResponse({"solicitadoPor":solicitadoPor,
+        #                         "aprobadoPor":aprobadoPor,
+        #                         "fecha_solicitud":fecha_solicitud,
+        #                         "fecha_aprobacion":fecha_aprobacion}, status=201)
+        #
+        # return HttpResponse(status=404)
 
 
         ###########
         #data = JSONParser().parse(request)
-       # serializer = Solicitud_CambioEstado_Serializer(data=data)
-        #if serializer.is_valid():
-         #   serializer.save()
-         #   return JSONResponse(serializer.data, status=201)
-        #return JSONResponse(serializer.errors, status=400)
+
+
 
 
 
@@ -530,7 +543,9 @@ def realizarAvanceEtapa(request, pk, pk2):
         jbody = json.loads(request.body)
         aprobadoPor = jbody['aprobadoPor']
         solicitud.aprobadoPor = aprobadoPor
-        solicitud.fecha_aprobacion = datetime.now
+        now = datetime.now()
+        format_iso_now = now.isoformat()
+        solicitud.fecha_aprobacion = format_iso_now
         solicitud.save()
 
         ## Cambio en la etapa

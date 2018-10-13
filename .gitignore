@@ -11,4 +11,4 @@ bin
 images
 migrations/*
 _trial_temp
-.pyc
+/.pyc

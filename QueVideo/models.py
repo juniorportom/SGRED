@@ -131,6 +131,16 @@ class Actividad(models.Model):
     PlanLogistica = models.ForeignKey(PlanLogistica)
 
 
+class ActividadEditForm(ModelForm):
+    Fecha = forms.DateTimeField()
+    Video = forms.CharField(max_length=20)
+    Observaciones = forms.CharField(max_length=20)
+    Lugar = forms.CharField(max_length=20)
+    class Meta:
+        model = Actividad
+        fields = ['Fecha', 'Video', 'Observaciones', 'Lugar']
+
+
 class Media(models.Model):
     idMedia = models.AutoField(primary_key=True)
     mediaType = models.CharField(max_length=255, choices=MEDIA_TYPE, default='V')

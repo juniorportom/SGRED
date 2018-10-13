@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Etapa
+from .models import Etapa, Solicitud_CambioEstado
 
 class EtapaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,5 +8,5 @@ class EtapaSerializer(serializers.ModelSerializer):
 
 class Solicitud_CambioEstado_Serializer(serializers.ModelSerializer):
     class Meta:
-        model = Etapa
+        model = Solicitud_CambioEstado
         fields = ('idSolicitud', 'solicitadoPor', 'aprobadoPor', 'fecha_solicitud', 'fecha_aprobacion')

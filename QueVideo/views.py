@@ -342,7 +342,7 @@ def edit_actividad(request, id):
 
     else:
         # actividad = Actividad.objects.get(IdActividad=request.actividad.IdActividad)
-        actividad = Actividad.objects.all().first()
+        actividad = Actividad.objects.get(pk=id)
         actividadEditform = ActividadEditForm(instance=actividad)
         context = {"actividadEditform": actividadEditform}
     return render(request, 'videos/editActividad.html', context)

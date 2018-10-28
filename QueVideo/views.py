@@ -5,293 +5,52 @@ import json
 import os
 from django.contrib import messages
 
-
-from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib.auth.models import User
-from django.core.mail import send_mail
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 from ftplib import FTP
-from QueVideo.forms import PlanLogisticaForm, InsumoRecursoForm
-from .models import Media, ClipForm,  EditUserForm, CustomUser, Category, EditCustomUserForm, Clip_Media, Clip, \
-    PlanLogistica, Actividad, CrudoForm, Etapa, Solicitud_CambioEstado, ActividadEditForm, Crudo
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect, request
-from django.shortcuts import render_to_response
-from django.contrib import auth
-from django.template.context_processors import csrf
-from django.core import serializers as jsonserializer, serializers
+
+from django_tables2 import RequestConfig
+from rest_framework import viewsets
+
+from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm
+from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
+from QueVideo.tables import SolicitudesTable
+from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponseRedirect
+
+from django.core import serializers
 from django.utils.datetime_safe import datetime
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from .Serializers_Generales import EtapaSerializer, Solicitud_CambioEstado_Serializer
-
-
-def index(request):
-    video_list = Media.objects.all()
-    selected_category = 0
-    selected_type = 0
-    categoria_list = Category.objects.all().order_by('name')
-    type_list = [{'idType': '1', 'name': 'Videos'}, {'idType': '2', 'name': 'Audios'}]
-
-    if request.method == 'POST':
-        selected_category = int(request.POST.get("idSelCategorias", 0))
-        arg = request.POST.get("idSelTipo", 0)
-        selected_type = int(arg)
-        if selected_category != 0:
-            video_list = Media.objects.filter(category=selected_category)
-        if selected_type != 0:
-            if selected_type == 1:
-                video_list = Media.objects.filter(mediaType='V')
-            else:
-                if selected_type == 2:
-                    video_list = Media.objects.filter(mediaType='A')
-
-    context = {'video_list': video_list, 'categoria_list': categoria_list, 'selected_category': selected_category,
-               'selected_type': selected_type, 'type_list': type_list}
-    return render(request, 'videos/index.html', context)
-
-
-# def login(request):
-#     c = {}
-#     c.update(csrf(request))
-#     return render(request, 'auth/login.html', c)
-
-
-def auth_view(request):
-    username = request.POST.get('username', '')
-    password = request.POST.get('password', '')
-    user = auth.authenticate(username=username, password=password)
-
-    if user is not None:
-        auth.login(request, user)
-        return HttpResponseRedirect('/videos')
-    else:
-        return HttpResponseRedirect('/invalid')
-
-
-# def loggedin(request):
-#     return render_to_response('/auth/loggedin.html', {'full_name': request.user.login})
-
-
-# def invalid_login(request):
-#     return render(request, '/auth/invalid.html')
-#
-#
-# def logout(request):
-#     auth.logout()
-#
-#     return render_to_response('/auth/logout.html', )
-#
-
-def detail(request, videoid):
-    if request.method == 'POST':
-        form = ClipForm(request.POST)
-        if form.is_valid():
-            if request.user.is_authenticated():
-                clip = form.save()
-                video = Media.objects.get(pk=videoid)
-                current_user = request.user
-                media_clip = Clip_Media(clip=clip, media=video, user=current_user)
-                media_clip.save()
-                mail_sender(clip.idClip)
-        return HttpResponseRedirect(reverse('gallery:details', args=videoid))
-    else:
-        auth = 0
-        if request.user.is_authenticated():
-            auth = 1
-        form = ClipForm()
-        current_video = Media.objects.get(pk=videoid)
-        context = {'video': current_video, 'form': form, 'auth': auth}
-        return render(request, 'videos/details.html', context)
-
-
-def detailSC(request, videoid):
-    if request.method == 'POST':
-        form = ClipForm(request.POST)
-        if form.is_valid():
-            if request.user.is_authenticated():
-                clip = form.save()
-                video = Media.objects.get(pk=videoid)
-                current_user = request.user
-                media_clip = Clip_Media(clip=clip, media=video, user=current_user)
-                media_clip.save()
-        return HttpResponseRedirect(reverse('gallery:detailsSC', args=videoid))
-    else:
-        form = ClipForm()
-        current_video = Media.objects.get(pk=videoid)
-        context = {'video': current_video, 'form': form}
-        return render(request, 'videos/detailsSC.html', context)
-
-
-def all_media(request):
-    all_media_objects = Media.objects.all()
-
-    return HttpResponse(jsonserializer.serialize("json", all_media_objects))
-
-
-@csrf_exempt
-def media_detail(request, videoid):
-    video = Media.objects.filter(pk=videoid)
-    return HttpResponse(jsonserializer.serialize("json", video))
-
-
-def all_users(request):
-    all_users_objects = User.objects.all()
-
-    return HttpResponse(jsonserializer.serialize("json", all_users_objects))
-
-
-@csrf_exempt
-def add_user_view(request):
-    if request.method == 'POST':
-        juser = json.loads(request.body)
-        username = juser['username']
-        first_name = juser['first_name']
-        last_name = juser['last_name']
-        password = juser['password']
-        email = juser['email']
-
-        user_model = User.objects.create_user(username=username, password=password)
-        user_model.first_name = first_name
-        user_model.last_name = last_name
-        user_model.email = email
-
-        user_app = CustomUser(pais=juser['custom']['country'],
-                              ciudad=juser['custom']['city'],
-                              imagen=juser['custom']['image'],
-                              auth_user_id=user_model)
-
-        user_model.save()
-        user_app.save()
-    return HttpResponse(serializers.serialize('json', [user_model]))
-
-
-def mod_user_view(request):
-    if request.method == 'POST':
-        form = EditUserForm(request.POST, instance=request.user)
-        user = User.objects.get(username=request.user.username)
-        customuser = CustomUser.objects.filter(auth_user_id=user).first()
-        customform = EditCustomUserForm(request.POST, request.FILES, instance=customuser)
-
-        if form.is_valid():
-            if customform.is_valid():
-                form.save()
-                customform.save()
-                return HttpResponseRedirect(reverse('gallery:index'))
-
-    else:
-        user = User.objects.get(username=request.user.username)
-        print('username ' + user.username)
-        form = EditUserForm(instance=user)
-        customuser = CustomUser.objects.filter(auth_user_id=user).first()
-        customform = EditCustomUserForm(instance=customuser)
-
-    context = {
-        'form': form,
-        'customform': customform
-    }
-
-    return render(request, 'auth/modUser.html', context)
-
-
-def get_user_view(request):
-    if request.user.is_authenticated:
-        return JsonResponse({"username": request.user.username,
-                             "first_name": request.user.first_name,
-                             "last_name": request.user.last_name,
-                             "email": request.user.email})
-    else:
-        return JsonResponse({"username": ''})
-
-
-def change_password(request):
-    if request.method == 'POST':
-        form = PasswordChangeForm(data=request.POST, user=request.user)
-
-        if form.is_valid():
-            form.save()
-            update_session_auth_hash(request, user=form.user)
-            return HttpResponseRedirect(reverse('gallery:index'))
-    else:
-        form = PasswordChangeForm(user=request.user)
-    context = {
-        'form': form
-    }
-    return render(request, 'auth/changePassword.html', context)
-
-
-@csrf_exempt
-def login_view(request):
-    if request.method == 'POST':
-        juser = json.loads(request.body)
-        username = juser['username']
-        password = juser['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            mensaje = "ok"
-        else:
-            mensaje = "Nombre de usuario o clave no valido"
-    return JsonResponse({"mensaje": mensaje})
-
-
-@csrf_exempt
-def logout_view(request):
-    logout(request)
-    return JsonResponse({"mensaje": 'ok'})
-
-
-@csrf_exempt
-def is_logged_view(request):
-    if request.user.is_authenticated:
-        mensaje = 'ok'
-    else:
-        mensaje = 'no'
-    return JsonResponse({"mensaje": mensaje})
-
-
-@csrf_exempt
-def ingresar(request):
-    return render(request, "auth/login.html")
-
-
-@csrf_exempt
-def agregar_usuario(request):
-    return render(request, "auth/registro.html")
-
-
-def mail_sender(idClip):
-    clip = Clip.objects.get(pk=idClip)
-    clipmedia = Clip_Media.objects.get(clip=clip)
-    media = Media.objects.get(pk=clipmedia.media.idMedia)
-    send_mail(
-        'Clip agregado a su video/audio',
-        'Se informa que un nuevo clip ha sido agregado\n \n' +
-        'Detalles\n' + 'Título del clip: ' + clip.name + '\n' + 'Video: ' + media.title + '\n\n'
-        + 'Acceda a la página para poder ver el clip añadido',
-        'procesosagiles201820@gmail.com',
-        [media.user.email],
-        fail_silently=False,
-    )
 
 
 # ###################################################SGRED#######################################################
 
+def index(request):
+    context = {'option': 'dashboard'}
+    return render(request, 'dashboard/index.html', context)
+
+
+def static_tables(request):
+    context = {'option': 'statictables'}
+    return render(request, 'dashboard/static-tables.html', context)
+
+
+def crear_Recurso(request):
+    context = {'option': 'recursos'}
+    return render(request, 'recursos/crearRecurso.html', context)
+
+
 def ver_proyecto(request):
     return render(request, 'videos/proyecto.html')
+
 
 def get_plan_logistica(request, planId):
     plan = PlanLogistica.objects.filter(pk=planId)
 
     if plan is not None:
-        # return JsonResponse({"nombre": plan.Nombre,
-        #                      "descripcion": plan.Descripcion,
-        #                      "escaleta": plan.Escaleta,
-        #                      "guionTecnico": plan.GuionTecnico})
         return HttpResponse(serializers.serialize("json", plan))
     else:
         return JsonResponse({"nombre": ''})
@@ -371,7 +130,6 @@ def upload_crudo(request):
         form = CrudoForm()
         crudos = Crudo.objects.all()
         return render(request, 'crudos/create.html', {'form': form, 'crudo_list': crudos})
-
 
 
 ## Methods of etapa, solicitud cambio etapa CRUD
@@ -610,6 +368,7 @@ def realizarAvanceEtapa(request, pk, pk2):
                              "etapa_type": etapa.etapa_type}, status=201)
         return HttpResponse(status=404)
 
+
 # CONSOLE LOG CODE
 # import logging, logging.config
 # import sys
@@ -643,21 +402,26 @@ def agregarPlanLogistica(request):
     return render(request, 'recursos/planLogistica.html', {'form': form})
 
 
-def agregarInsumoRecurso(request):
+def agregarArtefactoRecurso(request):
     if request.method == 'POST':
-        form = InsumoRecursoForm(request.POST, request.FILES)
+        form = ArtefactoRecursoForm(request.POST, request.FILES)
         if form.is_valid():
-            insumo = form.save()
+            artefacto = form.save()
             messages.success(request, "Se Agrego Insumo de Diseño Correctamente", extra_tags="alert-success")
         return HttpResponseRedirect(reverse('QueVideo:agregarInsumoRecurso'))
     else:
-        form = InsumoRecursoForm()
+        form = ArtefactoRecursoForm()
     return render(request, 'recursos/insumo.html', {'form': form})
 
-from django_tables2 import RequestConfig
-from .tables import SolicitudesTable
 
 def getNotifications(request):
     table = SolicitudesTable(Solicitud_CambioEstado.objects.all())
     RequestConfig(request).configure(table)
     return render(request, 'videos/solicitudes.html', {'table': table})
+
+
+# Serializadores Rest - API endpoint that allows users to be viewed or edited.
+
+class RecursosViewSet(viewsets.ModelViewSet):
+    queryset = Recurso.objects.all().order_by('fechaCreacion')
+    serializer_class = RecursoSerializer

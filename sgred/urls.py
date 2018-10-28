@@ -26,8 +26,6 @@ router = routers.DefaultRouter()
 #Recursos
 router.register(r'recurso', views.RecursosViewSet)
 
-
-
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('QueVideo.urls', namespace='QueVideo')),

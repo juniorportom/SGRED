@@ -87,17 +87,17 @@ WSGI_APPLICATION = 'sgred.wsgi.application'
 #DATABASES = {'default': dj_database_url.config()}
 
 
-DATABASES = {
-     'default': {
-         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-         'NAME': os.environ.get('DATABASE_NAME'),
-         'USER': os.environ.get('DATABASE_USER'),
-         'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-         'HOST': os.environ.get('DATABASE_HOST'),
-         'PORT': os.environ.get('DATABASE_PORT'),
-     }
-
- }
+# DATABASES = {
+#      'default': {
+#          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#          'NAME': os.environ.get('DATABASE_NAME'),
+#          'USER': os.environ.get('DATABASE_USER'),
+#          'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+#          'HOST': os.environ.get('DATABASE_HOST'),
+#          'PORT': os.environ.get('DATABASE_PORT'),
+#      }
+#
+#  }
 
 
 # DATABASES = {
@@ -111,6 +111,19 @@ DATABASES = {
 #      }
 #
 #  }
+
+DATABASES = {
+     # nestor PC DB parameters
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'QueVideo',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+
+ }
 
 
 REST_FRAMEWORK = {

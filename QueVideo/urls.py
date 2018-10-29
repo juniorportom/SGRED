@@ -6,10 +6,10 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^proyecto', views.ver_proyecto, name='proyecto'),
-    url(r'^agregarCrudo', views.upload_crudo, name='agregarCrudo'),
+    url('agregarCrudoBlock', views.upload_crudo_block, name='agregarCrudoBlock'),
+    url('agregarCrudo', views.upload_crudo, name='agregarCrudo'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^proyecto', views.ver_proyecto, name='proyecto'),
-    url(r'^agregarCrudo', views.upload_crudo, name='agregarCrudo'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^planLogistica/(?P<planId>\d+)/actividades/$', views.get_actividades, name='actividades'),
     url(r'^planLogistica/(?P<planId>\d+)/actividad/(?P<actId>\d+)$', views.add_actividad, name='agregarActividad'),
@@ -27,6 +27,4 @@ urlpatterns = [
     url(r'^static-tables/$', views.static_tables, name='static-tables'),
     url(r'^agregarArtefactoRecurso/$', views.agregarArtefactoRecurso, name='agregarArtefactoRecurso'),
     url(r'^agregarPlanLogistica/$', views.agregarPlanLogistica, name='agregarPlanLogistica'),
-
-
 ]

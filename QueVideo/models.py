@@ -24,23 +24,6 @@ class Actividad(models.Model):
     Lugar = models.CharField(max_length=255)
     PlanLogistica = models.ForeignKey(PlanLogistica)
 
-
-
-CRUDO_TYPE = (
-    ('V', 'Video'),
-)
-
-
-class Crudo(models.Model):
-    IdCrudo = models.AutoField(primary_key=True)
-    Nombre = models.CharField(max_length=150, blank=False, unique=True)
-    Tipo = models.CharField(max_length=50, choices=CRUDO_TYPE, default='V', blank=False)
-    Archivo = models.FileField(upload_to='crudos', null=True)
-    url = models.CharField(max_length=2000, blank=False, default=" ")
-
-
-
-
     # ---------------------------- SGRD-18-----------------------------
     #     Como Asesor/Gestor RED debo poder realizar un avance
     #     en la etapa del recurso para informar a todos los interesados
@@ -69,10 +52,9 @@ ETAPA_TYPE = (
 
 class Etapa(models.Model):
     idEtapa = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=255)
     estado = models.CharField(max_length=255, choices=ESTADO_TYPE)
     fecha_inicio = models.DateTimeField(default=datetime.now)
-    fecha_fin = models.DateTimeField('fecha de finalizacion no definida')
+    fecha_fin = models.DateTimeField('fecha de finalizacion no definida', blank=True, null=True)
     etapa_type = models.CharField(max_length=255, choices=ETAPA_TYPE)
 
     def __unicode__(self):
@@ -108,13 +90,27 @@ class Recurso(models.Model):
     estado = models.CharField(max_length=255, choices=ESTADO_TYPE)
     proyecto = models.CharField(max_length=255)
     fechaCreacion = models.DateTimeField(default=datetime.now)
-    etapa = models.ForeignKey(Etapa, on_delete=models.CASCADE)
-    solicitud_cambio = models.ForeignKey(Solicitud_CambioEstado, on_delete=models.CASCADE)
+    etapa = models.CharField(max_length=255, choices=ETAPA_TYPE)
+
+    etapa_history = models.ForeignKey(Etapa, on_delete=models.CASCADE, blank=True, null=True)
+    solicitud_cambio = models.ForeignKey(Solicitud_CambioEstado, on_delete=models.CASCADE, blank=True, null=True)
     Tipo = models.CharField(max_length=255, choices=TIPO_RECURSO, default='VD')
 
-def __unicode__(self):
-    return self.nombre
+    def __unicode__(self):
+        return self.nombre
 
+CRUDO_TYPE = (
+    ('V', 'Video'),
+)
+
+
+class Crudo(models.Model):
+    IdCrudo = models.AutoField(primary_key=True)
+    Nombre = models.CharField(max_length=150, blank=False, unique=True)
+    Tipo = models.CharField(max_length=50, choices=CRUDO_TYPE, default='V', blank=False)
+    Archivo = models.FileField(upload_to='crudos', null=True)
+    url = models.CharField(max_length=2000, blank=False, default=" ")
+    recurso = models.ForeignKey(Recurso, on_delete=models.CASCADE, default=1)
 
 TIPO_ARTEFACTO = (
     ('E', 'Escaleta'),

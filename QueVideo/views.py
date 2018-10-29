@@ -30,6 +30,11 @@ from rest_framework.parsers import JSONParser
 
 def index(request):
     context = {'option': 'dashboard'}
+    # hard code el recurso actual para los demas requests
+    # ver la documentacion de datos de sesiones en django: https://docs.djangoproject.com/en/2.1/topics/http/sessions/
+    recursoActual = Recurso.objects.first()
+    request.session['recurso_actual']= recursoActual.nombre
+    request.session['recurso_actual_id'] = recursoActual.idRecurso
     return render(request, 'dashboard/index.html', context)
 
 
@@ -44,7 +49,8 @@ def crear_Recurso(request):
 
 
 def ver_proyecto(request):
-    return render(request, 'videos/proyecto.html')
+    context = {'option': 'proyecto'}
+    return render(request, 'videos/proyecto.html', context)
 
 
 def get_plan_logistica(request, planId):
@@ -130,6 +136,33 @@ def upload_crudo(request):
         form = CrudoForm()
         crudos = Crudo.objects.all()
         return render(request, 'crudos/create.html', {'form': form, 'crudo_list': crudos})
+
+
+def upload_crudo_block(request):
+    if request.method == 'POST':
+        form = CrudoForm(request.POST, request.FILES)
+        if form.is_valid():
+            crudo = form.save()
+            ftp = FTP('200.21.21.36')
+            ftp.login('miso|anonymous')
+            folder, name = crudo.Archivo.name.split("/")
+            fileName, fileExtention = name.split(".")
+            stampedName = fileName + "-" + str(crudo.IdCrudo) + "." + fileExtention
+            with open(crudo.Archivo.path, 'rb') as f:
+                ftp.storbinary('STOR %s' % stampedName, f)
+                crudo.url = 'ftp://miso|anonymous@200.21.21.36/' + stampedName
+                # obtener el recurso actual desde el session manager.
+                crudo.recurso = Recurso.objects.get(idRecurso = request.session['recurso_actual_id'])
+                crudo.save()
+            ftp.quit()
+            if os.path.isfile(crudo.Archivo.path):
+                os.remove(crudo.Archivo.path)
+            messages.success(request, 'Archivo ' + name + ' Guardado con Exito en el repositorio de crudos del recurso: ' + request.session['recurso_actual'])
+            return HttpResponseRedirect(reverse('QueVideo:agregarCrudoBlock'))
+    else:
+        form = CrudoForm()
+        crudos = Crudo.objects.all()
+        return render(request, 'crudos/createBlock.html', {'form': form, 'crudo_list': crudos})
 
 
 ## Methods of etapa, solicitud cambio etapa CRUD
@@ -283,6 +316,7 @@ def solicitud_cambio_estado_detail(request, pk):
 
 
 # ---------------------------- SGRD-23 -----------------------------
+# Como miembro de grupo debo poder marcar la etapa
 # Como miembro de grupo debo poder marcar la etapa
 # como completada para solicitar avance de etapa.
 

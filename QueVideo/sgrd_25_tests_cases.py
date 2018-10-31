@@ -68,3 +68,28 @@ class Sgrd25FunctionalTest(TestCase):
         span = self.browser.find_element(By.XPATH, '//span[text()="Name"]')
 
         self.assertIn('Name', span.text)
+
+    def test_crudo_list_create_button(self):
+        self.browser.get('http://localhost:8000')
+        self.browser.implicitly_wait(3)
+        botonMenu = self.browser.find_element_by_id('sidebar-collapse-btn')
+        botonMenu.click()
+
+        span = WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.ID, "produccionSpan")))
+        span.click()
+
+        span2 = WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.XPATH, '//span[text()="Listado de Crudos"]')))
+        span2.click()
+
+        self.browser.implicitly_wait(3)
+
+        botonGrabar = self.browser.find_element_by_id('crear_crudo')
+        botonGrabar.click()
+
+        self.browser.implicitly_wait(3)
+
+        h3 = self.browser.find_element_by_id('crudo_page_title')
+
+        self.assertIn('Programación transferencia a repositorio crudos del recurso', h3.text)

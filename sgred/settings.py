@@ -96,14 +96,14 @@ DATABASES = {
      #     'HOST': os.environ.get('DATABASE_HOST'),
      #     'PORT': os.environ.get('DATABASE_PORT'),
      # }
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME':'agilesproyectofinal',
-        'USER':'root',
-        'PASSWORD':'root',
-        'HOST':'127.0.0.1',
-        'PORT':'3306',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME':'agilesproyectofinal',
+    #     'USER':'root',
+    #     'PASSWORD':'root',
+    #     'HOST':'127.0.0.1',
+    #     'PORT':'3306',
+    # }
 
  }
 
@@ -120,18 +120,18 @@ DATABASES = {
 #
 #  }
 #
-# DATABASES = {
-#      # nestor PC DB parameters
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'QueVideo',
-#         'USER': 'postgres',
-#         'PASSWORD': 'admin',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
-#
-#  }
+DATABASES = {
+     # nestor PC DB parameters
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'QueVideo',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+
+ }
 
 
 REST_FRAMEWORK = {

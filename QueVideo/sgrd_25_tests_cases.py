@@ -92,4 +92,4 @@ class Sgrd25FunctionalTest(TestCase):
 
         h3 = self.browser.find_element_by_id('crudo_page_title')
 
-        self.assertIn('Programación transferencia a repositorio crudos del recurso', h3.text)
+        self.assertIn('Programacion transferencia a repositorio crudos del recurso', h3.text)

@@ -188,12 +188,15 @@
                         </li>
                         <li {% if option == 'statictables' %}class="active open"{% endif %}>
                             <a href="">
-                                <i class="fa fa-table"></i> Producción
+                                <i class="fa fa-table"></i> <span id="produccionSpan">Producción</span>
                                 <i class="fa arrow"></i>
                             </a>
                             <ul class="sidebar-nav">
                                 <li>
                                     <a href="{% url 'QueVideo:agregarCrudoBlock' %}"> Crudos </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'QueVideo:listaCrudos' %}"> <span>Listado de Crudos</span> </a>
                                 </li>
                                 <li>
                                     <a href="{% url 'QueVideo:static-tables' %}"> Static Tables </a>

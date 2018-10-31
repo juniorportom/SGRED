@@ -8,6 +8,8 @@ urlpatterns = [
     url(r'^proyecto', views.ver_proyecto, name='proyecto'),
     url('agregarCrudoBlock', views.upload_crudo_block, name='agregarCrudoBlock'),
     url('agregarCrudo', views.upload_crudo, name='agregarCrudo'),
+    # sgrd 25 kata implementacion paso 2
+    url('listaCrudos', views.crudo_list, name='listaCrudos'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^proyecto', views.ver_proyecto, name='proyecto'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),

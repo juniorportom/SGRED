@@ -164,6 +164,10 @@ def upload_crudo_block(request):
         crudos = Crudo.objects.all()
         return render(request, 'crudos/createBlock.html', {'form': form, 'crudo_list': crudos})
 
+# paso 2 kata web verde
+def crudo_list(request):
+    crudos = Crudo.objects.all()
+    return render(request, 'crudos/crudoList.html', {'crudo_list': crudos})
 
 ## Methods of etapa, solicitud cambio etapa CRUD
 

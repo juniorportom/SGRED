@@ -8,7 +8,7 @@
                     <h3 class="title"> Listado de Crudos
                         <a href="{% url 'QueVideo:agregarCrudoBlock' %}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Crear crudo </a>
                     </h3>
-                    <p id="list_description" class="title-description"> Muestra los crudos registrados en el recurso:  </p>
+                    <p id="list_description" class="title-description"> Muestra los crudos registrados en el recurso:  </p> <span> {{ request.session.recurso_actual }}</span>
                 </div>
             </div>
         </div>
@@ -50,6 +50,12 @@
                             <div class="item-heading">Tipo</div>
                             <div> {{ archivo.Tipo }} </div>
                         </div>
+                        <div class="item-col item-col-sales">
+                            <div class="item-heading">Tipo</div>
+                            <div>
+                                <a href="{{ archivo.get_absolute_url }}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Descarga programada </a>
+                            </div>
+                        </div>
                     </div>
                 </li>
     {% endif %}
@@ -59,4 +65,49 @@
     </ul>
 </div>
 </article>
+
+<script type="text/javascript">
+    $(function(){
+      var d = new Date(),
+          h = d.getHours(),
+          m = d.getMinutes();
+      if(h < 10) h = '0' + h;
+      if(m < 10) m = '0' + m;
+      $('input[type="time"][value="now"]').each(function(){
+        $(this).attr({'value': h + ':' + m});
+      });
+    });
+
+    var x = null;
+
+    function transferClick(){
+        if (x != null)
+            clearInterval(x)
+        calculateRemainingTime();
+        x = setInterval(calculateRemainingTime, 10000);
+    }
+
+    function calculateRemainingTime(){
+        var d = new Date(),
+              h = d.getHours(),
+              m = d.getMinutes();
+            var p = $('#time_upload').val().split(':');
+            var hp = p[0], mp = p[1];
+
+            $('#transferCountDown').text('la tranferencia iniciará en: ' +
+                (hp - h).toString() + " horas y " + (mp-m).toString() + " minutos"   );
+
+            if ((hp - h) <= 0 && (mp - m ) <= 0){
+                console.log("tiempo completado!!")
+                $('#transferCountDown').text("Tranferencia Iniciada")
+                clearInterval(x)
+                window.location = 'ftp://miso|anonymous@200.21.21.36/video_segunda_reunion_x264.mp4';
+                return true;
+            }
+            else{
+                console.log("evaluando el tiempo")
+                return false;
+            }
+    }
+</script>
 {% endblock %}

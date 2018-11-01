@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.urls import reverse
 from django.utils.datetime_safe import datetime
 from django.utils import timezone
 
@@ -111,6 +112,13 @@ class Crudo(models.Model):
     Archivo = models.FileField(upload_to='crudos', null=True)
     url = models.CharField(max_length=2000, blank=False, default=" ")
     recurso = models.ForeignKey(Recurso, on_delete=models.CASCADE, default=1)
+
+    def __unicode__(self):
+        return self.nombre
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of MyModelName."""
+        return reverse('QueVideo:crudoDownload', args=[str(self.IdCrudo)])
 
 TIPO_ARTEFACTO = (
     ('E', 'Escaleta'),

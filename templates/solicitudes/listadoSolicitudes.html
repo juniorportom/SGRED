@@ -1,0 +1,55 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+<article class="content items-list-page">
+    <div class="title-search-block">
+        <div class="title-block">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3 class="title"> Listado de Solicitudes</h3>
+                    <p id="list_description" class="title-description"> Muestra las solicitudes de cambio de etapa:  </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+<div class="card items">
+    <ul class="item-list striped">
+    {#                paso 3 verde #}
+        <li class="item item-list-header">
+            <div class="item-row">
+                <div class="item-col item-col-header item-col-title">
+                    <div>
+                        <span>Solicitado por</span>
+                    </div>
+                </div>
+                <div class="item-col item-col-header item-col-sales">
+                <div>
+                    <span>Fecha de solicitud</span>
+                </div>
+            </div>
+            </div>
+        </li>
+    {% for solicitud in lista_solicitudes %}
+                <li class="item">
+                    <div class="item-row">
+                        <div class="item-col fixed pull-left item-col-title">
+                            <div class="item-heading">Solicitado por</div>
+                            <div>
+                                <h4 class="item-title"> {{ solicitud.solicitadoPor }} </h4>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-sales">
+                            <div class="item-heading">Fecha de solicitud</div>
+                            <div> {{ solicitud.fecha_solicitud }} </div>
+                        </div>
+                    </div>
+                </li>
+
+    {% empty %}
+        <p>      no hay solicitudes aun disponibles  :( </p>
+    {% endfor %}
+    </ul>
+</div>
+</article>
+{% endblock %}

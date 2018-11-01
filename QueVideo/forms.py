@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from tagulous.forms import TagField
 
 from QueVideo.models import PlanLogistica, Artefacto, Actividad, Crudo, Recurso
 from QueVideo.serializers import RecursoSerializer
@@ -16,8 +17,9 @@ class CrudoForm(ModelForm):
             'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'Tipo': forms.Select(attrs={'class': 'form-control'}),
             'Archivo': forms.FileInput(attrs={'class': 'form-control-file'}),
+            'etiqueta': forms.TextInput(attrs={'class': 'form-control'}),
         }
-        fields = ["Nombre", "Tipo", "Archivo"]
+        fields = ["Nombre", "Tipo", "Archivo", "etiqueta"]
 
 
 class ActividadEditForm(ModelForm):
@@ -75,8 +77,9 @@ class CrudoForm(ModelForm):
             'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'Tipo': forms.Select(attrs={'class': 'form-control'}),
             'Archivo': forms.FileInput(attrs={'class': 'form-control-file'}),
+            'etiqueta': forms.TextInput(attrs={'class': 'form-control'}),
         }
-        fields = ["Nombre", "Tipo", "Archivo"]
+        fields = ["Nombre", "Tipo", "Archivo", "etiqueta"]
 
 
 

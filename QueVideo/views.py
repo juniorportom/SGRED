@@ -166,7 +166,7 @@ def upload_crudo_block(request):
 
 # paso 2 kata web verde
 def crudo_list(request):
-    crudos = Crudo.objects.filter(recurso__idRecurso = request.session['recurso_actual_id'])
+    crudos = Crudo.objects.filter(recurso__idRecurso=request.session['recurso_actual_id'])
     return render(request, 'crudos/crudoList.html', {'crudo_list': crudos})
 
 

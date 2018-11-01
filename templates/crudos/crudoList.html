@@ -26,10 +26,15 @@
                     </div>
                 </div>
                 <div class="item-col item-col-header item-col-sales">
-                <div>
-                    <span>Tipo</span>
+                    <div>
+                        <span>Tags</span>
+                    </div>
                 </div>
-            </div>
+                <div class="item-col item-col-header item-col-sales">
+                    <div>
+                        <span>Tipo</span>
+                    </div>
+                </div>
             </div>
         </li>
     {% for archivo in crudo_list %}
@@ -44,6 +49,12 @@
                                 <a href="{{ archivo.url }}" class="">
                                     <h4 class="item-title"> {{ archivo.Nombre }} </h4>
                                 </a>
+                            </div>
+                        </div>
+                        <div class="item-col fixed pull-left item-col-title">
+                            <div class="item-heading">Tags</div>
+                            <div>
+                                <h4 class="item-title"> {{ archivo.etiqueta}} </h4>
                             </div>
                         </div>
                         <div class="item-col item-col-sales">

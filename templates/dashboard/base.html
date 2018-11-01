@@ -65,54 +65,54 @@
                             <ul class="notifications-container">
                                 {% if messages %}
                                     {% for message in messages %}
-                                    <li class="alert alert-success-dismissible">{{ message }}</li>
+                                        <li class="alert alert-success-dismissible">{{ message }}</li>
                                     {% endfor %}
                                 {% endif %}
-{#                                <li>#}
-{#                                    <a href="" class="notification-item">#}
-{#                                        <div class="img-col">#}
-{#                                            <div class="img" style="background-image: url('assets/faces/3.jpg')"></div>#}
-{#                                        </div>#}
-{#                                        <div class="body-col">#}
-{#                                            <p>#}
-{#                                                <span class="accent">Zack Alien</span> pushed new commit:#}
-{#                                                <span class="accent">Fix page load performance issue</span>. </p>#}
-{#                                        </div>#}
-{#                                    </a>#}
-{#                                </li>#}
-{#                                <li>#}
-{#                                    <a href="" class="notification-item">#}
-{#                                        <div class="img-col">#}
-{#                                            <div class="img" style="background-image: url('assets/faces/5.jpg')"></div>#}
-{#                                        </div>#}
-{#                                        <div class="body-col">#}
-{#                                            <p>#}
-{#                                                <span class="accent">Amaya Hatsumi</span> started new task:#}
-{#                                                <span class="accent">Dashboard UI design.</span>. </p>#}
-{#                                        </div>#}
-{#                                    </a>#}
-{#                                </li>#}
-{#                                <li>#}
-{#                                    <a href="" class="notification-item">#}
-{#                                        <div class="img-col">#}
-{#                                            <div class="img" style="background-image: url('assets/faces/8.jpg')"></div>#}
-{#                                        </div>#}
-{#                                        <div class="body-col">#}
-{#                                            <p>#}
-{#                                                <span class="accent">Andy Nouman</span> deployed new version of#}
-{#                                                <span class="accent">NodeJS REST Api V3</span>#}
-{#                                            </p>#}
-{#                                        </div>#}
-{#                                    </a>#}
-{#                                </li>#}
-{#                            </ul>#}
-                            <footer>
-                                <ul>
-                                    <li>
-                                        <a href=""> View All </a>
-                                    </li>
-                                </ul>
-                            </footer>
+                                {#                                <li>#}
+                                {#                                    <a href="" class="notification-item">#}
+                                {#                                        <div class="img-col">#}
+                                {#                                            <div class="img" style="background-image: url('assets/faces/3.jpg')"></div>#}
+                                {#                                        </div>#}
+                                {#                                        <div class="body-col">#}
+                                {#                                            <p>#}
+                                {#                                                <span class="accent">Zack Alien</span> pushed new commit:#}
+                                {#                                                <span class="accent">Fix page load performance issue</span>. </p>#}
+                                {#                                        </div>#}
+                                {#                                    </a>#}
+                                {#                                </li>#}
+                                {#                                <li>#}
+                                {#                                    <a href="" class="notification-item">#}
+                                {#                                        <div class="img-col">#}
+                                {#                                            <div class="img" style="background-image: url('assets/faces/5.jpg')"></div>#}
+                                {#                                        </div>#}
+                                {#                                        <div class="body-col">#}
+                                {#                                            <p>#}
+                                {#                                                <span class="accent">Amaya Hatsumi</span> started new task:#}
+                                {#                                                <span class="accent">Dashboard UI design.</span>. </p>#}
+                                {#                                        </div>#}
+                                {#                                    </a>#}
+                                {#                                </li>#}
+                                {#                                <li>#}
+                                {#                                    <a href="" class="notification-item">#}
+                                {#                                        <div class="img-col">#}
+                                {#                                            <div class="img" style="background-image: url('assets/faces/8.jpg')"></div>#}
+                                {#                                        </div>#}
+                                {#                                        <div class="body-col">#}
+                                {#                                            <p>#}
+                                {#                                                <span class="accent">Andy Nouman</span> deployed new version of#}
+                                {#                                                <span class="accent">NodeJS REST Api V3</span>#}
+                                {#                                            </p>#}
+                                {#                                        </div>#}
+                                {#                                    </a>#}
+                                {#                                </li>#}
+                                {#                            </ul>#}
+                                <footer>
+                                    <ul>
+                                        <li>
+                                            <a href=""> View All </a>
+                                        </li>
+                                    </ul>
+                                </footer>
                         </div>
                     </li>
                     <li class="profile dropdown">
@@ -172,17 +172,33 @@
 
                             </ul>
                         </li>
-                        <li {% if option == 'statictables' %}class="active open"{% endif %}>
+                        <li {% if option == 'preproduccion' %}class="active open"{% endif %}>
                             <a href="">
-                                <i class="fa fa-area-chart"></i> pre-producción
+                                <i class="fa fa-sitemap"></i> Pre-produccion
                                 <i class="fa arrow"></i>
                             </a>
                             <ul class="sidebar-nav">
                                 <li>
-                                    <a href="{% url 'QueVideo:proyecto' %}"> Vista pre-produccion </a>
+                                    <a href="#"> Plan de logistica
+                                        <i class="fa arrow"></i>
+                                    </a>
+                                    <ul class="sidebar-nav">
+                                        <li>
+                                            <a href="actividades/"> Actividades </a>
+                                        </li>
+                                        <li>
+                                            <a href="#"> Artefactos </a>
+                                        </li>
+                                        <li>
+                                            <a href="#"> Equipo</a>
+                                        </li>
+                                        <li>
+                                            <a href="#"> Crudos </a>
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li>
-                                    <a href="charts-morris.html"> Morris Charts </a>
+                                    <a href="{% url 'QueVideo:proyecto' %}"> Vista pre-produccion </a>
                                 </li>
                             </ul>
                         </li>
@@ -197,12 +213,6 @@
                                 </li>
                                 <li>
                                     <a href="{% url 'QueVideo:listaCrudos' %}"> <span>Listado de Crudos</span> </a>
-                                </li>
-                                <li>
-                                    <a href="{% url 'QueVideo:static-tables' %}"> Static Tables </a>
-                                </li>
-                                <li>
-                                    <a href="responsive-tables.html"> Responsive Tables </a>
                                 </li>
                             </ul>
                         </li>

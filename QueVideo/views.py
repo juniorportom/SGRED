@@ -162,12 +162,12 @@ def upload_crudo_block(request):
     else:
         form = CrudoForm()
         crudos = Crudo.objects.all()
-        return render(request, 'crudos/createBlock.html', {'form': form, 'crudo_list': crudos})
+        return render(request, 'crudos/createBlock.html', {'form': form, 'crudo_list': crudos, 'option': 'produccion'})
 
 # paso 2 kata web verde
 def crudo_list(request):
     crudos = Crudo.objects.filter(recurso__idRecurso=request.session['recurso_actual_id'])
-    return render(request, 'crudos/crudoList.html', {'crudo_list': crudos})
+    return render(request, 'crudos/crudoList.html', {'crudo_list': crudos, 'option': 'produccion'})
 
 
 def crudo_details_download(request, crudoId):
@@ -475,3 +475,7 @@ def getNotifications(request):
 class RecursosViewSet(viewsets.ModelViewSet):
     queryset = Recurso.objects.all().order_by('fechaCreacion')
     serializer_class = RecursoSerializer
+
+
+def actividades_view(request):
+    return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})

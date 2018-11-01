@@ -11,7 +11,6 @@ urlpatterns = [
     url('crudoDownload/(?P<crudoId>\d+)$', views.crudo_details_download, name='crudoDownload'),
     # sgrd 25 kata implementacion paso 2
     url('listaCrudos', views.crudo_list, name='listaCrudos'),
-    url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^proyecto', views.ver_proyecto, name='proyecto'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^planLogistica/(?P<planId>\d+)/actividades/$', views.get_actividades, name='actividades'),
@@ -19,6 +18,7 @@ urlpatterns = [
     url(r'^planLogistica/(?P<planId>\d+)/actividad/$', views.add_actividad, name='agregarActividad'),
     url(r'editarActividad/(?P<id>\d+)$', views.edit_actividad, name='editarActividad'),
     url(r'^etapas/$', views.etapa_list),
+    url(r'^actividades/$', views.actividades_view),
     url(r'^etapas/(?P<pk>[0-9]+)/$', views.etapa_detail),
     url(r'^solicitudesCambio/$', views.solicitud_cambio_estado_list),
     url(r'^solicitudesCambio/(?P<pk>[0-9]+)/$', views.solicitud_cambio_estado_detail),

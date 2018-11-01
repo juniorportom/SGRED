@@ -166,8 +166,20 @@ def upload_crudo_block(request):
 
 # paso 2 kata web verde
 def crudo_list(request):
-    crudos = Crudo.objects.all()
+    crudos = Crudo.objects.filter(recurso__idRecurso = request.session['recurso_actual_id'])
     return render(request, 'crudos/crudoList.html', {'crudo_list': crudos})
+
+
+def crudo_details_download(request, crudoId):
+    if request.method == 'POST':
+        request.session['crudo'+ crudoId] = "descargado"
+        return HttpResponseRedirect(reverse('QueVideo:crudoDownload', kwargs={'crudoId':crudoId}))
+    else:
+        crudo = Crudo.objects.get(pk=crudoId)
+        key='crudo'+ crudoId
+        status = request.session.get(key)
+        return render(request, 'crudos/crudoDownload.html', {'crudo': crudo, 'status': status})
+
 
 ## Methods of etapa, solicitud cambio etapa CRUD
 

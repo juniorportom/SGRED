@@ -120,18 +120,18 @@ DATABASES = {
 #
 #  }
 #
-#DATABASES = {
-     # nestor PC DB parameters
- #    'default': {
- #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
- #        'NAME': 'QueVideo',
- #        'USER': 'postgres',
- #        'PASSWORD': 'admin',
- #        'HOST': 'localhost',
- #        'PORT': '5432',
- #    }
- #
- # }
+# DATABASES = {
+#      # nestor PC DB parameters
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'QueVideo',
+#         'USER': 'postgres',
+#         'PASSWORD': 'admin',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+#
+#  }
 
 
 REST_FRAMEWORK = {

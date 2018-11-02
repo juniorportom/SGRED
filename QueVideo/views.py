@@ -33,8 +33,12 @@ def index(request):
     # hard code el recurso actual para los demas requests
     # ver la documentacion de datos de sesiones en django: https://docs.djangoproject.com/en/2.1/topics/http/sessions/
     recursoActual = Recurso.objects.first()
-    request.session['recurso_actual']= recursoActual.nombre
-    request.session['recurso_actual_id'] = recursoActual.idRecurso
+    if recursoActual is not None:
+        request.session['recurso_actual'] = recursoActual.nombre
+        request.session['recurso_actual_id'] = recursoActual.idRecurso
+    else:
+        request.session['recurso_actual'] = ''
+        request.session['recurso_actual_id'] = ''
     return render(request, 'dashboard/index.html', context)
 
 
@@ -164,6 +168,7 @@ def upload_crudo_block(request):
         crudos = Crudo.objects.all()
         return render(request, 'crudos/createBlock.html', {'form': form, 'crudo_list': crudos, 'option': 'produccion'})
 
+
 # paso 2 kata web verde
 def crudo_list(request):
     crudos = Crudo.objects.filter(recurso__idRecurso=request.session['recurso_actual_id'])
@@ -176,14 +181,13 @@ def crudo_details_download(request, crudoId):
         return HttpResponseRedirect(reverse('QueVideo:crudoDownload', kwargs={'crudoId':crudoId}))
     else:
         crudo = Crudo.objects.get(pk=crudoId)
-        key='crudo'+ crudoId
+        key = 'crudo' + crudoId
         status = request.session.get(key)
         return render(request, 'crudos/crudoDownload.html', {'crudo': crudo, 'status': status})
 
+# Methods of etapa, solicitud cambio etapa CRUD
 
-## Methods of etapa, solicitud cambio etapa CRUD
-
-## Json class response for handle httpResponse
+# Json class response for handle httpResponse
 class JSONResponse(HttpResponse):
     """
     An HttpResponse that renders its content into JSON.
@@ -195,8 +199,8 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
-## GET  >> all list of etapa
-## POST >> a new etapa
+# GET  >> all list of etapa
+# POST >> a new etapa
 
 @csrf_exempt
 def etapa_list(request):
@@ -217,9 +221,9 @@ def etapa_list(request):
         return JSONResponse(serializer.errors, status=400)
 
 
-## GET >> detail etapa
-## PUT >> update etapa
-## DELETE >> delete etapa
+# GET >> detail etapa
+# PUT >> update etapa
+# DELETE >> delete etapa
 @csrf_exempt
 def etapa_detail(request, pk):
     """
@@ -247,8 +251,8 @@ def etapa_detail(request, pk):
         return HttpResponse(status=204)
 
 
-## GET  >> all list of solicitud cambio estado
-## POST >> a new solicitud cambio de estado
+# GET  >> all list of solicitud cambio estado
+# POST >> a new solicitud cambio de estado
 
 @csrf_exempt
 def solicitud_cambio_estado_list(request):
@@ -298,9 +302,9 @@ def solicitud_cambio_estado_list(request):
         # data = JSONParser().parse(request)
 
 
-## GET >> detail solicitud cambio estado
-## PUT >> update detail solicitud
-## DELETE >> delete detail solicitud
+# GET >> detail solicitud cambio estado
+# PUT >> update detail solicitud
+# DELETE >> delete detail solicitud
 
 @csrf_exempt
 def solicitud_cambio_estado_detail(request, pk):
@@ -337,9 +341,9 @@ def solicitud_cambio_estado_detail(request, pk):
 # como completada para solicitar avance de etapa.
 
 # 1. Registro el cambio de Estado de etapa DONE, WAITING, PROCESS>> Registro el DONE
-## DONE >> el estado actual del recurso esta completado
-## WAITING >> el estado actual del recurso esta en espera de ser comenzado
-## PROCESS >> el estado actual del recurso esta en desarrollo
+# DONE >> el estado actual del recurso esta completado
+# WAITING >> el estado actual del recurso esta en espera de ser comenzado
+# PROCESS >> el estado actual del recurso esta en desarrollo
 
 @csrf_exempt
 def cambioEstadoEtapa(request, pk):
@@ -382,7 +386,7 @@ def realizarAvanceEtapa(request, pk, pk2):
 
     if request.method == 'POST':
 
-        ## Cambio en la solicitud
+        # Cambio en la solicitud
         jbody = json.loads(request.body)
         aprobadoPor = jbody['aprobadoPor']
         solicitud.aprobadoPor = aprobadoPor
@@ -391,7 +395,7 @@ def realizarAvanceEtapa(request, pk, pk2):
         solicitud.fecha_aprobacion = format_iso_now
         solicitud.save()
 
-        ## Cambio en la etapa
+        # Cambio en la etapa
         act = etapa.etapa_type
         if act == 'Pre':
             etapa.etapa_type = 'Pro'

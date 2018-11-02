@@ -22,42 +22,60 @@
             <div class="item-row">
                 <div class="item-col item-col-header item-col-title">
                     <div>
-                        <span>Name</span>
+                        <span>Nombre</span>
                     </div>
                 </div>
                 <div class="item-col item-col-header item-col-sales">
-                <div>
-                    <span>Tipo</span>
+                    <div>
+                        <span>Tipo</span>
+                    </div>
                 </div>
-            </div>
+                <div class="item-col item-col-header item-col-sales">
+                    <div>
+                        <span>Estado</span>
+                    </div>
+                </div>
+                <div class="item-col item-col-header item-col-sales">
+                    <div>
+                        <span>Opciones</span>
+                    </div>
+                </div>
             </div>
         </li>
     {% for archivo in crudo_list %}
     {% if "ftp" in archivo.url%}
 
 {#                paso 2 verde#}
-                <li class="item">
-                    <div class="item-row">
-                        <div class="item-col fixed pull-left item-col-title">
-                            <div class="item-heading">Name</div>
-                            <div>
-                                <a href="{{ archivo.url }}" class="">
-                                    <h4 class="item-title"> {{ archivo.Nombre }} </h4>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="item-col item-col-sales">
-                            <div class="item-heading">Tipo</div>
-                            <div> {{ archivo.Tipo }} </div>
-                        </div>
-                        <div class="item-col item-col-sales">
-                            <div class="item-heading">Tipo</div>
-                            <div>
-                                <a href="{{ archivo.get_absolute_url }}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Descarga programada </a>
-                            </div>
-                        </div>
+        <li class="item">
+            <div class="item-row">
+                <div class="item-col fixed pull-left item-col-title">
+                    <div class="item-heading">Name</div>
+                    <div>
+                        <a href="{{ archivo.url }}" class="">
+                            <h4 class="item-title"> {{ archivo.Nombre }} </h4>
+                        </a>
                     </div>
-                </li>
+                </div>
+                <div class="item-col item-col-sales">
+                    <div class="item-heading">Tipo</div>
+                    <div> {{ archivo.Tipo }} </div>
+                </div>
+                <div class="item-col item-col-sales">
+                    <div class="item-heading">Estado</div>
+                    {% if archivo.IdCrudo in descargados %}
+                    <div>Descargado</div>
+                    {% else %}
+                    <div>Pendiente</div>
+                    {% endif %}
+                </div>
+                <div class="item-col item-col-sales">
+                    <div class="item-heading">Tipo</div>
+                    <div>
+                            <a href="{{ archivo.get_absolute_url }}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Descarga programada </a>
+                    </div>
+                </div>
+            </div>
+        </li>
     {% endif %}
     {% empty %}
         <p> no hay crudos registrados </p>

@@ -25,23 +25,23 @@
                                 <span>Nombre</span>
                             </div>
                         </div>
-                        <div class="item-col item-col-header item-col-sales">
+                        <div class="item-col item-col-header item-col-title">
                             <div>
                                 <span>Tags</span>
                             </div>
                         </div>
-                        <div class="item-col item-col-header item-col-sales">
+                        <div class="item-col item-col-header item-col-title">
                             <div>
                                 <span>Tipo</span>
 
                             </div>
                         </div>
-                        <div class="item-col item-col-header item-col-sales">
+                        <div class="item-col item-col-header item-col-title">
                             <div>
                                 <span>Estado</span>
                             </div>
                         </div>
-                        <div class="item-col item-col-header item-col-sales">
+                        <div class="item-col item-col-header item-col-title">
                             <div>
                                 <span>Opciones</span>
                             </div>
@@ -54,7 +54,7 @@
                         <li class="item">
                             <div class="item-row">
                                 <div class="item-col fixed pull-left item-col-title">
-                                    <div class="item-heading">Name</div>
+                                    <div class="item-heading">Nombre</div>
                                     <div>
                                         <a href="{{ archivo.url }}" class="">
                                             <h4 class="item-title"> {{ archivo.Nombre }} </h4>
@@ -67,11 +67,11 @@
                                         <h4 class="item-title"> {{ archivo.etiqueta}} </h4>
                                     </div>
                                 </div>
-                                <div class="item-col item-col-sales">
+                                <div class="item-col item-col-title">
                                     <div class="item-heading">Tipo</div>
-                                    <div> {{ archivo.Tipo }} </div>
+                                    <div class="item-title"> {{ archivo.Tipo }} </div>
                                 </div>
-                                <div class="item-col item-col-sales">
+                                <div class="item-col item-col-title">
                                     <div class="item-heading">Estado</div>
                                     {% if archivo.IdCrudo in descargados %}
                                         <div>Descargado</div>
@@ -79,7 +79,7 @@
                                         <div>Pendiente</div>
                                     {% endif %}
                                 </div>
-                                <div class="item-col item-col-sales">
+                                <div class="item-col item-col-title">
                                     <div class="item-heading">Tipo</div>
                                     <div>
                                         <a href="{{ archivo.get_absolute_url }}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Descarga programada </a>

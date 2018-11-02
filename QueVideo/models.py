@@ -7,13 +7,8 @@ from django.urls import reverse
 from django.utils.datetime_safe import datetime
 from django.utils import timezone
 import tagulous.models
-<<<<<<< HEAD
 from django.contrib.auth.models import User
 
-=======
-
-
->>>>>>> origin/develop
 # ################################################### ---- SGRED ----- #######################################################
 
 
@@ -109,32 +104,6 @@ CRUDO_TYPE = (
 )
 
 
-<<<<<<< HEAD
-=======
-# Recurso
-
-class Recurso(models.Model):
-    idRecurso = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=255)
-    descripcion = models.CharField(max_length=255,default='')
-    estado = models.CharField(max_length=255, choices=ESTADO_TYPE)
-    proyecto = models.CharField(max_length=255)
-    fechaCreacion = models.DateTimeField(default=datetime.now)
-    etapa = models.CharField(max_length=255, choices=ETAPA_TYPE)
-
-    etapa_history = models.ForeignKey(Etapa, on_delete=models.CASCADE, blank=True, null=True)
-    solicitud_cambio = models.ForeignKey(Solicitud_CambioEstado, on_delete=models.CASCADE, blank=True, null=True)
-    Tipo = models.CharField(max_length=255, choices=TIPO_RECURSO, default='VD')
-
-    def __unicode__(self):
-        return self.nombre
-
-CRUDO_TYPE = (
-    ('V', 'Video'),
-)
-
-
->>>>>>> origin/develop
 class Crudo(models.Model):
     IdCrudo = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=150, blank=False, unique=True)

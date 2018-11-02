@@ -1,107 +1,124 @@
 {% extends 'dashboard/base.html' %}
 {% block body %}
-<article class="content items-list-page">
-    <div class="title-search-block">
-        <div class="title-block">
-            <div class="row">
-                <div class="col-md-6">
-                    <h3 class="title"> Listado de Crudos
-                        <a href="{% url 'QueVideo:agregarCrudoBlock' %}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Crear crudo </a>
-                    </h3>
-                    <p id="list_description" class="title-description"> Muestra los crudos registrados en el recurso:  </p> <span> {{ request.session.recurso_actual }}</span>
+    <article class="content items-list-page">
+        <div class="title-search-block">
+            <div class="title-block">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="title"> Listado de Crudos
+                            <a href="{% url 'QueVideo:agregarCrudoBlock' %}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Crear crudo </a>
+                        </h3>
+                        <p id="list_description" class="title-description"> Muestra los crudos registrados en el recurso:  </p> <span> {{ request.session.recurso_actual }}</span>
+                    </div>
                 </div>
             </div>
+
         </div>
 
-    </div>
-
-<div class="card items">
-    <ul class="item-list striped">
-    {#                paso 3 verde #}
-        <li class="item item-list-header">
-            <div class="item-row">
-                <div class="item-col item-col-header item-col-title">
-                    <div>
-                        <span>Name</span>
-                    </div>
-                </div>
-                <div class="item-col item-col-header item-col-sales">
-                    <div>
-                        <span>Tags</span>
-                    </div>
-                </div>
-                <div class="item-col item-col-header item-col-sales">
-                    <div>
-                        <span>Tipo</span>
-                    </div>
-                </div>
-            </div>
-        </li>
-    {% for archivo in crudo_list %}
-    {% if "ftp" in archivo.url%}
-
-{#                paso 2 verde#}
-                <li class="item">
+        <div class="card items">
+            <ul class="item-list striped">
+                {#                paso 3 verde #}
+                <li class="item item-list-header">
                     <div class="item-row">
-                        <div class="item-col fixed pull-left item-col-title">
-                            <div class="item-heading">Name</div>
+                        <div class="item-col item-col-header item-col-title">
                             <div>
-                                <a href="{{ archivo.url }}" class="">
-                                    <h4 class="item-title"> {{ archivo.Nombre }} </h4>
-                                </a>
+                                <span>Nombre</span>
                             </div>
                         </div>
-                        <div class="item-col fixed pull-left item-col-title">
-                            <div class="item-heading">Tags</div>
+                        <div class="item-col item-col-header item-col-sales">
                             <div>
-                                <h4 class="item-title"> {{ archivo.etiqueta}} </h4>
+                                <span>Tags</span>
                             </div>
                         </div>
-                        <div class="item-col item-col-sales">
-                            <div class="item-heading">Tipo</div>
-                            <div> {{ archivo.Tipo }} </div>
-                        </div>
-                        <div class="item-col item-col-sales">
-                            <div class="item-heading">Tipo</div>
+                        <div class="item-col item-col-header item-col-sales">
                             <div>
-                                <a href="{{ archivo.get_absolute_url }}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Descarga programada </a>
+                                <span>Tipo</span>
+
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-sales">
+                            <div>
+                                <span>Estado</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-sales">
+                            <div>
+                                <span>Opciones</span>
                             </div>
                         </div>
                     </div>
                 </li>
-    {% endif %}
-    {% empty %}
-        <p> no hay crudos registrados </p>
-    {% endfor %}
-    </ul>
-</div>
-</article>
+                {% for archivo in crudo_list %}
+                    {% if "ftp" in archivo.url%}
+                        {#                paso 2 verde#}
+                        <li class="item">
+                            <div class="item-row">
+                                <div class="item-col fixed pull-left item-col-title">
+                                    <div class="item-heading">Name</div>
+                                    <div>
+                                        <a href="{{ archivo.url }}" class="">
+                                            <h4 class="item-title"> {{ archivo.Nombre }} </h4>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="item-col fixed pull-left item-col-title">
+                                    <div class="item-heading">Tags</div>
+                                    <div>
+                                        <h4 class="item-title"> {{ archivo.etiqueta}} </h4>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-sales">
+                                    <div class="item-heading">Tipo</div>
+                                    <div> {{ archivo.Tipo }} </div>
+                                </div>
+                                <div class="item-col item-col-sales">
+                                    <div class="item-heading">Estado</div>
+                                    {% if archivo.IdCrudo in descargados %}
+                                        <div>Descargado</div>
+                                    {% else %}
+                                        <div>Pendiente</div>
+                                    {% endif %}
+                                </div>
+                                <div class="item-col item-col-sales">
+                                    <div class="item-heading">Tipo</div>
+                                    <div>
+                                        <a href="{{ archivo.get_absolute_url }}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Descarga programada </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    {% endif %}
+                {% empty %}
+                    <p> no hay crudos registrados </p>
+                {% endfor %}
+            </ul>
+        </div>
+    </article>
+    <script type="text/javascript">
+        $(function(){
+            var d = new Date(),
+                h = d.getHours(),
+                m = d.getMinutes();
+            if(h < 10) h = '0' + h;
+            if(m < 10) m = '0' + m;
+            $('input[type="time"][value="now"]').each(function(){
+                $(this).attr({'value': h + ':' + m});
+            });
+        });
 
-<script type="text/javascript">
-    $(function(){
-      var d = new Date(),
-          h = d.getHours(),
-          m = d.getMinutes();
-      if(h < 10) h = '0' + h;
-      if(m < 10) m = '0' + m;
-      $('input[type="time"][value="now"]').each(function(){
-        $(this).attr({'value': h + ':' + m});
-      });
-    });
+        var x = null;
 
-    var x = null;
+        function transferClick(){
+            if (x != null)
+                clearInterval(x)
+            calculateRemainingTime();
+            x = setInterval(calculateRemainingTime, 10000);
+        }
 
-    function transferClick(){
-        if (x != null)
-            clearInterval(x)
-        calculateRemainingTime();
-        x = setInterval(calculateRemainingTime, 10000);
-    }
-
-    function calculateRemainingTime(){
-        var d = new Date(),
-              h = d.getHours(),
-              m = d.getMinutes();
+        function calculateRemainingTime(){
+            var d = new Date(),
+                h = d.getHours(),
+                m = d.getMinutes();
             var p = $('#time_upload').val().split(':');
             var hp = p[0], mp = p[1];
 
@@ -119,6 +136,6 @@
                 console.log("evaluando el tiempo")
                 return false;
             }
-    }
-</script>
+        }
+    </script>
 {% endblock %}

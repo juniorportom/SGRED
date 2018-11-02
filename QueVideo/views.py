@@ -171,8 +171,16 @@ def upload_crudo_block(request):
 
 # paso 2 kata web verde
 def crudo_list(request):
-    crudos = Crudo.objects.filter(recurso__idRecurso=request.session['recurso_actual_id'])
-    return render(request, 'crudos/crudoList.html', {'crudo_list': crudos, 'option': 'produccion'})
+    crudos = Crudo.objects.filter(recurso__idRecurso = request.session['recurso_actual_id'])
+    descargados = []
+    for cru in crudos:
+        if request.session.get("crudo" + str(cru.IdCrudo)):
+            print "crudo descargado"
+            descargados.append(cru.IdCrudo)
+    for x in descargados:
+        print '------- for de ids de archivos descargados ------'
+        print x
+    return render(request, 'crudos/crudoList.html', {'crudo_list': crudos, 'descargados': descargados, 'option': 'produccion'})
 
 
 def crudo_details_download(request, crudoId):
@@ -186,6 +194,7 @@ def crudo_details_download(request, crudoId):
         return render(request, 'crudos/crudoDownload.html', {'crudo': crudo, 'status': status})
 
 # Methods of etapa, solicitud cambio etapa CRUD
+
 
 # Json class response for handle httpResponse
 class JSONResponse(HttpResponse):

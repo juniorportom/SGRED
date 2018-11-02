@@ -142,11 +142,12 @@
                 <div class="sidebar-header">
                     <div class="brand">
                         <div class="logo">
-                            <span class="l l1"></span>
+                            <img src="{% static 'dashboard/imagenes/Logo_andes.png' %}" alt="Andes" width="55" height="45" style="vertical-align: top !important;">
+                            {% comment %}<span class="l l1"></span>
                             <span class="l l2"></span>
                             <span class="l l3"></span>
                             <span class="l l4"></span>
-                            <span class="l l5"></span>
+                            <span class="l l5"></span>{% endcomment %}
                         </div>
                         SGRED
                     </div>
@@ -316,7 +317,7 @@
                                 </li>
                             </ul>
                         </li>
-                        <li>
+                       {% comment %} <li>
                             <a href="screenful.html">
                                 <i class="fa fa-bar-chart"></i> Agile Metrics
                                 <span class="label label-screenful">by Screenful</span>
@@ -450,6 +451,7 @@
 
         <footer class="footer">
             <div class="footer-block buttons">
+                Sistema de Gestión de Recursos Educativos Digitales
                 {% comment %}<iframe class="footer-github-btn"
                         src="https://ghbtns.com/github-btn.html?user=modularcode&repo=modular-admin-html&type=star&count=true"
                         frameborder="0" scrolling="0" width="140px" height="20px"></iframe>{% endcomment %}

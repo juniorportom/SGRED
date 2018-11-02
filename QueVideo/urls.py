@@ -22,10 +22,9 @@ urlpatterns = [
     url(r'^etapas/(?P<pk>[0-9]+)/$', views.etapa_detail),
     url(r'^solicitudesCambio/$', views.solicitud_cambio_estado_list),
     url(r'^solicitudesCambio/(?P<pk>[0-9]+)/$', views.solicitud_cambio_estado_detail),
-    url(r'^cambioEstadoEtapa/(?P<pk>[0-9]+)/$', views.cambioEstadoEtapa),
+    url(r'^cambioEstadoEtapa/(?P<pk>[0-9]+)/$', views.cambioEstadoEtapa, name='cambioEstadoEtapa'),
     url(r'^avanzarEtapa/(?P<pk>[0-9]+)/solicitud/(?P<pk2>[0-9]+)$', views.realizarAvanceEtapa),
     url(r'^getNotifications/$', views.getNotifications),
-
     url(r'^crearRecurso/$', views.crear_Recurso, name='crearRecurso'),
     url(r'^static-tables/$', views.static_tables, name='static-tables'),
     url(r'^agregarArtefactoRecurso/$', views.agregarArtefactoRecurso, name='agregarArtefactoRecurso'),

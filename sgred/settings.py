@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django_tables2',
     'bootstrap4',
     'corsheaders',
-    'QueVideo'
+    'QueVideo',
+    'tagulous',
 ]
 
 MIDDLEWARE = [
@@ -88,23 +89,30 @@ WSGI_APPLICATION = 'sgred.wsgi.application'
 
 
 DATABASES = {
-     # 'default': {
-     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-     #     'NAME': os.environ.get('DATABASE_NAME'),
-     #     'USER': os.environ.get('DATABASE_USER'),
-     #     'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
-     #     'HOST': os.environ.get('DATABASE_HOST'),
-     #     'PORT': os.environ.get('DATABASE_PORT'),
-     # }
-'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd5tbu8odhi1pi1',
-        'USER': 'knzzpkvqbalhxe',
-        'PASSWORD': 'cafb5c11e51421177bbc287bc4467688b83f1d6ca9d9f45b47af67673b495a71',
-        'HOST': 'ec2-54-225-110-152.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': os.environ.get('DATABASE_NAME'),
+    #     'USER': os.environ.get('DATABASE_USER'),
+    #     'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+    #     'HOST': os.environ.get('DATABASE_HOST'),
+    #     'PORT': os.environ.get('DATABASE_PORT'),
+    # }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'QueVideo',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'admin',
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '5432',
+    # }
+    'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'd5tbu8odhi1pi1',
+            'USER': 'knzzpkvqbalhxe',
+            'PASSWORD': 'cafb5c11e51421177bbc287bc4467688b83f1d6ca9d9f45b47af67673b495a71',
+            'HOST': 'ec2-54-225-110-152.compute-1.amazonaws.com',
+            'PORT': '5432',
+        }
  }
 
 
@@ -120,19 +128,18 @@ DATABASES = {
 #
 #  }
 #
-
-#DATABASES = {
-     # nestor PC DB parameters
- #    'default': {
- #        'ENGINE': 'django.db.backends.postgresql_psycopg2',
- #        'NAME': 'QueVideo',
- #        'USER': 'postgres',
- #        'PASSWORD': 'admin',
- #        'HOST': 'localhost',
- #        'PORT': '5432',
- #    }
- #
- # }
+# DATABASES = {
+#      # nestor PC DB parameters
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'QueVideo',
+#         'USER': 'postgres',
+#         'PASSWORD': 'admin',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+#
+#  }
 
 
 REST_FRAMEWORK = {
@@ -196,8 +203,10 @@ STATICFILES_DIRS = (
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ORIGIN_ALLOW_ALL = True
 
+
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL ='accounts/login'
+LOGOUT_REDIRECT_URL = 'accounts/login'
 
 # Variables Correo Electronico
 

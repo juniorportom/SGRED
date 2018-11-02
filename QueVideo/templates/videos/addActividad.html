@@ -11,9 +11,6 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
     <script>
-        alert("Prueba el plan es " + {{plan.pk}});
-    </script>
-    <script>
         function enviarForm()
         {
             $.ajax(
@@ -30,7 +27,7 @@
                     dataType: "json",
                     success: function (data)
                     {
-                        window.location = "{% url 'proyecto'%}"
+                        window.location = "../../../actividades/"
                     },
                     failure: function (errMsg)
                     {
@@ -50,12 +47,12 @@
         </div>
 
         <form method="post" action="" onsubmit="return enviarForm();">
-            <input id="fecha" name="fecha" type="datetime-local" placeholder="Fecha" class="form-control input-md" required=""/>
+            <input id="fecha" name="fecha" type="date" placeholder="Fecha" class="form-control input-md" required=""/>
             <input id="video" name="video" type="text" placeholder="Video" class="form-control input-md" required=""/>
             <input id="observaciones" name="observaciones" type="text" placeholder="Observaciones" class="form-control input-md" required=""/>
             <input id="lugar" name="lugar" type="text" placeholder="Lugar" class="form-control input-md" required=""/>
             <input type="submit" value="Agregar" class="btn btn-primary"/>
-            <a href="https://sgred.herokuapp.com/proyecto" class="btn btn-primary">Cancelar</a>
+            <a href="../../../actividades" class="btn btn-primary">Cancelar</a>
         </form>
     </div>
 </div>

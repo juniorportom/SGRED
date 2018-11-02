@@ -195,7 +195,9 @@ STATICFILES_DIRS = (
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ORIGIN_ALLOW_ALL = True
 
-
+LOGIN_REDIRECT_URL = '/'
+LOGIN_URL ='accounts/login'
+LOGOUT_REDIRECT_URL = 'accounts/login'
 
 # Variables Correo Electronico
 

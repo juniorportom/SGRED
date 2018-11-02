@@ -72,16 +72,18 @@ function calculateRemainingTime(){
 
         if ((hp - h) <= 0 && (mp - m ) <= 0){
             console.log("tiempo completado!!")
+            console.log("descargando: " + scriptUrl)
             $('#transferCountDown').text("Descarga Iniciada")
-            clearInterval(x)
             $("#program_btn").attr("disabled", true);
-            window.location = scriptUrl;
+            //window.location = scriptUrl;
+            window.open(scriptUrl, '_blank');
             $("#form_download").submit();
-            return true;
+            //return true;
+            clearInterval(x)
         }
         else{
             console.log("evaluando el tiempo")
-            return false;
+            //return false;
         }
 }
 </script>

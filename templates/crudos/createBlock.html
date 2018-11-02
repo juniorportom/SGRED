@@ -99,7 +99,14 @@ function calculateRemainingTime(){
             $('#transferCountDown').text("Tranferencia Iniciada")
             clearInterval(x)
             $("#program_btn").attr("disabled", true);
-            $("#form_upload").submit();
+            //$("#form_upload").find(':submit').click();
+
+            var $myForm = $("#form_upload");
+            if(! $myForm[0].checkValidity()) {
+                //send a validation error to the user
+                $('#transferCountDown').text("Error de validacion del formulario, recuerde que todos los campos son obligatorios")
+            }
+            $myForm.find(':submit').click();
             return true;
         }
         else{

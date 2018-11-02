@@ -1,9 +1,12 @@
 from django.conf.urls import url, include
 from . import views
-
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^accounts/login', auth_views.login, name='login'),
+    url(r'^logout', auth_views.logout, name='logout'),
+
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^proyecto', views.ver_proyecto, name='proyecto'),
     url('agregarCrudoBlock', views.upload_crudo_block, name='agregarCrudoBlock'),
@@ -29,4 +32,7 @@ urlpatterns = [
     url(r'^static-tables/$', views.static_tables, name='static-tables'),
     url(r'^agregarArtefactoRecurso/$', views.agregarArtefactoRecurso, name='agregarArtefactoRecurso'),
     url(r'^agregarPlanLogistica/$', views.agregarPlanLogistica, name='agregarPlanLogistica'),
+
+    url('verSolicitudes', views.solicitudes_list, name='verSolicitudes'),
+    url('recursosAsociados', views.getViewRecursosAsignados, name='verRecursosAsociados'),
 ]

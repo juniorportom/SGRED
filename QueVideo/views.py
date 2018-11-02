@@ -25,11 +25,16 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
+from django.contrib.auth.decorators import login_required
 
 # ###################################################SGRED#######################################################
-
+@login_required
 def index(request):
-    context = {'option': 'dashboard'}
+    n = notificationsBadge(True)
+    listNotif = notificationsBadge(False)
+    #request.session['listNotif'] = listNotif
+    request.session['num_notif'] = n
+    context = {'option': 'dashboard','n_number': n,'listNotif':listNotif}
     # hard code el recurso actual para los demas requests
     # ver la documentacion de datos de sesiones en django: https://docs.djangoproject.com/en/2.1/topics/http/sessions/
     recursoActual = Recurso.objects.first()
@@ -482,9 +487,30 @@ def getNotifications(request):
     RequestConfig(request).configure(table)
     return render(request, 'videos/solicitudes.html', {'table': table})
 
+def notificationsBadge(opt):
+    if opt is True:
+        return (Solicitud_CambioEstado.objects.all()).count()
+    else:
+        return (Solicitud_CambioEstado.objects.all())
+
+def solicitudes_list(request):
+    sol = Solicitud_CambioEstado.objects.all()
+    n = request.session.get('num_notif', '0')
+    context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n}
+    return render(request, 'solicitudes/listadoSolicitudes.html', context)
+
+# ---------------------------- SGRD-20 -----------------------------
+#     Como miembro de grupo debo poder consultar los recursos a los
+#       cuales estoy asignado para saber el trabajo asignado.
+
+def getViewRecursosAsignados(request):
+    recAsig= Recurso.objects.filter(usuario=request.user)
+    n = request.session.get('num_notif', '0')
+    context = {'lista_recursos': recAsig,'option': 'recursos', 'n_number': n}
+    return render(request, 'recursos/listaRecursosAsociados.html', context)
+
 
 # Serializadores Rest - API endpoint that allows users to be viewed or edited.
-
 class RecursosViewSet(viewsets.ModelViewSet):
     queryset = Recurso.objects.all().order_by('fechaCreacion')
     serializer_class = RecursoSerializer

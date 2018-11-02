@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.datetime_safe import datetime
 from django.utils import timezone
 import tagulous.models
-
+from django.contrib.auth.models import User
 
 # ################################################### ---- SGRED ----- #######################################################
 
@@ -76,9 +76,6 @@ class Solicitud_CambioEstado(models.Model):
     fecha_solicitud = models.DateTimeField(default=datetime.now)
     fecha_aprobacion = models.DateTimeField('fecha de aprobacion no definida')
 
-    def __unicode__(self):
-        return self.nombre
-
     def was_requested_recently(self):
         return self.fecha_solicitud >= timezone.now() - datetime.timedelta(days=1)
 
@@ -94,6 +91,7 @@ class Recurso(models.Model):
     fechaCreacion = models.DateTimeField(default=datetime.now)
     etapa = models.CharField(max_length=255, choices=ETAPA_TYPE)
 
+    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     etapa_history = models.ForeignKey(Etapa, on_delete=models.CASCADE, blank=True, null=True)
     solicitud_cambio = models.ForeignKey(Solicitud_CambioEstado, on_delete=models.CASCADE, blank=True, null=True)
     Tipo = models.CharField(max_length=255, choices=TIPO_RECURSO, default='VD')

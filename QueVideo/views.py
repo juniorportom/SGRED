@@ -24,6 +24,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
+<<<<<<< HEAD
 
 from django.contrib.auth.decorators import login_required
 
@@ -57,6 +58,36 @@ def crear_Recurso(request):
     return render(request, 'recursos/crearRecurso.html', context)
 
 
+=======
+
+
+# ###################################################SGRED#######################################################
+
+def index(request):
+    context = {'option': 'dashboard'}
+    # hard code el recurso actual para los demas requests
+    # ver la documentacion de datos de sesiones en django: https://docs.djangoproject.com/en/2.1/topics/http/sessions/
+    recursoActual = Recurso.objects.first()
+    if recursoActual is not None:
+        request.session['recurso_actual'] = recursoActual.nombre
+        request.session['recurso_actual_id'] = recursoActual.idRecurso
+    else:
+        request.session['recurso_actual'] = ''
+        request.session['recurso_actual_id'] = ''
+    return render(request, 'dashboard/index.html', context)
+
+
+def static_tables(request):
+    context = {'option': 'statictables'}
+    return render(request, 'dashboard/static-tables.html', context)
+
+
+def crear_Recurso(request):
+    context = {'option': 'recursos'}
+    return render(request, 'recursos/crearRecurso.html', context)
+
+
+>>>>>>> origin/develop
 def ver_proyecto(request):
     context = {'option': 'proyecto'}
     return render(request, 'videos/proyecto.html', context)
@@ -186,6 +217,7 @@ def crudo_list(request):
         print '------- for de ids de archivos descargados ------'
         print x
     return render(request, 'crudos/crudoList.html', {'crudo_list': crudos, 'descargados': descargados, 'option': 'produccion'})
+<<<<<<< HEAD
 
 
 def crudo_details_download(request, crudoId):
@@ -201,6 +233,23 @@ def crudo_details_download(request, crudoId):
 # Methods of etapa, solicitud cambio etapa CRUD
 
 
+=======
+
+
+def crudo_details_download(request, crudoId):
+    if request.method == 'POST':
+        request.session['crudo'+ crudoId] = "descargado"
+        return HttpResponseRedirect(reverse('QueVideo:crudoDownload', kwargs={'crudoId':crudoId}))
+    else:
+        crudo = Crudo.objects.get(pk=crudoId)
+        key = 'crudo' + crudoId
+        status = request.session.get(key)
+        return render(request, 'crudos/crudoDownload.html', {'crudo': crudo, 'status': status})
+
+# Methods of etapa, solicitud cambio etapa CRUD
+
+
+>>>>>>> origin/develop
 # Json class response for handle httpResponse
 class JSONResponse(HttpResponse):
     """
@@ -487,6 +536,7 @@ def getNotifications(request):
     RequestConfig(request).configure(table)
     return render(request, 'videos/solicitudes.html', {'table': table})
 
+<<<<<<< HEAD
 def notificationsBadge(opt):
     if opt is True:
         return (Solicitud_CambioEstado.objects.all()).count()
@@ -511,6 +561,11 @@ def getViewRecursosAsignados(request):
 
 
 # Serializadores Rest - API endpoint that allows users to be viewed or edited.
+=======
+
+# Serializadores Rest - API endpoint that allows users to be viewed or edited.
+
+>>>>>>> origin/develop
 class RecursosViewSet(viewsets.ModelViewSet):
     queryset = Recurso.objects.all().order_by('fechaCreacion')
     serializer_class = RecursoSerializer

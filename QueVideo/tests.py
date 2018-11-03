@@ -1,5 +1,5 @@
 
-_author_ = 'Joan Torres - Andres Ortiz - Danny Hurtado'
+author = 'Joan Torres - Andres Ortiz - Danny Hurtado'
 
 from unittest import TestCase
 from selenium import webdriver
@@ -26,7 +26,7 @@ class Sgrd105FunctionalTest(TestCase):
 
     def test_activity_check_link_location(self):
         self.browser.get('http://localhost:8090/actividades/')
-        self.browser.implicitly_wait(5)
+        self.browser.implicitly_wait(3)
         span = WebDriverWait(self.browser, 5).until(
             EC.visibility_of_element_located((By.ID, "activitySpan")))
         # span.click()
@@ -34,10 +34,8 @@ class Sgrd105FunctionalTest(TestCase):
         self.assertEquals('Done', span.text)
 
     def test_notification_message(self):
-        self.browser.get('http://localhost:8000/actividades/')
+        self.browser.get('http://localhost:8090/actividades/')
         self.browser.implicitly_wait(3)
-        botonMenu = self.browser.find_element_by_id('checkAct')
-        botonMenu.click()
 
         span = WebDriverWait(self.browser, 5).until(
             EC.visibility_of_element_located((By.ID, "activitySpan")))
@@ -46,4 +44,4 @@ class Sgrd105FunctionalTest(TestCase):
         nofication = WebDriverWait(self.browser, 5).until(
             EC.visibility_of_element_located((By.ID, "notify")))
 
-        self.assertIn('Actividad completada', nofication.text)
+        self.assertEquals('Actividad completada', nofication.text)

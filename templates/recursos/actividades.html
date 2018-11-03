@@ -1,6 +1,10 @@
 {% extends 'dashboard/base.html' %}
 {% block body %}
     <script>
+    function notifyUser() {
+          document.getElementById("notify").innerHTML = "Actividad completada";
+        };
+
         (function()
         {
             $.getJSON("../planLogistica/1/actividades/").done(function (data)
@@ -56,7 +60,8 @@
                         '   <div class="item-col fixed item-col-check">\n' +
                         '       <div class="item-heading">Completada</div>\n' +
                         '           <h4 class="no-overflow">' +
-                        '               <a class="check" id="checkAct" href="../checkActividad/' + item.pk + '" >  <span id="activitySpan">' +
+                        '               <a class="check" id="checkAct" ' + item.pk + '" >' +
+                        '                   <span id="activitySpan" onClick="notifyUser()">' +
                         '                   <i class="fa fa-check"/>Done</span> '+
                         '               </a>\n' +
                         '           </h4>\n' +
@@ -77,6 +82,7 @@
                         <h3 class="title"> Listado de Actividades
                             <a href="../planLogistica/1/actividad" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Agregar actividad </a>
                         </h3>
+                        <p class="title" id="notify"></p>
                     </div>
                 </div>
             </div>

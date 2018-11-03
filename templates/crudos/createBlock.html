@@ -1,0 +1,119 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+    <article class="content item-editor-page">
+        <div class="title-block">
+            <h3 id="crudo_page_title" class="title"> Programacion transferencia a repositorio crudos del recurso
+
+            </h3>
+                <span>{{ request.session.recurso_actual }}</span>
+                <span class="sparkline bar" data-type="bar"></span>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6">
+                    <form id="form_upload" action="{% url 'QueVideo:agregarCrudoBlock' %}" enctype="multipart/form-data" method="post">
+                        {% csrf_token %}
+                    {#        {{ form.as_p }}#}
+                        {% for field in form %}
+                            <div class="form-group">
+                                {% if field.errors %}
+                                    <div class="alert alert-danger" role="alert">
+                                      {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                                {{ field.label_tag }}
+                                {{ field }}
+                            </div>
+                        {% endfor %}
+                        <div class="form-group">
+                            <label for="time_upload">Seleccione una hora para relizar la transferencia </label>
+                            <input class="form-control" id="time_upload" type="time" name="usr_time" value='now'>
+                        </div>
+
+                        <p id="transferCountDown">-</p>
+
+                        <input class="btn btn-primary" id="program_btn" type="button" value="Programar Transferencia" onclick="transferClick()">
+
+
+                        <input type="submit" class="btn btn-primary" style="margin-left: 16px" value="Agregar Inmediatamente"  />
+                    </form>
+                </div>
+                <div class="col-sm-6">
+
+                    <div class="alert alert-warning" role="alert">
+                      No cierre la ventana del navegador luego de programada la transferencia, de lo contrario esta no se completará
+                    </div>
+
+                    <div class="alert alert-success" role="alert">
+                      Para agregar otro archivo use una nueva ventana <a target="_blank" href="{% url 'QueVideo:agregarCrudo' %}"> Nuevo archivo</a>
+                    </div>
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li class="alert alert-success">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+
+
+    </article>
+
+<script type="text/javascript">
+$(function(){
+  var d = new Date(),
+      h = d.getHours(),
+      m = d.getMinutes();
+  if(h < 10) h = '0' + h;
+  if(m < 10) m = '0' + m;
+  $('input[type="time"][value="now"]').each(function(){
+    $(this).attr({'value': h + ':' + m});
+  });
+});
+
+var x = null;
+
+function transferClick(){
+    if (x != null)
+        clearInterval(x)
+    calculateRemainingTime();
+    x = setInterval(calculateRemainingTime, 10000);
+}
+
+function calculateRemainingTime(){
+    var d = new Date(),
+          h = d.getHours(),
+          m = d.getMinutes();
+        var p = $('#time_upload').val().split(':');
+        var hp = p[0], mp = p[1];
+
+        $('#transferCountDown').text('la tranferencia iniciará en: ' +
+            (hp - h).toString() + " horas y " + (mp-m).toString() + " minutos"   );
+
+        if ((hp - h) <= 0 && (mp - m ) <= 0){
+            console.log("tiempo completado!!")
+            $('#transferCountDown').text("Tranferencia Iniciada")
+            clearInterval(x)
+            $("#program_btn").attr("disabled", true);
+            //$("#form_upload").find(':submit').click();
+
+            var $myForm = $("#form_upload");
+            if(! $myForm[0].checkValidity()) {
+                //send a validation error to the user
+                $('#transferCountDown').text("Error de validacion del formulario, recuerde que todos los campos son obligatorios")
+            }
+            $myForm.find(':submit').click();
+            return true;
+        }
+        else{
+            console.log("evaluando el tiempo")
+            return false;
+        }
+}
+</script>
+
+{% endblock %}

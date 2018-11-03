@@ -16,14 +16,25 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf.urls.static import static
+from rest_framework import routers
+
+from QueVideo import views
 from sgred import settings
+
+router = routers.DefaultRouter()
+
+#Recursos
+router.register(r'recurso', views.RecursosViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^videos/', include('QueVideo.urls')),
-    url(r'^', include('QueVideo.urls', namespace='QueVideo'))
-]
+    url(r'^', include('QueVideo.urls', namespace='QueVideo')),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
+    # API Rest SGRED
+    url(r'^api-sgred/', include(router.urls))
+
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

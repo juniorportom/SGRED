@@ -1,48 +1,38 @@
 from django.conf.urls import url, include
 from . import views
-from django.contrib.auth.views import login
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^media/$', views.all_media, name="All media"),
-    url(r'^media/(?P<videoid>\d+)$', views.media_detail, name="media detail"),
-    url(r'^users/$', views.all_users, name="All users"),
-    url(r'^addUser/$', views.add_user_view, name='addUser'),
-    url(r'^getUser/$', views.get_user_view, name='getUser'),
-    url(r'^modUser/$', views.mod_user_view, name='modUser'),
-    url(r'^changePassword/$', views.change_password, name='changePassword'),
-    url(r'^details/(?P<videoid>\d+)$', views.detail, name="details"),
-    url(r'^detailsSC/(?P<videoid>\d+)$', views.detailSC, name="detailsSC"),
-    url(r'^login/$', views.login_view, name='login'),
-    url(r'^logout/$', views.logout_view, name='logout'),
-    url(r'^isLogged/$', views.is_logged_view, name='isLogged'),
+    url(r'^accounts/login', auth_views.login, name='login'),
+    url(r'^logout', auth_views.logout, name='logout'),
+
     url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^ingresar', views.ingresar, name='ingresar'),
-    url(r'^agregarUsuario', views.agregar_usuario, name='agregarUsuario'),
     url(r'^proyecto', views.ver_proyecto, name='proyecto'),
-
-    url(r'^agregarInsumoRecurso', views.agregarInsumoRecurso, name='agregarInsumoRecurso'),
-    url(r'^agregarPlanLogistica', views.agregarPlanLogistica, name='agregarPlanLogistica'),
-
-
-    url(r'^agregarCrudo', views.upload_crudo, name='agregarCrudo'),
-    url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
+    url('agregarCrudoBlock', views.upload_crudo_block, name='agregarCrudoBlock'),
+    url('agregarCrudo', views.upload_crudo, name='agregarCrudo'),
+    url('crudoDownload/(?P<crudoId>\d+)$', views.crudo_details_download, name='crudoDownload'),
+    # sgrd 25 kata implementacion paso 2
+    url('listaCrudos', views.crudo_list, name='listaCrudos'),
     url(r'^proyecto', views.ver_proyecto, name='proyecto'),
-    url(r'^agregarCrudo', views.upload_crudo, name='agregarCrudo'),
     url(r'^planLogistica/(?P<planId>\d+)$', views.get_plan_logistica, name='plan_logistica'),
     url(r'^planLogistica/(?P<planId>\d+)/actividades/$', views.get_actividades, name='actividades'),
     url(r'^planLogistica/(?P<planId>\d+)/actividad/(?P<actId>\d+)$', views.add_actividad, name='agregarActividad'),
     url(r'^planLogistica/(?P<planId>\d+)/actividad/$', views.add_actividad, name='agregarActividad'),
     url(r'editarActividad/(?P<id>\d+)$', views.edit_actividad, name='editarActividad'),
-
     url(r'^etapas/$', views.etapa_list),
+    url(r'^actividades/$', views.actividades_view),
     url(r'^etapas/(?P<pk>[0-9]+)/$', views.etapa_detail),
     url(r'^solicitudesCambio/$', views.solicitud_cambio_estado_list),
     url(r'^solicitudesCambio/(?P<pk>[0-9]+)/$', views.solicitud_cambio_estado_detail),
-
-    url(r'^cambioEstadoEtapa/(?P<pk>[0-9]+)/$', views.cambioEstadoEtapa),
+    url(r'^cambioEstadoEtapa/(?P<pk>[0-9]+)/$', views.cambioEstadoEtapa, name='cambioEstadoEtapa'),
     url(r'^avanzarEtapa/(?P<pk>[0-9]+)/solicitud/(?P<pk2>[0-9]+)$', views.realizarAvanceEtapa),
+    url(r'^getNotifications/$', views.getNotifications),
+    url(r'^crearRecurso/$', views.crear_Recurso, name='crearRecurso'),
+    url(r'^static-tables/$', views.static_tables, name='static-tables'),
+    url(r'^agregarArtefactoRecurso/$', views.agregarArtefactoRecurso, name='agregarArtefactoRecurso'),
+    url(r'^agregarPlanLogistica/$', views.agregarPlanLogistica, name='agregarPlanLogistica'),
 
-    url(r'^getNotifications/$', views.getNotifications)
-
+    url('verSolicitudes', views.solicitudes_list, name='verSolicitudes'),
+    url('recursosAsociados', views.getViewRecursosAsignados, name='verRecursosAsociados'),
 ]

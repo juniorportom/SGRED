@@ -10,6 +10,9 @@ from ftplib import FTP
 
 from django_tables2 import RequestConfig
 from rest_framework import viewsets
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
@@ -27,14 +30,15 @@ from rest_framework.parsers import JSONParser
 
 from django.contrib.auth.decorators import login_required
 
+
 # ###################################################SGRED#######################################################
 @login_required
 def index(request):
     n = notificationsBadge(True)
     listNotif = notificationsBadge(False)
-    #request.session['listNotif'] = listNotif
+    # request.session['listNotif'] = listNotif
     request.session['num_notif'] = n
-    context = {'option': 'dashboard','n_number': n,'listNotif':listNotif}
+    context = {'option': 'dashboard', 'n_number': n, 'listNotif': listNotif}
     # hard code el recurso actual para los demas requests
     # ver la documentacion de datos de sesiones en django: https://docs.djangoproject.com/en/2.1/topics/http/sessions/
     recursoActual = Recurso.objects.first()
@@ -50,6 +54,13 @@ def index(request):
 def static_tables(request):
     context = {'option': 'statictables'}
     return render(request, 'dashboard/static-tables.html', context)
+
+
+def entregablesRecursos(request, recursoId):
+    crudosList = Crudo.objects.filter(recurso_id=recursoId)
+    recurso = Recurso.objects.filter(idRecurso=recursoId).first()
+    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso}
+    return render(request, 'recursos/detalleEntregable.html', context)
 
 
 def crear_Recurso(request):
@@ -161,12 +172,14 @@ def upload_crudo_block(request):
                 ftp.storbinary('STOR %s' % stampedName, f)
                 crudo.url = 'ftp://miso|anonymous@200.21.21.36/' + stampedName
                 # obtener el recurso actual desde el session manager.
-                crudo.recurso = Recurso.objects.get(idRecurso = request.session['recurso_actual_id'])
+                crudo.recurso = Recurso.objects.get(idRecurso=request.session['recurso_actual_id'])
                 crudo.save()
             ftp.quit()
             if os.path.isfile(crudo.Archivo.path):
                 os.remove(crudo.Archivo.path)
-            messages.success(request, 'Archivo ' + name + ' Guardado con Exito en el repositorio de crudos del recurso: ' + request.session['recurso_actual'])
+            messages.success(request,
+                             'Archivo ' + name + ' Guardado con Exito en el repositorio de crudos del recurso: ' +
+                             request.session['recurso_actual'])
             return HttpResponseRedirect(reverse('QueVideo:agregarCrudoBlock'))
     else:
         form = CrudoForm()
@@ -176,7 +189,7 @@ def upload_crudo_block(request):
 
 # paso 2 kata web verde
 def crudo_list(request):
-    crudos = Crudo.objects.filter(recurso__idRecurso = request.session['recurso_actual_id'])
+    crudos = Crudo.objects.filter(recurso__idRecurso=request.session['recurso_actual_id'])
     descargados = []
     for cru in crudos:
         if request.session.get("crudo" + str(cru.IdCrudo)):
@@ -185,18 +198,20 @@ def crudo_list(request):
     for x in descargados:
         print '------- for de ids de archivos descargados ------'
         print x
-    return render(request, 'crudos/crudoList.html', {'crudo_list': crudos, 'descargados': descargados, 'option': 'produccion'})
+    return render(request, 'crudos/crudoList.html',
+                  {'crudo_list': crudos, 'descargados': descargados, 'option': 'produccion'})
 
 
 def crudo_details_download(request, crudoId):
     if request.method == 'POST':
-        request.session['crudo'+ crudoId] = "descargado"
-        return HttpResponseRedirect(reverse('QueVideo:crudoDownload', kwargs={'crudoId':crudoId}))
+        request.session['crudo' + crudoId] = "descargado"
+        return HttpResponseRedirect(reverse('QueVideo:crudoDownload', kwargs={'crudoId': crudoId}))
     else:
         crudo = Crudo.objects.get(pk=crudoId)
         key = 'crudo' + crudoId
         status = request.session.get(key)
         return render(request, 'crudos/crudoDownload.html', {'crudo': crudo, 'status': status})
+
 
 # Methods of etapa, solicitud cambio etapa CRUD
 
@@ -475,11 +490,11 @@ def agregarArtefactoRecurso(request):
         form = ArtefactoRecursoForm(request.POST, request.FILES)
         if form.is_valid():
             artefacto = form.save()
-            messages.success(request, "Se Agrego Insumo de Diseño Correctamente", extra_tags="alert-success")
-        return HttpResponseRedirect(reverse('QueVideo:agregarInsumoRecurso'))
+            messages.success(request, "Se Agrego Artefacto de Diseño Correctamente", extra_tags="alert-success")
+        return HttpResponseRedirect(reverse('QueVideo:agregarArtefactoRecurso'), {'option': 'preproduccion'})
     else:
         form = ArtefactoRecursoForm()
-    return render(request, 'recursos/insumo.html', {'form': form})
+    return render(request, 'recursos/artefactos.html', {'form': form, 'option': 'preproduccion'})
 
 
 def getNotifications(request):
@@ -487,11 +502,13 @@ def getNotifications(request):
     RequestConfig(request).configure(table)
     return render(request, 'videos/solicitudes.html', {'table': table})
 
+
 def notificationsBadge(opt):
     if opt is True:
         return (Solicitud_CambioEstado.objects.all()).count()
     else:
         return (Solicitud_CambioEstado.objects.all())
+
 
 def solicitudes_list(request):
     sol = Solicitud_CambioEstado.objects.all()
@@ -499,14 +516,15 @@ def solicitudes_list(request):
     context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n}
     return render(request, 'solicitudes/listadoSolicitudes.html', context)
 
+
 # ---------------------------- SGRD-20 -----------------------------
 #     Como miembro de grupo debo poder consultar los recursos a los
 #       cuales estoy asignado para saber el trabajo asignado.
 
 def getViewRecursosAsignados(request):
-    recAsig= Recurso.objects.filter(usuario=request.user)
+    recAsig = Recurso.objects.filter(usuario=request.user)
     n = request.session.get('num_notif', '0')
-    context = {'lista_recursos': recAsig,'option': 'recursos', 'n_number': n}
+    context = {'lista_recursos': recAsig, 'option': 'recursos', 'n_number': n}
     return render(request, 'recursos/listaRecursosAsociados.html', context)
 
 
@@ -518,3 +536,12 @@ class RecursosViewSet(viewsets.ModelViewSet):
 
 def actividades_view(request):
     return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
+
+
+class RecursosList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'recursos/entregablesRecurso.html'
+
+    def get(self, request):
+        queryset = Recurso.objects.all().filter(estado='DONE')
+        return Response({'recursos': queryset})

@@ -35,4 +35,7 @@ urlpatterns = [
 
     url('verSolicitudes', views.solicitudes_list, name='verSolicitudes'),
     url('recursosAsociados', views.getViewRecursosAsignados, name='verRecursosAsociados'),
+    url('entregablesRecurso', views.RecursosList.as_view(), name='entregablesRecurso'),
+    url(r'^detalleEntregablesRecurso/(?P<recursoId>\d+)/$', views.entregablesRecursos, name='detalleEntregablesRecurso'),
+
 ]

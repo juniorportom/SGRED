@@ -41,7 +41,6 @@ def index(request):
     if recursoActual is not None:
         request.session['recurso_actual'] = recursoActual.nombre
         request.session['recurso_actual_id'] = recursoActual.idRecurso
-        request.session['recurso_actual_etapa'] = recursoActual.etapa
     else:
         request.session['recurso_actual'] = ''
         request.session['recurso_actual_id'] = ''
@@ -364,23 +363,22 @@ def solicitud_cambio_estado_detail(request, pk):
 def cambioEstadoEtapa(request, pk):
     print "entra al servicio"
     try:
-        #etapa = Etapa.objects.get(idEtapa=pk)
         recurso = Recurso.objects.get(idRecurso=pk)
-        etapa = Etapa.objects.get(etapa_type=recurso.etapa)
+        etapaActual = recurso.etapa
+        etapaSiguiente = etapaActual.siguiente_etapa
     except Etapa.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'PUT':
-        nuevaEtapa = json.loads(request.body)
-        print nuevaEtapa
-        estado = nuevaEtapa
-        etapa.estado = estado
-        etapa.save()
-        return JsonResponse({"idEtapa": etapa.idEtapa,
-                             "estado": etapa.estado,
-                             "fecha_inicio": etapa.fecha_inicio,
-                             "fecha_fin": etapa.fecha_fin,
-                             "etapa_type": etapa.etapa_type}, status=201)
+        if etapaSiguiente is not None:
+            recurso.etapa = etapaSiguiente
+        recurso.save()
+        return JsonResponse({"idEtapa": etapaSiguiente.idEtapa,
+                             "estado": etapaSiguiente.estado,
+                             "fecha_inicio": etapaSiguiente.fecha_inicio,
+                             "fecha_fin": etapaSiguiente.fecha_fin,
+                             "etapa_anterior": etapaActual.etapa_type,
+                             "nueva_etapa": etapaSiguiente.etapa_type}, status=201)
         return HttpResponse(status=404)
 
 

@@ -36,10 +36,10 @@
               contentType: "application/json; charset=utf-8",
               type: 'PUT',
               success: function(data) {
-                alert('Load was performed.');
+                alert('El recurso cambió de etapa: ' + data.etapa_anterior + " -> " + data.nueva_etapa);
               },
               error: function(data) {
-                alert('Error ' + data.responseText);
+                alert('El recurso se encuentra en la última etapa');
               }
             });
         }

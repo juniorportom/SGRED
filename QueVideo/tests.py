@@ -45,3 +45,12 @@ class Sgrd105FunctionalTest(TestCase):
             EC.visibility_of_element_located((By.ID, "notify")))
 
         self.assertEquals('Actividad completada', nofication.text)
+
+    def test_change_done(self):
+            self.browser.get('http://localhost:8090/actividades/')
+            self.browser.implicitly_wait(3)
+            span = WebDriverWait(self.browser, 5).until(
+                EC.visibility_of_element_located((By.ID, "activitySpan")))
+            # span.click()
+
+            self.assertEquals('Completada', span.text)

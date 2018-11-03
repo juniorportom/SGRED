@@ -17,7 +17,7 @@ from rest_framework.views import APIView
 from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
 from QueVideo.tables import SolicitudesTable
-from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso
+from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 
@@ -36,9 +36,9 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     n = notificationsBadge(True)
     listNotif = notificationsBadge(False)
-    #request.session['listNotif'] = listNotif
+    # request.session['listNotif'] = listNotif
     request.session['num_notif'] = n
-    context = {'option': 'dashboard','n_number': n,'listNotif':listNotif}
+    context = {'option': 'dashboard', 'n_number': n, 'listNotif': listNotif}
     # hard code el recurso actual para los demas requests
     # ver la documentacion de datos de sesiones en django: https://docs.djangoproject.com/en/2.1/topics/http/sessions/
     recursoActual = Recurso.objects.first()
@@ -172,12 +172,14 @@ def upload_crudo_block(request):
                 ftp.storbinary('STOR %s' % stampedName, f)
                 crudo.url = 'ftp://miso|anonymous@200.21.21.36/' + stampedName
                 # obtener el recurso actual desde el session manager.
-                crudo.recurso = Recurso.objects.get(idRecurso = request.session['recurso_actual_id'])
+                crudo.recurso = Recurso.objects.get(idRecurso=request.session['recurso_actual_id'])
                 crudo.save()
             ftp.quit()
             if os.path.isfile(crudo.Archivo.path):
                 os.remove(crudo.Archivo.path)
-            messages.success(request, 'Archivo ' + name + ' Guardado con Exito en el repositorio de crudos del recurso: ' + request.session['recurso_actual'])
+            messages.success(request,
+                             'Archivo ' + name + ' Guardado con Exito en el repositorio de crudos del recurso: ' +
+                             request.session['recurso_actual'])
             return HttpResponseRedirect(reverse('QueVideo:agregarCrudoBlock'))
     else:
         form = CrudoForm()
@@ -187,7 +189,7 @@ def upload_crudo_block(request):
 
 # paso 2 kata web verde
 def crudo_list(request):
-    crudos = Crudo.objects.filter(recurso__idRecurso = request.session['recurso_actual_id'])
+    crudos = Crudo.objects.filter(recurso__idRecurso=request.session['recurso_actual_id'])
     descargados = []
     for cru in crudos:
         if request.session.get("crudo" + str(cru.IdCrudo)):
@@ -196,13 +198,14 @@ def crudo_list(request):
     for x in descargados:
         print '------- for de ids de archivos descargados ------'
         print x
-    return render(request, 'crudos/crudoList.html', {'crudo_list': crudos, 'descargados': descargados, 'option': 'produccion'})
+    return render(request, 'crudos/crudoList.html',
+                  {'crudo_list': crudos, 'descargados': descargados, 'option': 'produccion'})
 
 
 def crudo_details_download(request, crudoId):
     if request.method == 'POST':
-        request.session['crudo'+ crudoId] = "descargado"
-        return HttpResponseRedirect(reverse('QueVideo:crudoDownload', kwargs={'crudoId':crudoId}))
+        request.session['crudo' + crudoId] = "descargado"
+        return HttpResponseRedirect(reverse('QueVideo:crudoDownload', kwargs={'crudoId': crudoId}))
     else:
         crudo = Crudo.objects.get(pk=crudoId)
         key = 'crudo' + crudoId
@@ -490,10 +493,13 @@ def agregarArtefactoRecurso(request):
         if form.is_valid():
             artefacto = form.save()
             messages.success(request, "Se Agrego Artefacto de Diseño Correctamente", extra_tags="alert-success")
-        return HttpResponseRedirect(reverse('QueVideo:agregarArtefactoRecurso'), {'option': 'preproduccion'})
+            artefactos = Artefacto.objects.all();
+        return HttpResponseRedirect(reverse('QueVideo:agregarArtefactoRecurso'),
+                                    {'option': 'preproduccion', 'artefactos': artefactos})
     else:
         form = ArtefactoRecursoForm()
-    return render(request, 'recursos/artefactos.html', {'form': form, 'option': 'preproduccion'})
+        artefactos = Artefacto.objects.all();
+    return render(request, 'recursos/artefactos.html', {'form': form, 'option': 'preproduccion','artefactos': artefactos})
 
 
 def getNotifications(request):
@@ -521,9 +527,9 @@ def solicitudes_list(request):
 #       cuales estoy asignado para saber el trabajo asignado.
 
 def getViewRecursosAsignados(request):
-    recAsig= Recurso.objects.filter(usuario=request.user)
+    recAsig = Recurso.objects.filter(usuario=request.user)
     n = request.session.get('num_notif', '0')
-    context = {'lista_recursos': recAsig,'option': 'recursos', 'n_number': n}
+    context = {'lista_recursos': recAsig, 'option': 'recursos', 'n_number': n}
     return render(request, 'recursos/listaRecursosAsociados.html', context)
 
 
@@ -536,11 +542,13 @@ class RecursosViewSet(viewsets.ModelViewSet):
 def actividades_view(request):
     return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
 
+
 def checkActividad(request, id):
     actividad = Actividad.objects.get(pk=id)
-    actividad.Estado=True
+    actividad.Estado = True
     actividad.save()
     return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
+
 
 class RecursosList(APIView):
     renderer_classes = [TemplateHTMLRenderer]

@@ -1,19 +1,68 @@
 {% extends 'dashboard/base.html' %}
 {% block body %}
     <article class="content item-editor-page">
-        <div class="title-block">
-            <h3 class="title"> Artefacto
-                <span class="sparkline bar" data-type="bar"></span>
-            </h3>
+
+
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title-block">
+                    <h3 class="title"> Agregar Artefactos </h3>
+                    <hr/>
+                </div>
+                <section class="example">
+                    <form action="{% url 'QueVideo:agregarArtefactoRecurso' %}" method="post"
+                          enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+
+
+                        <div class="form-group row">
+                            <div class="col-sm-12 " style="text-align:right ">
+                                <input type="submit" value="Agregar Artefacto" class="btn btn-primary"/>
+                                <a href="{% url 'QueVideo:index' %}" class="btn btn-secondary">Cancelar</a>
+                            </div>
+                        </div>
+
+
+                    </form>
+                </section>
+            </div>
         </div>
-        <form action="{% url 'QueVideo:agregarArtefactoRecurso' %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
 
-                <input type="submit" value="Agregar Artefacto" class="btn btn-primary"/>
-                <a href="{% url 'QueVideo:index' %}" class="btn btn-secondary">Cancelar</a>
 
-        </form>
+        <br/>
+        <div class="card">
+            <div class="card-block">
+                <div class="card-title-block">
+                    <h3 class="title"> Artefactos </h3>
+                </div>
+                <section class="example">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Nombre</th>
+                            <th>Descripcion</th>
+                            <th>Archivo</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        {% for artefacto in artefactos %}
+                            <tr>
+                                <td>{{ artefacto.Tipo }}</td>
+                                <td>{{ artefacto.Nombre }}</td>
+                                <td>{{ artefacto.Descripcion }}</td>
+                                <td>{{ artefacto.Archivo }}</td>
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+        </div>
+
     </article>
 
 {% endblock %}

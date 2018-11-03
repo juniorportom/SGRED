@@ -10,6 +10,9 @@ from ftplib import FTP
 
 from django_tables2 import RequestConfig
 from rest_framework import viewsets
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
@@ -26,6 +29,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
 from django.contrib.auth.decorators import login_required
+
 
 # ###################################################SGRED#######################################################
 @login_required
@@ -50,6 +54,13 @@ def index(request):
 def static_tables(request):
     context = {'option': 'statictables'}
     return render(request, 'dashboard/static-tables.html', context)
+
+
+def entregablesRecursos(request, recursoId):
+    crudosList = Crudo.objects.filter(recurso_id=recursoId)
+    recurso = Recurso.objects.filter(idRecurso=recursoId).first()
+    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso}
+    return render(request, 'recursos/detalleEntregable.html', context)
 
 
 def crear_Recurso(request):
@@ -197,6 +208,7 @@ def crudo_details_download(request, crudoId):
         key = 'crudo' + crudoId
         status = request.session.get(key)
         return render(request, 'crudos/crudoDownload.html', {'crudo': crudo, 'status': status})
+
 
 # Methods of etapa, solicitud cambio etapa CRUD
 
@@ -477,11 +489,11 @@ def agregarArtefactoRecurso(request):
         form = ArtefactoRecursoForm(request.POST, request.FILES)
         if form.is_valid():
             artefacto = form.save()
-            messages.success(request, "Se Agrego Insumo de Diseño Correctamente", extra_tags="alert-success")
-        return HttpResponseRedirect(reverse('QueVideo:agregarInsumoRecurso'))
+            messages.success(request, "Se Agrego Artefacto de Diseño Correctamente", extra_tags="alert-success")
+        return HttpResponseRedirect(reverse('QueVideo:agregarArtefactoRecurso'), {'option': 'preproduccion'})
     else:
         form = ArtefactoRecursoForm()
-    return render(request, 'recursos/insumo.html', {'form': form})
+    return render(request, 'recursos/artefactos.html', {'form': form, 'option': 'preproduccion'})
 
 
 def getNotifications(request):
@@ -489,17 +501,20 @@ def getNotifications(request):
     RequestConfig(request).configure(table)
     return render(request, 'videos/solicitudes.html', {'table': table})
 
+
 def notificationsBadge(opt):
     if opt is True:
         return (Solicitud_CambioEstado.objects.all()).count()
     else:
         return (Solicitud_CambioEstado.objects.all())
 
+
 def solicitudes_list(request):
     sol = Solicitud_CambioEstado.objects.all()
     n = request.session.get('num_notif', '0')
     context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n}
     return render(request, 'solicitudes/listadoSolicitudes.html', context)
+
 
 # ---------------------------- SGRD-20 -----------------------------
 #     Como miembro de grupo debo poder consultar los recursos a los
@@ -521,10 +536,16 @@ class RecursosViewSet(viewsets.ModelViewSet):
 def actividades_view(request):
     return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
 
-
 def checkActividad(request, id):
     actividad = Actividad.objects.get(pk=id)
     actividad.Estado=True
     actividad.save()
     return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
 
+class RecursosList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'recursos/entregablesRecurso.html'
+
+    def get(self, request):
+        queryset = Recurso.objects.all().filter(estado='DONE')
+        return Response({'recursos': queryset})

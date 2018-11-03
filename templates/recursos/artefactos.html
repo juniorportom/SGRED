@@ -1,47 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Agregar Insumo Diseño</title>
-    {# Load the tag library #}
-    {% load bootstrap4 %}
-    {# Load CSS and JavaScript #}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-
-</head>
-<body>
-
-
-{% if messages %}
-    {% for message in messages %}
-        <div class="alert {{ message.tags }} float-message">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}<strong>ERROR: </strong> {% endif %}
-            {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}<strong>EXITOSO: </strong> {% endif %}
-            {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}<strong>INFORMACION: </strong> {% endif %}
-            {{ message }}
+{% extends 'dashboard/base.html' %}
+{% block body %}
+    <article class="content item-editor-page">
+        <div class="title-block">
+            <h3 class="title"> Artefacto
+                <span class="sparkline bar" data-type="bar"></span>
+            </h3>
         </div>
-    {% endfor %}
-{% endif %}
+        <form action="{% url 'QueVideo:agregarArtefactoRecurso' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
 
-{% block content %}
-    <div class="row">
-        <div class="col-md-6 col-sm-offset-3">
-            <div class="page-header">
-                <h2>Agregar Insumo</h2>
-            </div>
-            <form action="{% url 'QueVideo:agregarInsumoRecurso' %}" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                {% buttons %}
-                    <input type="submit" value="Agregar Insumo" class="btn btn-primary"/>
-                    <a href="{% url 'QueVideo:index' %}" class="btn btn-primary">Cancelar</a>
-                {% endbuttons %}
-            </form>
-        </div>
-    </div>
+                <input type="submit" value="Agregar Artefacto" class="btn btn-primary"/>
+                <a href="{% url 'QueVideo:index' %}" class="btn btn-secondary">Cancelar</a>
+
+        </form>
+    </article>
+
 {% endblock %}
 
-</body>
-</html>
+
+
+
+

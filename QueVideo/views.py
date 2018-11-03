@@ -10,6 +10,9 @@ from ftplib import FTP
 
 from django_tables2 import RequestConfig
 from rest_framework import viewsets
+from rest_framework.renderers import TemplateHTMLRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
@@ -26,6 +29,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
 from django.contrib.auth.decorators import login_required
+
 
 # ###################################################SGRED#######################################################
 @login_required
@@ -50,6 +54,13 @@ def index(request):
 def static_tables(request):
     context = {'option': 'statictables'}
     return render(request, 'dashboard/static-tables.html', context)
+
+
+def entregablesRecursos(request, recursoId):
+    crudosList = Crudo.objects.filter(recurso_id=recursoId)
+    recurso = Recurso.objects.filter(idRecurso=recursoId).first()
+    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso}
+    return render(request, 'recursos/detalleEntregable.html', context)
 
 
 def crear_Recurso(request):
@@ -112,7 +123,7 @@ def edit_actividad(request, id):
         form = ActividadEditForm(data=request.POST, instance=instance)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(reverse('QueVideo:proyecto'))
+        return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
 
     else:
         # actividad = Actividad.objects.get(IdActividad=request.actividad.IdActividad)
@@ -197,6 +208,7 @@ def crudo_details_download(request, crudoId):
         key = 'crudo' + crudoId
         status = request.session.get(key)
         return render(request, 'crudos/crudoDownload.html', {'crudo': crudo, 'status': status})
+
 
 # Methods of etapa, solicitud cambio etapa CRUD
 
@@ -357,26 +369,28 @@ def solicitud_cambio_estado_detail(request, pk):
 # 1. Registro el cambio de Estado de etapa DONE, WAITING, PROCESS>> Registro el DONE
 # DONE >> el estado actual del recurso esta completado
 # WAITING >> el estado actual del recurso esta en espera de ser comenzado
-# PROCESS >> el estado actual del recurso esta en desarrollo
+# PROCESS >> el estado actual del recuedit_actividadrso esta en desarrollo
 
 @csrf_exempt
 def cambioEstadoEtapa(request, pk):
+    print "entra al servicio"
     try:
-        etapa = Etapa.objects.get(idEtapa=pk)
+        recurso = Recurso.objects.get(idRecurso=pk)
+        etapaActual = recurso.etapa
+        etapaSiguiente = etapaActual.siguiente_etapa
     except Etapa.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'PUT':
-        nuevoEstado = json.loads(request.body)
-        estado = nuevoEstado['estado']
-        etapa.estado = estado
-        etapa.save()
-        return JsonResponse({"idEtapa": etapa.idEtapa,
-                             "nombre": etapa.nombre,
-                             "estado": etapa.estado,
-                             "fecha_inicio": etapa.fecha_inicio,
-                             "fecha_fin": etapa.fecha_fin,
-                             "etapa_type": etapa.etapa_type}, status=201)
+        if etapaSiguiente is not None:
+            recurso.etapa = etapaSiguiente
+        recurso.save()
+        return JsonResponse({"idEtapa": etapaSiguiente.idEtapa,
+                             "estado": etapaSiguiente.estado,
+                             "fecha_inicio": etapaSiguiente.fecha_inicio,
+                             "fecha_fin": etapaSiguiente.fecha_fin,
+                             "etapa_anterior": etapaActual.etapa_type,
+                             "nueva_etapa": etapaSiguiente.etapa_type}, status=201)
         return HttpResponse(status=404)
 
 
@@ -475,11 +489,11 @@ def agregarArtefactoRecurso(request):
         form = ArtefactoRecursoForm(request.POST, request.FILES)
         if form.is_valid():
             artefacto = form.save()
-            messages.success(request, "Se Agrego Insumo de Diseño Correctamente", extra_tags="alert-success")
-        return HttpResponseRedirect(reverse('QueVideo:agregarInsumoRecurso'))
+            messages.success(request, "Se Agrego Artefacto de Diseño Correctamente", extra_tags="alert-success")
+        return HttpResponseRedirect(reverse('QueVideo:agregarArtefactoRecurso'), {'option': 'preproduccion'})
     else:
         form = ArtefactoRecursoForm()
-    return render(request, 'recursos/insumo.html', {'form': form})
+    return render(request, 'recursos/artefactos.html', {'form': form, 'option': 'preproduccion'})
 
 
 def getNotifications(request):
@@ -487,17 +501,20 @@ def getNotifications(request):
     RequestConfig(request).configure(table)
     return render(request, 'videos/solicitudes.html', {'table': table})
 
+
 def notificationsBadge(opt):
     if opt is True:
         return (Solicitud_CambioEstado.objects.all()).count()
     else:
         return (Solicitud_CambioEstado.objects.all())
 
+
 def solicitudes_list(request):
     sol = Solicitud_CambioEstado.objects.all()
     n = request.session.get('num_notif', '0')
     context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n}
     return render(request, 'solicitudes/listadoSolicitudes.html', context)
+
 
 # ---------------------------- SGRD-20 -----------------------------
 #     Como miembro de grupo debo poder consultar los recursos a los
@@ -518,3 +535,17 @@ class RecursosViewSet(viewsets.ModelViewSet):
 
 def actividades_view(request):
     return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
+
+def checkActividad(request, id):
+    actividad = Actividad.objects.get(pk=id)
+    actividad.Estado=True
+    actividad.save()
+    return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
+
+class RecursosList(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'recursos/entregablesRecurso.html'
+
+    def get(self, request):
+        queryset = Recurso.objects.all().filter(estado='DONE')
+        return Response({'recursos': queryset})

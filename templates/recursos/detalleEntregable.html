@@ -1,0 +1,77 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+
+
+    <article class="content item-editor-page">
+        <div class="title-block">
+            <h3 class="title"> Entregables - {{ recurso.nombre }}
+                <span class="sparkline bar" data-type="bar"></span>
+
+            </h3>
+            {{ recurso.descripcion }}
+        </div>
+        <form name="item">
+            <div class="card card-block">
+
+                <div class="card">
+                    <div class="card-block">
+                        <div class="card-title-block">
+                            <h3 class="title"> Crudos</h3>
+                        </div>
+                        <section class="example">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Nombre</th>
+                                    <th>Archivo</th>
+                                    <th>URL</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                {% for crudo in crudos %}
+                                    <tr>
+                                        <td>{% if  crudo.Tipo   == 'V' %}
+                                            <i class="fa fa-file-video-o" style=" font-size: 35px"
+                                               title="VIDEO"></i>{% endif %}</td>
+                                        <td>{{ crudo.Nombre }}</td>
+                                        <td>{{ crudo.Archivo }}</td>
+                                        <td>{{ crudo.url }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-block">
+                        <div class="card-title-block">
+                            <h3 class="title"> {{ recurso.nombre }}</h3>
+                            <hr style="border-color: #000000"/>
+                        </div>
+                        <section class="example">
+                            <center>
+                                <div id="idFrame" style="align-content: center">
+                                    <iframe id="player" class="embed-responsive-item" width="500" height="400"
+                                            src="https://www.youtube.com/embed/EYEkFkhkOes?enablejsapi=1"></iframe>
+                                </div>
+                            </center>
+                        </section>
+                    </div>
+                </div>
+
+                <hr style="border-color: #000000"/>
+                <div class="form-group row">
+                    <div class="col-sm-12 " style="text-align:right ">
+                        <a href="{% url 'QueVideo:entregablesRecurso' %}" class="btn btn-primary">Regresar</a>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </article>
+
+{% endblock %}

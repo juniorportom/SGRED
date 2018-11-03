@@ -22,7 +22,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <!-- Place favicon.ico in the root directory -->
+    <script>
+        function cambiarEtapa(){
+            var SendInfo= {"idEtapa":2,
+                    "fecha_fin":"2018-06.25T14:30:59Z",
+                    "fecha_inicio":"2018-06.25T14:30:59Z",
+                    "nombre":"produccion",
+                    "estado":"DONE",
+                    "etapa_type":"Pro"};
+             $.ajax({
+              url: '../cambioEstadoEtapa/1/',
+              data: JSON.stringify(SendInfo),
+              contentType: "application/json; charset=utf-8",
+              type: 'PUT',
+              success: function(data) {
+                alert('El recurso cambió de etapa: ' + data.etapa_anterior + " -> " + data.nueva_etapa);
+              },
+              error: function(data) {
+                alert('El recurso se encuentra en la última etapa');
+              }
+            });
+        }
 
+    </script>
 
 </head>
 <body>
@@ -46,16 +68,17 @@
 
             <div class="header-block header-block-nav">
                 <ul class="nav-profile">
-                    <li >
+                    <li>
                         <i class="fa fa-area-chart"></i> Recurso Actual: {{ request.session.recurso_actual }}
                         <i class="fa arrow"></i>
+                        <a href="javascript:cambiarEtapa()">Cambiar estado</a>
                     </li>
                     <li class="notifications new">
                         <a href="" data-toggle="dropdown">
                             <i class="fa fa-bell-o"></i>
                             <sup>
                                 <span class="counter">
-                                    {{n_number}}
+                                    {{ n_number }}
                                 </span>
                             </sup>
                         </a>
@@ -64,7 +87,8 @@
                                 {% if listNotif %}
                                     {% for notif in listNotif %}
                                         <li class="alert alert-success-dismissible">
-                                        <a href="{% url 'QueVideo:verSolicitudes' %}"> {{ notif.solicitadoPor }} realizo una solicitud de cambio de etapa </a>
+                                            <a href="{% url 'QueVideo:verSolicitudes' %}"> {{ notif.solicitadoPor }}
+                                                realizo una solicitud de cambio de etapa </a>
                                         </li>
                                     {% endfor %}
                                 {% endif %}
@@ -137,7 +161,8 @@
                 <div class="sidebar-header">
                     <div class="brand">
                         <div class="logo">
-                            <img src="{% static 'dashboard/imagenes/Logo_andes.png' %}" alt="Andes" width="55" height="45" style="vertical-align: top !important;">
+                            <img src="{% static 'dashboard/imagenes/Logo_andes.png' %}" alt="Andes" width="55"
+                                 height="45" style="vertical-align: top !important;">
                             {% comment %}<span class="l l1"></span>
                             <span class="l l2"></span>
                             <span class="l l3"></span>
@@ -170,10 +195,13 @@
                         </li>
                         <li {% if option == 'preproduccion' %}class="active open"{% endif %}>
                             <a href="">
-                                <i class="fa fa-sitemap"></i> Pre-produccion
+                                <i class="fa fa-sitemap"></i> Pre-Producción
                                 <i class="fa arrow"></i>
                             </a>
                             <ul class="sidebar-nav">
+                                <li>
+                                    <a href="{% url 'QueVideo:agregarArtefactoRecurso' %}"> Artefactos </a>
+                                </li>
                                 <li>
                                     <a href="#"> Plan de logistica
                                         <i class="fa arrow"></i>
@@ -182,9 +210,7 @@
                                         <li>
                                             <a href="/actividades/"> Actividades </a>
                                         </li>
-                                        <li>
-                                            <a href="#"> Artefactos </a>
-                                        </li>
+
                                         <li>
                                             <a href="#"> Equipo</a>
                                         </li>
@@ -206,6 +232,19 @@
                                 </li>
                             </ul>
                         </li>
+
+                        <li {% if option == 'postproduccion' %}class="active open"{% endif %}>
+                            <a href="">
+                                <i class="fa fa-desktop"></i> <span id="postproduccionSpan">Post-Producción</span>
+                                <i class="fa arrow"></i>
+                            </a>
+                            <ul class="sidebar-nav">
+                                <li>
+                                    <a href="{% url 'QueVideo:entregablesRecurso' %}"> Entregables </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         <!--li>
                             <a href="forms.html">
                                 <i class="fa fa-pencil-square-o"></i> Forms </a>
@@ -511,32 +550,32 @@
                 <!-- /.modal-content -->
             </div>
             <!-- /.modal-dialog -->
-    </div>
-    <!-- /.modal -->
-    <div class="modal fade" id="confirm-modal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">
-                        <i class="fa fa-warning"></i> Alert</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure want to do this?</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
-                </div>
-            </div>
-            <!-- /.modal-content -->
         </div>
-        <!-- /.modal-dialog -->
+        <!-- /.modal -->
+        <div class="modal fade" id="confirm-modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">
+                            <i class="fa fa-warning"></i> Alert</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure want to do this?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Yes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
     </div>
-    <!-- /.modal -->
-</div>
 </div>
 <!-- Reference block for JS -->
 <div class="ref" id="ref">

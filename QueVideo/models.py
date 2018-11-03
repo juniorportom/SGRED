@@ -25,6 +25,7 @@ class Actividad(models.Model):
     Observaciones = models.CharField(max_length=255)
     Lugar = models.CharField(max_length=255)
     PlanLogistica = models.ForeignKey(PlanLogistica)
+    Estado= models.BooleanField(default=False)
 
     # ---------------------------- SGRD-18-----------------------------
     #     Como Asesor/Gestor RED debo poder realizar un avance
@@ -58,9 +59,10 @@ class Etapa(models.Model):
     fecha_inicio = models.DateTimeField(default=datetime.now)
     fecha_fin = models.DateTimeField('fecha de finalizacion no definida', blank=True, null=True)
     etapa_type = models.CharField(max_length=255, choices=ETAPA_TYPE)
+    siguiente_etapa = models.ForeignKey("self", blank=True, null=True)
 
     def __unicode__(self):
-        return self.nombre
+        return self.etapa_type
 
 
 TIPO_RECURSO = (
@@ -89,10 +91,10 @@ class Recurso(models.Model):
     estado = models.CharField(max_length=255, choices=ESTADO_TYPE)
     proyecto = models.CharField(max_length=255)
     fechaCreacion = models.DateTimeField(default=datetime.now)
-    etapa = models.CharField(max_length=255, choices=ETAPA_TYPE)
+    etapa = models.ForeignKey(Etapa, on_delete=models.CASCADE, blank=True, null=False)
 
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    etapa_history = models.ForeignKey(Etapa, on_delete=models.CASCADE, blank=True, null=True)
+    #etapa_history = models.ForeignKey(Etapa, on_delete=models.CASCADE, blank=True, null=True)
     solicitud_cambio = models.ForeignKey(Solicitud_CambioEstado, on_delete=models.CASCADE, blank=True, null=True)
     Tipo = models.CharField(max_length=255, choices=TIPO_RECURSO, default='VD')
 

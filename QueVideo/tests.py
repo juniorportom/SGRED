@@ -1,8 +1,5 @@
-from _future_ import unicode_literals
 
-from django.test import TestCase
-
-_author_ = 'Joan Torres - Andres Ortiz - Daniel Hurtado'
+_author_ = 'Joan Torres - Andres Ortiz - Danny Hurtado'
 
 from unittest import TestCase
 from selenium import webdriver
@@ -20,7 +17,7 @@ class Sgrd105FunctionalTest(TestCase):
     # https://www.seleniumhq.org/download/
 
     def setUp(self):
-        chromedriver = 'D:\\chromedriver_win32\\chromedriver.exe'
+        chromedriver ='/usr/local/bin/chromedriver'
         self.browser = webdriver.Chrome(chromedriver)
         self.browser.implicitly_wait(3)
 
@@ -29,13 +26,11 @@ class Sgrd105FunctionalTest(TestCase):
 
 
     def test_activity_check_link_location(self):
-        self.browser.get('http://localhost:8000/actividades/')
-        self.browser.implicitly_wait(3)
-        botonMenu = self.browser.find_element_by_id('checkAct')
-        botonMenu.click()
-
+        self.browser.get('http://localhost:8090/actividades/')
+        self.browser.implicitly_wait(5)
         span = WebDriverWait(self.browser, 5).until(
             EC.visibility_of_element_located((By.ID, "activitySpan")))
-        span.click()
+        # span.click()
 
-        self.assertIn('Done', span.text)
+        self.assertEquals('Done', span.text)
+

@@ -46,10 +46,18 @@
                         '   </div>\n' +
                         '   <div class="item-col fixed item-col-check">\n' +
                         '       <div class="item-heading">Editar</div>\n' +
-                        '       <div>\n' +
                         '           <h4 class="no-overflow">' +
                         '               <a class="edit" href="../editarActividad/' + item.pk + '" >' +
                         '                   <i class="fa fa-pencil"/>' +
+                        '               </a>\n' +
+                        '           </h4>\n'+
+                        '       </div>\n' +
+                        '   </div>\n' +
+                        '   <div class="item-col fixed item-col-check">\n' +
+                        '       <div class="item-heading">Completada</div>\n' +
+                        '           <h4 class="no-overflow">' +
+                        '               <a class="check" id="checkAct" href="../checkActividad/' + item.pk + '" >  <span id="activitySpan">' +
+                        '                   <i class="fa fa-check"/>Done</span> '+
                         '               </a>\n' +
                         '           </h4>\n' +
                         '       </div>\n' +
@@ -104,9 +112,14 @@
                                 <span>Lugar</span>
                             </div>
                         </div>
-                        <div class="item-col item-col-header item-col-sales">
+                        <div class="item-col item-col-header item-col-title">
                             <div>
                                 <span>Editar</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>Completada</span>
                             </div>
                         </div>
                     </div>

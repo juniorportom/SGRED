@@ -14,8 +14,27 @@
                 {
                     num = num +1;
                     var f = new Date(item.fields.Fecha);
+                    var edit = '<h4 class="no-overflow">' +
+                        '               <a class="edit" href="/editarActividad/' + item.pk + '" >' +
+                        '                   <i class="fa fa-pencil"/>' +
+                        '               </a>\n' +
+                        '           </h4>\n'
+
+                    var texto = ' <a class="check" id="checkAct" href="/checkActividad/'+ item.pk + '" >' +
+                                           '<span id="activitySpan" onClick="notifyUser()">' +
+                                           '<i class="fa"/>Done</span> '+
+                                           '</a>\n '
+                    if (item.fields.Estado==true){
+                        texto=' <a class="check" id="checkAct"  >' +
+                                           '<span id="activitySpan" onClick="notifyUser()">' +
+                                           '<i class="fa fa-check"/>Completada</span> '+
+                                           '</a>\n '
+
+                        edit = ''
+                    }
 
                     $("#actividades_ul").append(
+
                         '<li class="item">\n' +
                         '<div class="item-row">\n'+
                         '   <div class="item-col fixed pull-left item-col-check">\n' +
@@ -50,21 +69,14 @@
                         '   </div>\n' +
                         '   <div class="item-col fixed item-col-check">\n' +
                         '       <div class="item-heading">Editar</div>\n' +
-                        '           <h4 class="no-overflow">' +
-                        '               <a class="edit" href="../editarActividad/' + item.pk + '" >' +
-                        '                   <i class="fa fa-pencil"/>' +
-                        '               </a>\n' +
-                        '           </h4>\n'+
+                                  edit+
                         '       </div>\n' +
                         '   </div>\n' +
                         '   <br>\n' +
                         '   <div class="item-col fixed item-col-title">\n' +
                         //'       <div class="item-heading">Completada</div>\n' +
                         '           <h4 class="no-overflow">' +
-                        '               <a class="check" id="checkAct" ' + item.pk + '" >' +
-                        '                   <span id="activitySpan" onClick="notifyUser()">' +
-                        '                   <i class="fa fa-check"/> &nbsp; Completada</span> '+
-                        '               </a>\n' +
+                                      texto+
                         '           </h4>\n' +
                         //'       </div>\n' +
                         '   </div>\n' +

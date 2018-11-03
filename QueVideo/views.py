@@ -492,3 +492,11 @@ class RecursosViewSet(viewsets.ModelViewSet):
 
 def actividades_view(request):
     return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
+
+
+def checkActividad(request, id):
+    actividad = Actividad.objects.get(pk=id)
+    actividad.Estado=True
+    actividad.save()
+    return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
+

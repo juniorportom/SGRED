@@ -29,4 +29,5 @@ urlpatterns = [
     url(r'^static-tables/$', views.static_tables, name='static-tables'),
     url(r'^agregarArtefactoRecurso/$', views.agregarArtefactoRecurso, name='agregarArtefactoRecurso'),
     url(r'^agregarPlanLogistica/$', views.agregarPlanLogistica, name='agregarPlanLogistica'),
+    url(r'^checkActividad/(?P<id>\d+)$', views.checkActividad, name='checkActividad'),
 ]

@@ -1,6 +1,4 @@
-
-_author_ = 'Joan Torres - Andres Ortiz - Danny Hurtado'
-
+author = 'Joan Torres - Andres Ortiz - Danny Hurtado'
 from unittest import TestCase
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
@@ -24,13 +22,31 @@ class Sgrd105FunctionalTest(TestCase):
     def tearDown(self):
         self.browser.quit()
 
-
     def test_activity_check_link_location(self):
         self.browser.get('http://localhost:8090/actividades/')
-        self.browser.implicitly_wait(5)
+
+        self.browser.implicitly_wait(3)
         span = WebDriverWait(self.browser, 5).until(
             EC.visibility_of_element_located((By.ID, "activitySpan")))
         # span.click()
 
         self.assertEquals('Done', span.text)
+
+    def test_notification_message(self):
+        self.browser.get('http://localhost:8090/actividades/')
+        self.browser.implicitly_wait(3)
+
+        nofication = WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.ID, "notify")))
+
+        self.assertEquals('Actividad completada', nofication.text)
+
+    def test_change_done(self):
+            self.browser.get('http://localhost:8090/actividades/')
+            self.browser.implicitly_wait(3)
+            span = WebDriverWait(self.browser, 5).until(
+                EC.visibility_of_element_located((By.ID, "activitySpan")))
+            # span.click()
+
+            self.assertEquals('Completada', span.text)
 

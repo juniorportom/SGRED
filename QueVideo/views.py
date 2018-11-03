@@ -113,7 +113,7 @@ def edit_actividad(request, id):
         form = ActividadEditForm(data=request.POST, instance=instance)
         if form.is_valid():
             form.save()
-        return HttpResponseRedirect(reverse('QueVideo:proyecto'))
+        return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
 
     else:
         # actividad = Actividad.objects.get(IdActividad=request.actividad.IdActividad)
@@ -522,3 +522,11 @@ class RecursosViewSet(viewsets.ModelViewSet):
 
 def actividades_view(request):
     return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
+
+
+def checkActividad(request, id):
+    actividad = Actividad.objects.get(pk=id)
+    actividad.Estado=True
+    actividad.save()
+    return render(request, 'recursos/actividades.html', {'option': 'preproduccion'})
+

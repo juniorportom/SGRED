@@ -33,6 +33,10 @@ urlpatterns = [
     url(r'^agregarArtefactoRecurso/$', views.agregarArtefactoRecurso, name='agregarArtefactoRecurso'),
     url(r'^agregarPlanLogistica/$', views.agregarPlanLogistica, name='agregarPlanLogistica'),
 
+
     url('verSolicitudes', views.solicitudes_list, name='verSolicitudes'),
     url('recursosAsociados', views.getViewRecursosAsignados, name='verRecursosAsociados'),
+
+    url(r'^checkActividad/(?P<id>\d+)$', views.checkActividad, name='checkActividad'),
+
 ]

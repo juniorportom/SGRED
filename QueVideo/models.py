@@ -25,6 +25,7 @@ class Actividad(models.Model):
     Observaciones = models.CharField(max_length=255)
     Lugar = models.CharField(max_length=255)
     PlanLogistica = models.ForeignKey(PlanLogistica)
+    Estado= models.BooleanField(default=False)
 
     # ---------------------------- SGRD-18-----------------------------
     #     Como Asesor/Gestor RED debo poder realizar un avance

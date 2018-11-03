@@ -22,7 +22,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
     <!-- Place favicon.ico in the root directory -->
+    <script>
+        function cambiarEtapa(){
+            var SendInfo= {"idEtapa":2,
+                    "fecha_fin":"2018-06.25T14:30:59Z",
+                    "fecha_inicio":"2018-06.25T14:30:59Z",
+                    "nombre":"produccion",
+                    "estado":"DONE",
+                    "etapa_type":"Pro"};
+             $.ajax({
+              url: '../cambioEstadoEtapa/1/',
+              data: JSON.stringify(SendInfo),
+              contentType: "application/json; charset=utf-8",
+              type: 'PUT',
+              success: function(data) {
+                alert('Load was performed.');
+              },
+              error: function(data) {
+                alert('Error ' + data.responseText);
+              }
+            });
+        }
 
+    </script>
 
 </head>
 <body>
@@ -49,6 +71,7 @@
                     <li >
                         <i class="fa fa-area-chart"></i> Recurso Actual: {{ request.session.recurso_actual }}
                         <i class="fa arrow"></i>
+                        <a href="javascript:cambiarEtapa()">Cambiar estado</a>
                     </li>
                     <li class="notifications new">
                         <a href="" data-toggle="dropdown">

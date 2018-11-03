@@ -60,7 +60,7 @@ class Etapa(models.Model):
     etapa_type = models.CharField(max_length=255, choices=ETAPA_TYPE)
 
     def __unicode__(self):
-        return self.nombre
+        return str(self.idEtapa)
 
 
 TIPO_RECURSO = (

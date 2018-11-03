@@ -41,6 +41,7 @@ def index(request):
     if recursoActual is not None:
         request.session['recurso_actual'] = recursoActual.nombre
         request.session['recurso_actual_id'] = recursoActual.idRecurso
+        request.session['recurso_actual_etapa'] = recursoActual.etapa
     else:
         request.session['recurso_actual'] = ''
         request.session['recurso_actual_id'] = ''
@@ -357,22 +358,25 @@ def solicitud_cambio_estado_detail(request, pk):
 # 1. Registro el cambio de Estado de etapa DONE, WAITING, PROCESS>> Registro el DONE
 # DONE >> el estado actual del recurso esta completado
 # WAITING >> el estado actual del recurso esta en espera de ser comenzado
-# PROCESS >> el estado actual del recurso esta en desarrollo
+# PROCESS >> el estado actual del recuedit_actividadrso esta en desarrollo
 
 @csrf_exempt
 def cambioEstadoEtapa(request, pk):
+    print "entra al servicio"
     try:
-        etapa = Etapa.objects.get(idEtapa=pk)
+        #etapa = Etapa.objects.get(idEtapa=pk)
+        recurso = Recurso.objects.get(idRecurso=pk)
+        etapa = Etapa.objects.get(etapa_type=recurso.etapa)
     except Etapa.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'PUT':
-        nuevoEstado = json.loads(request.body)
-        estado = nuevoEstado['estado']
+        nuevaEtapa = json.loads(request.body)
+        print nuevaEtapa
+        estado = nuevaEtapa
         etapa.estado = estado
         etapa.save()
         return JsonResponse({"idEtapa": etapa.idEtapa,
-                             "nombre": etapa.nombre,
                              "estado": etapa.estado,
                              "fecha_inicio": etapa.fecha_inicio,
                              "fecha_fin": etapa.fecha_fin,

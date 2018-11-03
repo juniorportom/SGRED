@@ -24,7 +24,6 @@ class Sgrd105FunctionalTest(TestCase):
     def tearDown(self):
         self.browser.quit()
 
-
     def test_activity_check_link_location(self):
         self.browser.get('http://localhost:8090/actividades/')
         self.browser.implicitly_wait(5)
@@ -34,3 +33,17 @@ class Sgrd105FunctionalTest(TestCase):
 
         self.assertEquals('Done', span.text)
 
+    def test_notification_message(self):
+        self.browser.get('http://localhost:8000/actividades/')
+        self.browser.implicitly_wait(3)
+        botonMenu = self.browser.find_element_by_id('checkAct')
+        botonMenu.click()
+
+        span = WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.ID, "activitySpan")))
+        span.click()
+
+        nofication = WebDriverWait(self.browser, 5).until(
+            EC.visibility_of_element_located((By.ID, "notify")))
+
+        self.assertIn('Actividad completada', nofication.text)

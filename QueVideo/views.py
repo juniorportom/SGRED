@@ -14,10 +14,10 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm
+from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
 from QueVideo.tables import SolicitudesTable
-from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto
+from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 
@@ -557,3 +557,17 @@ class RecursosList(APIView):
     def get(self, request):
         queryset = Recurso.objects.all().filter(estado='DONE')
         return Response({'recursos': queryset})
+
+# ---------------------------- SGRD-74 -----------------------------
+# crear una solicitud de control de calidad
+
+def SolicitudControlCalidad(request):
+    if request.method == 'POST':
+        form = ticketCalidadForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return HttpResponseRedirect(reverse('QueVideo:SolicitudControlCalidad'))
+    else:
+        ultimoEntregable = Entregable.objects.latest('IdEntregable')
+        form = ticketCalidadForm(initial={'Estado': 'PROCESS', 'Entregable': ultimoEntregable.IdEntregable})
+        return render(request, 'controlCalidad/solicitudControlCalidad.html', {'form': form, 'option': 'controlCalidad'})

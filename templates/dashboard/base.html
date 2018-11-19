@@ -245,6 +245,18 @@
                             </ul>
                         </li>
 
+                        <li {% if option == 'controlCalidad' %}class="active open"{% endif %}>
+                            <a href="">
+                                <i class="fa fa-bar-chart"></i> <span id="controlCalidadSpan">Control Calidad</span>
+                                <i class="fa arrow"></i>
+                            </a>
+                            <ul class="sidebar-nav">
+                                <li>
+                                    <a href="{% url 'QueVideo:SolicitudControlCalidad' %}"> Crear Solicitud </a>
+                                </li>
+                            </ul>
+                        </li>
+
                         <!--li>
                             <a href="forms.html">
                                 <i class="fa fa-pencil-square-o"></i> Forms </a>

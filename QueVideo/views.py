@@ -14,10 +14,10 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm
+from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, ticketSearchForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
 from QueVideo.tables import SolicitudesTable
-from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable
+from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable, ticketCalidad
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 
@@ -29,6 +29,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
 from django.contrib.auth.decorators import login_required
+
+from django.contrib.postgres.search import SearchQuery, SearchVector
 
 
 # ###################################################SGRED#######################################################
@@ -571,3 +573,19 @@ def SolicitudControlCalidad(request):
         ultimoEntregable = Entregable.objects.latest('IdEntregable')
         form = ticketCalidadForm(initial={'Estado': 'PROCESS', 'Entregable': ultimoEntregable.IdEntregable})
         return render(request, 'controlCalidad/solicitudControlCalidad.html', {'form': form, 'option': 'controlCalidad'})
+
+def ListaControlCalidad(request, filtro="Completo"):
+    tickets = ticketCalidad.objects.all()
+    if filtro != "Completo":
+        tickets = ticketCalidad.objects.filter(Estado=filtro)
+    # validate no query string has been sent
+    queryString = request.GET.get('query', '')
+    if (queryString != ''):
+        #this depends on database configs, see https://stackoverflow.com/questions/42421706/django-combining-unaccent-and-search-lookups
+        tickets = tickets.annotate(search=SearchVector('ComentarioApertura', config='unaccent')).filter(search=SearchQuery(queryString, config='unaccent'))
+    form = ticketSearchForm()
+    return render(request, 'controlCalidad/listaControlCalidad.html',
+                  {'ticket_list': tickets,
+                   'filtro': filtro,
+                   'option': 'controlCalidad',
+                   'searchForm': form})

@@ -42,5 +42,7 @@ urlpatterns = [
     url(r'^detalleEntregablesRecurso/(?P<recursoId>\d+)/$', views.entregablesRecursos, name='detalleEntregablesRecurso'),
 
     url('SolicitudControlCalidad/', views.SolicitudControlCalidad, name='SolicitudControlCalidad'),
+    url(r'ListaControlCalidad/(?P<filtro>\w+)/$', views.ListaControlCalidad, name='ListaControlCalidadFiltrado'),
+    url('ListaControlCalidad/', views.ListaControlCalidad, name='ListaControlCalidadCompleto'),
 
 ]

@@ -47,9 +47,26 @@ def index(request):
     if recursoActual is not None:
         request.session['recurso_actual'] = recursoActual.nombre
         request.session['recurso_actual_id'] = recursoActual.idRecurso
+
+        act = recursoActual.etapa.etapa_type
+        print act
+        if act == 'Pre':
+            request.session['etapa_recurso'] = 'Pre-Produccion'
+        elif act == 'Pro':
+            request.session['etapa_recurso'] = 'Produccion'
+        elif act == 'Pos':
+            request.session['etapa_recurso'] = 'Post-Produccion'
+        elif act == 'CC':
+            request.session['etapa_recurso'] = ' Control de calidad'
+        elif act == 'CP':
+            request.session['etapa_recurso'] = 'Cierre de proyecto'
+        elif act == 'SR':
+            request.session['etapa_recurso'] = 'Sistematización y resguardo'
+
     else:
         request.session['recurso_actual'] = ''
         request.session['recurso_actual_id'] = ''
+        request.session['etapa_recurso'] = ''
     return render(request, 'dashboard/index.html', context)
 
 

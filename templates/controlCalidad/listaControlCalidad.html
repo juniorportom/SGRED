@@ -1,0 +1,31 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+    <article class="content items-list-page">
+        <div class="title-search-block">
+                <div class="title-block">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h3 class="title"> Listado de Requerimientos de control de calidad
+                                <a href="{% url 'QueVideo:ListaControlCalidadFiltrado' 'DONE'%}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Filtrar Completados </a>
+                                <a href="{% url 'QueVideo:ListaControlCalidadFiltrado' 'PROCESS'%}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Filtrar Pendientes </a>
+                            </h3>
+                            <form action="{% url 'QueVideo:ListaControlCalidadCompleto' %}" method="get">
+                                {{ searchForm.as_p }}
+                                <input type="submit" value="Buscar">
+                            </form>
+                            <p id="list_description" class="title-description"> Muestra las solicitudes de control de calidad asociadas al producto del recurso:  </p> <span> {{ request.session.recurso_actual }}</span>
+                            <p id="status" class="title-description"> filtro aplicado  </p> <span> {{ filtro }}</span>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <ul>
+            {% for ticket in ticket_list %}
+                <li>{{ ticket.ComentarioApertura }} | {{ ticket.Estado }}</li>
+            {% empty %}
+                <p> El párametro de busqueda no generó resutados </p>
+            {% endfor %}
+        </ul>
+    </article>
+{% endblock %}

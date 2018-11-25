@@ -43,4 +43,6 @@ urlpatterns = [
 
     url(r'^SolicitudControlCalidad/', views.SolicitudControlCalidad, name='SolicitudControlCalidad'),
     url(r'^listSolicitudControlCalidad/', views.ListarSolicitudesControlCalidad, name='listSolicitudControlCalidad'),
+    url(r'ListaControlCalidad/(?P<filtro>\w+)/$', views.ListaControlCalidad, name='ListaControlCalidadFiltrado'),
+    url('ListaControlCalidad/', views.ListaControlCalidad, name='ListaControlCalidadCompleto')
 ]

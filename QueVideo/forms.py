@@ -91,7 +91,8 @@ class ticketCalidadForm(ModelForm):
         }
         fields = ["Responsable", "Estado", "ComentarioApertura", "Entregable"]
 
-
+class ticketSearchForm(forms.Form):
+    query = forms.CharField(label='Busqueda', max_length=250)
 
 class RecursoForm(APIView):
     renderer_classes = [TemplateHTMLRenderer]

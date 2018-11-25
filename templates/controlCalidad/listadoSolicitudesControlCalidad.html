@@ -1,102 +1,11 @@
 {% extends 'dashboard/base.html' %}
 {% block body %}
-    <script>
-    function notifyUser() {
-          document.getElementById("notify").innerHTML = "Actividad completada";
-        };
-
-        (function()
-        {
-            $.getJSON("../planLogistica/1/actividades/").done(function (data)
-            {
-                var num = 0;
-                $.each(data, function (i, item)
-                {
-                    num = num +1;
-                    var f = new Date(item.fields.Fecha);
-                    var edit = '<h4 class="no-overflow">' +
-                        '               <a class="edit" href="/editarActividad/' + item.pk + '" >' +
-                        '                   <i class="fa fa-pencil"/>' +
-                        '               </a>\n' +
-                        '           </h4>\n'
-
-                    var texto = ' <a class="check" id="checkAct" href="/checkActividad/'+ item.pk + '" >' +
-                                           '<span id="activitySpan" onClick="notifyUser()">' +
-                                           '<i class="fa"/>Done</span> '+
-                                           '</a>\n '
-                    if (item.fields.Estado==true){
-                        texto=' <a class="check" id="checkAct"  >' +
-                                           '<span id="activitySpan" onClick="notifyUser()">' +
-                                           '<i class="fa fa-check"/>Completada</span> '+
-                                           '</a>\n '
-
-                        edit = ''
-                    }
-
-                    $("#actividades_ul").append(
-
-                        '<li class="item">\n' +
-                        '<div class="item-row">\n'+
-                        '   <div class="item-col fixed pull-left item-col-check">\n' +
-                        '       <div class="item-heading">#</div>\n' +
-                        '       <div>\n' +
-                        '           <h4 class="item-title">' + num + '</h4>\n' +
-                        '       </div>\n' +
-                        '   </div>\n' +
-                        '   <div class="item-col fixed item-col-title">\n' +
-                        '       <div class="item-heading">Fecha</div>\n' +
-                        '       <div>\n' +
-                        '           <h4 class="no-overflow">' + f.toLocaleDateString('es-CO') + '</h4>\n' +
-                        '       </div>\n' +
-                        '   </div>\n' +
-                        '   <div class="item-col fixed item-col-title">\n' +
-                        '       <div class="item-heading">Escena</div>\n' +
-                        '       <div>\n' +
-                        '           <h4 class="no-overflow">' + item.fields.Video + '</h4>\n' +
-                        '       </div>\n' +
-                        '   </div>\n' +
-                        '   <div class="item-col fixed item-col-title">\n' +
-                        '       <div class="item-heading">Observaciones</div>\n' +
-                        '       <div>\n' +
-                        '           <h4 class="no-overflow">' + item.fields.Observaciones + '</h4>\n' +
-                        '       </div>\n' +
-                        '   </div>\n' +
-                        '   <div class="item-col fixed item-col-title">\n' +
-                        '       <div class="item-heading">Lugar</div>\n' +
-                        '       <div>\n' +
-                        '           <h4 class="no-overflow">' + item.fields.Lugar + '</h4>\n' +
-                        '       </div>\n' +
-                        '   </div>\n' +
-                        '   <div class="item-col fixed item-col-check">\n' +
-                        '       <div class="item-heading">Editar</div>\n' +
-
-                                  edit+
-                        '       </div>\n' +
-                        '   </div>\n' +
-                        '   <br>\n' +
-                        '   <div class="item-col fixed item-col-title">\n' +
-                        //'       <div class="item-heading">Completada</div>\n' +
-                        '           <h4 class="no-overflow">' +
-                                      texto+
-
-                        '           </h4>\n' +
-                        //'       </div>\n' +
-                        '   </div>\n' +
-                        '   <br>\n' +
-                        '</div>\n ' +
-                        '</li>\n'
-                    );
-                });
-            });
-        })();
-    </script>
     <article class="content items-list-page">
         <div class="title-search-block">
             <div class="title-block">
                 <div class="row">
                     <div class="col-md-6">
                         <h3 class="title"> Listado de Solicitudes de Calidad
-                            <a href="../planLogistica/1/actividad" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Agregar actividad </a>
                         </h3>
                         <p class="title" id="notify"></p>
                     </div>
@@ -116,40 +25,47 @@
                         </div>
                         <div class="item-col item-col-header item-col-title">
                             <div>
-                                <span>Fecha</span>
+                                <span>Fecha Solicitud</span>
                             </div>
                         </div>
                         <div class="item-col item-col-header item-col-title">
                             <div>
-                                <span>Escena</span>
+                                <span>Estado</span>
                             </div>
                         </div>
                         <div class="item-col item-col-header item-col-title">
                             <div>
-                                <span>Observaciones</span>
+                                <span>Comentario de apertura</span>
                             </div>
                         </div>
-                        <div class="item-col item-col-header item-col-title">
-                            <div>
-                                <span>Lugar</span>
-                            </div>
-                        </div>
-
-                        <div class="item-col item-col-header item-col-check">
-
-                            <div>
-                                <span>Editar</span>
-                            </div>
-                        </div>
-
-                        <!--div class="item-col item-col-header item-col-title">
-                            <div>
-                                <span>Completada</span>
-                            </div>
-                        </div-->
-
                     </div>
                 </li>
+                {% for ticket in lista_solicitudes%}
+                <li class="item">
+                    <div class="item-row">
+                        <div class="item-col item-col-header item-col-check">
+                            <div>
+                                <span>{{ticket.IdTicket}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>{{ticket.FechaSolicitud}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>{{ticket.Estado}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>{{ticket.ComentarioApertura}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor%}
             </ul>
         </div>
     </article>

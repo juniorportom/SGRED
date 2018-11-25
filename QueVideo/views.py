@@ -576,7 +576,7 @@ def SolicitudControlCalidad(request):
 
 
 def ListarSolicitudesControlCalidad(request):
-    sol = ticketCalidad.objects.all()
+    sol = ticketCalidad.objects.filter(Responsable=request.user)
     n = request.session.get('num_notif', '0')
     context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n}
     return render(request, 'controlCalidad/listadoSolicitudesControlCalidad.html', context)

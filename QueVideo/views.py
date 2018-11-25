@@ -571,3 +571,10 @@ def SolicitudControlCalidad(request):
         ultimoEntregable = Entregable.objects.latest('IdEntregable')
         form = ticketCalidadForm(initial={'Estado': 'PROCESS', 'Entregable': ultimoEntregable.IdEntregable})
         return render(request, 'controlCalidad/solicitudControlCalidad.html', {'form': form, 'option': 'controlCalidad'})
+
+
+def ListarSolicitudesControlCalidad(request):
+    sol = Solicitud_CambioEstado.objects.all()
+    n = request.session.get('num_notif', '0')
+    context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n}
+    return render(request, 'controlCalidad/listadoSolicitudesControlCalidad.html', context)

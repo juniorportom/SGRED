@@ -1,0 +1,93 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+    <script>
+        function enviarForm()
+        {
+            $.ajax(
+                {
+                    type: "POST",
+                    url:  "../../agregarComentario/" + {{ ticket.IdTicket }} + "/",
+                    data: JSON.stringify(
+                        {
+                            texto: $('#textoComentario').val(), user: "{{ user.get_username }}"
+                        }
+                    ),
+                    contentType: "application/json; charset=utf-8;",
+                    dataType: "json",
+                    success: function (data)
+                    {
+                        console.log("se agregó un comentario")
+                    },
+                    failure: function (errMsg)
+                    {
+                        alert("Se obtuvo un error al agregar el comentario" + errMsg)
+                    }
+                }
+            );
+            return true;
+        }
+    </script>
+    <article class="content typography-page">
+        <div class="card sameheight-item">
+            <div class="card-block">
+                <div class="card-title-block">
+                    <h3 class="title"> Solicitud de control de calidad - id: {{  ticket.IdTicket }} </h3>
+                </div>
+                <section class="section">
+                    <h4>Responsable </h4>
+                    <blockquote>
+                        <p>{{ticket.Responsable.username}}</p>
+                    </blockquote>
+                    <h4>Fecha de solicitud</h4>
+                    <blockquote>
+                        <p>{{ ticket.FechaSolicitud }}</p>
+                    </blockquote>
+                    <h4>Estado</h4>
+                    <blockquote>
+                        <p>{{ ticket.Estado }}</p>
+                    </blockquote>
+                    <h4>comentarioApertura</h4>
+                    <blockquote>
+                        <p>{{ ticket.ComentarioApertura }}</p>
+                    </blockquote>
+                </section>
+            </div>
+        </div>
+        <br>
+        {% if comentarios_list.count < 1 %}
+            <h3>No hay comentarios registrados para esta solicitud de revisión de calidad</h3>
+        {% else %}
+            <h3>Comentarios: </h3>
+        {% endif %}
+        {% for comentario in comentarios_list %}
+            <div class="card sameheight-item">
+                <div class="card-block">
+                    <div class="card-title-block">
+                        <h3 class="title"> Autor: {{ comentario.Autor.username }} </h3>
+                        <small> # {{ forloop.counter }} </small>
+                    </div>
+                    <section class="section">
+                        <blockquote>
+                            <p>{{ comentario.Texto }}</p>
+                        </blockquote>
+                        <blockquote class="pull-right">
+                            <p>{{ comentario.Fecha }}</p>
+                        </blockquote>
+                    </section>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="card card-block sameheight-item">
+            <div class="title-block">
+                <h3 class="title"> Nuevo comentario </h3>
+            </div>
+            <form method="post" action="" onsubmit="return enviarForm();">
+                <div class="form-group">
+                    <label class="control-label">Texto:</label>
+                    <textarea id="textoComentario" rows="3" class="form-control boxed"></textarea>
+                </div>
+                <input type="submit" class="btn btn-primary pull-right" value="Comentar"/>
+            </form>
+        </div>
+    </article>
+{% endblock %}

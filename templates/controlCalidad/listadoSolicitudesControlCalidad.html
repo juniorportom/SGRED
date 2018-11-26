@@ -41,30 +41,33 @@
                     </div>
                 </li>
                 {% for ticket in lista_solicitudes%}
-                <li class="item">
-                    <div class="item-row">
-                        <div class="item-col item-col-header item-col-check">
-                            <div>
-                                <span>{{ticket.IdTicket}}</span>
+                    <li class="item">
+                        <a href="../SolicitudControl/{{ticket.IdTicket}}">
+                            <div class="item-row">
+                                <div class="item-col item-col-header item-col-check">
+                                    <div>
+                                        <span>{{ticket.IdTicket}}</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header item-col-title">
+                                    <div>
+                                        <span>{{ticket.FechaSolicitud}}</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header item-col-title">
+                                    <div>
+                                        <span>{{ticket.Estado}}</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header item-col-title">
+                                    <div>
+                                        <span>{{ticket.ComentarioApertura}}</span>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="item-col item-col-header item-col-title">
-                            <div>
-                                <span>{{ticket.FechaSolicitud}}</span>
-                            </div>
-                        </div>
-                        <div class="item-col item-col-header item-col-title">
-                            <div>
-                                <span>{{ticket.Estado}}</span>
-                            </div>
-                        </div>
-                        <div class="item-col item-col-header item-col-title">
-                            <div>
-                                <span>{{ticket.ComentarioApertura}}</span>
-                            </div>
-                        </div>
-                    </div>
-                </li>
+                        </a>
+                    </li>
+
                 {% endfor%}
             </ul>
         </div>

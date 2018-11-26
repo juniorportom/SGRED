@@ -14,10 +14,13 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, ticketSearchForm, entregableForm
+
+from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, \
+    ticketSearchForm, ComentarioForm, entregableForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
 from QueVideo.tables import SolicitudesTable
-from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable, ticketCalidad
+from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable, \
+    ticketCalidad, comentarioTicket
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 
@@ -29,7 +32,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchQuery, SearchVector
 
 
@@ -76,12 +79,13 @@ def static_tables(request):
     return render(request, 'dashboard/static-tables.html', context)
 
 
+
 def entregablesRecursos(request, recursoId):
     crudosList = Crudo.objects.filter(recurso_id=recursoId)
     recurso = Recurso.objects.filter(idRecurso=recursoId).first()
-    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso}
+    entregable = Entregable.objects.filter(Recurso_id=recursoId).first()
+    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso,'entregable':entregable}
     return render(request, 'recursos/detalleEntregable.html', context)
-
 
 def crear_Recurso(request):
     context = {'option': 'recursos'}
@@ -565,6 +569,7 @@ class RecursosList(APIView):
 # ---------------------------- SGRD-74 -----------------------------
 # crear una solicitud de control de calidad
 
+
 def SolicitudControlCalidad(request):
     if request.method == 'POST':
         form = ticketCalidadForm(request.POST)
@@ -577,10 +582,24 @@ def SolicitudControlCalidad(request):
         return render(request, 'controlCalidad/solicitudControlCalidad.html', {'form': form, 'option': 'controlCalidad'})
 
 
-def ListarSolicitudesControlCalidad(request):
-    sol = ticketCalidad.objects.filter(Responsable=request.user)
+def ListarSolicitudesControlCalidad(request, filtro="Completo"):
+    sol = ticketCalidad.objects.filter(Responsable=request.user).order_by('IdTicket')
     n = request.session.get('num_notif', '0')
-    context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n}
+    if filtro != "Completo":
+        sol = ticketCalidad.objects.filter(Estado=filtro, Responsable=request.user)
+    # validate no query string has been sent
+    queryString = request.GET.get('query', '')
+    if queryString != '':
+        # this depends on database configs,
+        # see https://stackoverflow.com/questions/42421706/django-combining-unaccent-and-search-lookups
+        sol = sol.annotate(search=SearchVector('ComentarioApertura', config='unaccent')).filter(
+            search=SearchQuery(queryString, config='unaccent'))
+    form = ticketSearchForm()
+    context = {'lista_solicitudes': sol,
+               'n_number': n,
+               'searchForm': form,
+               'filtro': filtro,
+               'option': 'controlCalidad'}
     return render(request, 'controlCalidad/listadoSolicitudesControlCalidad.html', context)
 
 
@@ -590,8 +609,9 @@ def ListaControlCalidad(request, filtro="Completo"):
         tickets = ticketCalidad.objects.filter(Estado=filtro)
     # validate no query string has been sent
     queryString = request.GET.get('query', '')
-    if (queryString != ''):
-        #this depends on database configs, see https://stackoverflow.com/questions/42421706/django-combining-unaccent-and-search-lookups
+    if queryString != '':
+        # this depends on database configs,
+        # see https://stackoverflow.com/questions/42421706/django-combining-unaccent-and-search-lookups
         tickets = tickets.annotate(search=SearchVector('ComentarioApertura', config='unaccent')).filter(search=SearchQuery(queryString, config='unaccent'))
     form = ticketSearchForm()
     return render(request, 'controlCalidad/listaControlCalidad.html',
@@ -599,6 +619,7 @@ def ListaControlCalidad(request, filtro="Completo"):
                    'filtro': filtro,
                    'option': 'controlCalidad',
                    'searchForm': form})
+
 
 
 
@@ -635,4 +656,64 @@ def cerrarRecurso(request):
 
 
     return  HttpResponseRedirect(reverse('QueVideo:index'))
+
+
+@csrf_exempt
+def get_solicitud_control_calidad(request, id_ticket):
+    ticket = ticketCalidad.objects.get(pk=id_ticket)
+    comentarios_list = comentarioTicket.objects.filter(Ticket=ticket).order_by('idComentario')
+    # return HttpResponse(serializers.serialize("json", ticket))
+    return render(request, 'controlCalidad/detalleSolicitudControlCalidad.html',
+                  {'ticket': ticket,
+                   'comentarios_list': comentarios_list,
+                   'option': 'controlCalidad'})
+
+
+@csrf_exempt
+def get_comentarios_solicitud(request, id_ticket):
+    ticket = ticketCalidad.objects.filter(pk=id_ticket)
+    comentarios_list = comentarioTicket.objects.filter(Ticket=ticket)
+    return HttpResponse(serializers.serialize("json", comentarios_list))
+
+
+
+@csrf_exempt
+def add_comentario(request, id_ticket):
+    ticket = ticketCalidad.objects.get(pk=id_ticket)
+    if request.method == 'POST':
+        print('json' + request.body)
+        json_comentario = json.loads(request.body)
+        texto = json_comentario['texto']
+        nombre = json_comentario['user']
+        usuario = User.objects.get(username=nombre)
+        comentario_model = comentarioTicket(Texto=texto, Autor=usuario, Ticket=ticket)
+        comentario_model.save()
+
+    comentarios_list = comentarioTicket.objects.filter(Ticket=ticket).order_by('idComentario')
+    return render(request, 'controlCalidad/detalleSolicitudControlCalidad.html',
+                  {'ticket': ticket,
+                   'comentarios_list': comentarios_list,
+                   'option': 'controlCalidad'})
+
+
+def listadoComentarios(request, IdTicket):
+    comentarios = comentarioTicket.objects.filter(Ticket=IdTicket)
+    ticket = ticketCalidad.objects.filter(IdTicket=IdTicket).first()
+    form = ComentarioForm()
+    context = {'option': 'controlCalidad', 'comentarios': comentarios,'ticket':ticket,'form': form}
+    return render(request, 'controlCalidad/listadoComentarios.html', context)
+
+
+def agregarComentario(request, IdTicket):
+    if request.method == 'POST':
+        now = datetime.now()
+        today = now.strftime("%A, %b %d, %Y")
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save()
+            messages.success(request, "Se Agrego el Comentario Correctamente", extra_tags="alert-success")
+    comentarios = comentarioTicket.objects.all();
+    form = ComentarioForm()
+    context = {'option': 'controlCalidad', 'comentarios': comentarios, 'form': form}
+    return render(request, 'controlCalidad/listadoComentarios.html', context)
 

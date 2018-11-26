@@ -49,16 +49,40 @@
                 <div class="card">
                     <div class="card-block">
                         <div class="card-title-block">
-                            <h3 class="title"> {{ recurso.nombre }}</h3>
+                            <h3 class="title">Entregable Final : {{ recurso.nombre }}</h3>
                             <hr style="border-color: #000000"/>
                         </div>
                         <section class="example">
+
+
+                              <table class="table table-striped">
+                                <thead>
+                                <tr>
+
+                                    <th>Nombre</th>
+                                    <th>Version</th>
+                                    <th>Comentario</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+
+
+                                    <tr>
+                                        <td>{{ entregable.Nombre }}</td>
+                                        <td>{{ entregable.Version }}</td>
+                                        <td>{{ entregable.ComentarioVersion}}</td>
+                                    </tr>
+
+                                </tbody>
+                            </table>
+
                             <center>
                                 <div id="idFrame" style="align-content: center">
                                     <iframe id="player" class="embed-responsive-item" width="500" height="400"
-                                            src="https://www.youtube.com/embed/EYEkFkhkOes?enablejsapi=1"></iframe>
+                                            src="{{ entregable.VideoURL }}"></iframe>
                                 </div>
                             </center>
+
                         </section>
                     </div>
                 </div>

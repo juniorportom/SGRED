@@ -6,7 +6,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from tagulous.forms import TagField
 
-from QueVideo.models import PlanLogistica, Artefacto, Actividad, Crudo, Recurso, ticketCalidad
+
+from QueVideo.models import PlanLogistica, Artefacto, Actividad, Crudo, Recurso, ticketCalidad, comentarioTicket, Entregable
+
 from QueVideo.serializers import RecursoSerializer
 
 
@@ -58,6 +60,17 @@ class ArtefactoRecursoForm(ModelForm):
         fields = ['Nombre', 'Descripcion', 'Tipo', 'Archivo']
 
 
+class ComentarioForm(ModelForm):
+    class Meta:
+        model = comentarioTicket
+        widgets = {
+            'Texto': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+        fields = ['Texto']
+
+
+
+
 class ActividadEditForm(ModelForm):
     Fecha = forms.DateTimeField()
     Video = forms.CharField(max_length=20)
@@ -80,6 +93,7 @@ class CrudoForm(ModelForm):
         }
         fields = ["Nombre", "Tipo", "Archivo", "etiqueta"]
 
+
 class ticketCalidadForm(ModelForm):
     class Meta:
         model = ticketCalidad
@@ -91,6 +105,9 @@ class ticketCalidadForm(ModelForm):
         }
         fields = ["Responsable", "Estado", "ComentarioApertura", "Entregable"]
 
+
+class ticketSearchForm(forms.Form):
+    query = forms.CharField(label='Busqueda', max_length=250)
 
 
 class RecursoForm(APIView):
@@ -109,3 +126,16 @@ class RecursoForm(APIView):
             return Response({'serializer': serializer, 'recurso': recurso})
         serializer.save()
         return redirect('profile-list')
+
+
+class entregableForm(ModelForm):
+    class Meta:
+        model = Entregable
+        widgets = {
+            'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'Version': forms.NumberInput(attrs={'class': 'form-control','readonly':True}),
+            'ComentarioVersion': forms.TextInput(attrs={'class': 'form-control'}),
+            'VideoURL': forms.URLInput(attrs={'class': 'form-control'}),
+            'Recurso': forms.Select(attrs={'class': 'form-control'}),
+        }
+        fields = ["Nombre", "Version", "ComentarioVersion", "VideoURL","Recurso"]

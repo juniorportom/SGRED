@@ -1,6 +1,26 @@
 {% extends 'dashboard/base.html' %}
-
 {% block body %}
+
+    <script>
+        function llevarARevision(idRec){
+            var SendInfo= {"idRecurso":idRec
+                    };
+             $.ajax({
+              url: '../cambioEstadoEtapa/1/',
+              data: JSON.stringify(SendInfo),
+              contentType: "application/json; charset=utf-8",
+              type: 'PUT',
+              success: function(data) {
+                alert('El recurso cambió de etapa: ' + data.etapa_anterior + " -> " + data.nueva_etapa);
+              },
+              error: function(data) {
+                alert('El recurso se encuentra en la última etapa');
+              }
+            });
+        }
+
+    </script>
+
     <article class="content dashboard-page">
         <section class="section">
             <div class="row sameheight-container">
@@ -113,27 +133,40 @@
                         <ul class="item-list striped">
                             <li class="item item-list-header">
                                 <div class="item-row">
-                                    <div class="item-col item-col-header fixed item-col-img xs"></div>
+                                    <div class="item-col item-col-header fixed item-col-img lg"></div>
                                     <div class="item-col item-col-header item-col-title">
                                         <div>
                                             <span>Nombre</span>
                                         </div>
                                     </div>
-                                    <div class="item-col item-col-header item-col-sales">
+                                    <div class="item-col item-col-header item-col-title ">
+                                        <div>
+                                            <span>Generar Version</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-col item-col-header item-col-title">
                                         <div>
                                             <span>Etapa</span>
                                         </div>
                                     </div>
-                                    <div class="item-col item-col-header item-col-date">
+                                    <div class="item-col item-col-header  item-col-title">
                                         <div>
                                             <span>Creado</span>
                                         </div>
                                     </div>
+                                    <div class="item-col item-col-header item-col-title">
+                                        <div>
+                                            <span>Finalizar recurso</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </li>
-                            <li class="item">
+
+                            {% for recurso in listadoRecursos %}
+
+                                <li class="item">
                                 <div class="item-row">
-                                    <div class="item-col fixed item-col-img xs">
+                                    <div class="item-col item-col-img xs">
                                         <a href="">
                                             <div class="item-img xs rounded"
                                                  style="background-image: url(https://s3.amazonaws.com/uifaces/faces/twitter/brad_frost/128.jpg)"></div>
@@ -142,97 +175,54 @@
                                     <div class="item-col item-col-title no-overflow">
                                         <div>
                                             <a href="" class="">
-                                                <h4 class="item-title no-wrap"> Video introductorio clase MISO4101_01 </h4>
+                                                <h4 class="item-title no-wrap">{{ recurso.nombre }} </h4>
                                             </a>
                                         </div>
-                                    </div>
-                                    <div class="item-col item-col-sales">
-                                        <div class="item-heading">Sales</div>
-                                        <div> Preprod</div>
-                                    </div>
-                                    <div class="item-col item-col-date">
-                                        <div class="item-heading">Published</div>
-                                        <div> 21 SEP 10:45</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="item">
-                                <div class="item-row">
-                                    <div class="item-col fixed item-col-img xs">
-                                        <a href="">
-                                            <div class="item-img xs rounded"
-                                                 style="background-image: url(https://s3.amazonaws.com/uifaces/faces/twitter/_everaldo/128.jpg)"></div>
-                                        </a>
                                     </div>
                                     <div class="item-col item-col-title no-overflow">
                                         <div>
-                                            <a href="" class="">
-                                                <h4 class="item-title no-wrap"> Video introductorio clase MISO4206_01</h4>
+                                            <a href="{% url 'QueVideo:crearEntregable' %}" class="">
+                                                <h4 class="btn  btn-primary btn-sm rounded-s">Llevar a revision</h4>
                                             </a>
                                         </div>
-                                    </div>
-                                    <div class="item-col item-col-sales">
-                                        <div class="item-heading">Sales</div>
-                                        <div> Prod</div>
-                                    </div>
-                                    <div class="item-col item-col-date">
-                                        <div class="item-heading">Published</div>
-                                        <div> 21 SEP 10:45</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="item">
-                                <div class="item-row">
-                                    <div class="item-col fixed item-col-img xs">
-                                        <a href="">
-                                            <div class="item-img xs rounded"
-                                                 style="background-image: url(https://s3.amazonaws.com/uifaces/faces/twitter/eduardo_olv/128.jpg)"></div>
-                                        </a>
                                     </div>
                                     <div class="item-col item-col-title no-overflow">
-                                        <div>
-                                            <a href="" class="">
-                                                <h4 class="item-title no-wrap"> Video introductorio clase MISO4202_01 </h4>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="item-col item-col-sales">
                                         <div class="item-heading">Sales</div>
-                                        <div> Postprod</div>
-                                    </div>
-                                    <div class="item-col item-col-date">
-                                        <div class="item-heading">Published</div>
-                                        <div> 21 SEP 10:45</div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="item">
-                                <div class="item-row">
-                                    <div class="item-col fixed item-col-img xs">
-                                        <a href="">
-                                            <div class="item-img xs rounded"
-                                                 style="background-image: url(https://s3.amazonaws.com/uifaces/faces/twitter/pankogut/128.jpg)"></div>
-                                        </a>
+                                        <div> {{ recurso.estado }}</div>
                                     </div>
                                     <div class="item-col item-col-title no-overflow">
+                                        <div> {{ recurso.fechaCreacion }}</div>
+                                    </div>
+
+                                    <div class="item-col item-col-title no-overflow">
                                         <div>
-                                            <a href="" class="">
-                                                <h4 class="item-title no-wrap"> Video bienvenida a la U., Maestrias </h4>
+                                            <a href="#" class="cd-popup-trigger">
+                                                <h4 class="btn  btn-primary btn-sm rounded-s">Finalizar</h4>
                                             </a>
                                         </div>
                                     </div>
-                                    <div class="item-col item-col-sales">
-                                        <div class="item-heading">Sales</div>
-                                        <div> Postprod</div>
-                                    </div>
-                                    <div class="item-col item-col-date">
-                                        <div class="item-heading">Published</div>
-                                        <div> 21 SEP 10:45</div>
-                                    </div>
                                 </div>
                             </li>
+
+                            {% empty %}
+                                <p> no hay crudos registrados </p>
+                            {% endfor %}
+
                         </ul>
                     </div>
+
+                <div class="cd-popup" role="alert">
+                    <div class="cd-popup-container">
+
+                        <p>Esta seguro de querer Cerrar definitivamente el Recurso: {{ request.session.recurso_actual }} ?</p>
+                        <ul class="cd-buttons">
+                            <li><a id="cerrarRecurso"href="{% url 'QueVideo:cerrarRecurso' %}">Si</a></li>
+                            <li><a  class="cd-popup-onNo" href="#">No</a></li>
+                        </ul>
+                        <a href="#0" class="cd-popup-close img-replace">Close</a>
+                    </div> <!-- cd-popup-container -->
+                </div> <!-- cd-popup -->
+
 
                    {% comment %} <div class="card sameheight-item" data-exclude="xs" id="dashboard-history">
                         <div class="card-header card-header-sm bordered">

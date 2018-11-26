@@ -1,0 +1,83 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+    <article class="content items-list-page">
+        <div class="title-search-block">
+            <div class="title-block">
+                <div class="row">
+                    <div class="col-md-6">
+                       <h3 class="title"> Listado de Solicitudes de Calidad
+                            <a href="{% url 'QueVideo:listSolicitudControlCalidad' 'DONE'%}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Filtrar Completados </a>
+                            <a href="{% url 'QueVideo:listSolicitudControlCalidad' 'PROCESS'%}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Filtrar Pendientes </a>
+                        </h3>
+                        <p class="title" id="notify"></p>
+                        <form action="{% url 'QueVideo:listSolicitudControlCalidadCompleto' %}" method="get">
+                                {{ searchForm.as_p }}
+                                <input type="submit" value="Buscar">
+                            </form>
+                            <p id="list_description" class="title-description"> Muestra las solicitudes de control de calidad asociadas al producto del recurso:  </p> <span> {{ request.session.recurso_actual }}</span>
+                            <p id="status" class="title-description"> filtro aplicado  </p> <span> {{ filtro }}</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="card items">
+            <ul class="item-list striped" id="actividades_ul">
+                <li class="item item-list-header">
+                    <div class="item-row">
+                        <div class="item-col item-col-header item-col-check">
+                            <div>
+                                <span>#</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>Fecha Solicitud</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>Estado</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>Comentario de apertura</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% for ticket in lista_solicitudes%}
+                    <li class="item">
+                        <a href="../SolicitudControl/{{ticket.IdTicket}}">
+                            <div class="item-row">
+                                <div class="item-col item-col-header item-col-check">
+                                    <div>
+                                        <span>{{ticket.IdTicket}}</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header item-col-title">
+                                    <div>
+                                        <span>{{ticket.FechaSolicitud}}</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header item-col-title">
+                                    <div>
+                                        <span>{{ticket.Estado}}</span>
+                                    </div>
+                                </div>
+                                <div class="item-col item-col-header item-col-title">
+                                    <div>
+                                        <span>{{ticket.ComentarioApertura}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+
+                {% endfor%}
+            </ul>
+        </div>
+    </article>
+{% endblock %}

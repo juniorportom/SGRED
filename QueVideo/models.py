@@ -146,10 +146,11 @@ class ArchivoArtefacto(models.Model):
     Ubicacion = models.CharField(max_length=255)
     valor = models.CharField(max_length=64)
 
+
 class Entregable (models.Model):
     IdEntregable = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=255)
-    Version = models.IntegerField()
+    Version = models.IntegerField(default=0)
     ComentarioVersion = models.CharField(max_length=255)
     VideoURL = models.URLField()
     FechaModificacion = models.DateTimeField(default=datetime.now)
@@ -170,14 +171,10 @@ class ticketCalidad (models.Model):
     def __unicode__(self):
         return self.ComentarioApertura
 
+
 class comentarioTicket (models.Model):
     idComentario = models.AutoField(primary_key=True)
     Autor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     Fecha = models.DateTimeField(default=datetime.now)
     Texto = models.CharField(max_length=255)
     Ticket = models.ForeignKey(ticketCalidad,  on_delete=models.CASCADE, null=True, blank=True)
-
-
-
-
-

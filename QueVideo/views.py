@@ -594,17 +594,31 @@ def SolicitudControlCalidad(request):
         return render(request, 'controlCalidad/solicitudControlCalidad.html', {'form': form, 'option': 'controlCalidad'})
 
 
-def ListarSolicitudesControlCalidad(request):
+def ListarSolicitudesControlCalidad(request, filtro="Completo"):
     sol = ticketCalidad.objects.filter(Responsable=request.user).order_by('IdTicket')
     n = request.session.get('num_notif', '0')
-    context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n, 'option': 'controlCalidad'}
+    if filtro != "Completo":
+        sol = ticketCalidad.objects.filter(Estado=filtro, Responsable=request.user)
+    # validate no query string has been sent
+    queryString = request.GET.get('query', '')
+    if queryString != '':
+        # this depends on database configs,
+        # see https://stackoverflow.com/questions/42421706/django-combining-unaccent-and-search-lookups
+        sol = sol.annotate(search=SearchVector('ComentarioApertura', config='unaccent')).filter(
+            search=SearchQuery(queryString, config='unaccent'))
+    form = ticketSearchForm()
+    context = {'lista_solicitudes': sol,
+               'n_number': n,
+               'searchForm': form,
+               'filtro': filtro,
+               'option': 'controlCalidad'}
     return render(request, 'controlCalidad/listadoSolicitudesControlCalidad.html', context)
 
 
 def ListaControlCalidad(request, filtro="Completo"):
     tickets = ticketCalidad.objects.all()
     if filtro != "Completo":
-        tickets = ticketCalidad.objects.filter(Estado=filtro)
+        tickets = ticketCalidad.objects.filter(Estado=filtro, Responsable=request.user)
     # validate no query string has been sent
     queryString = request.GET.get('query', '')
     if queryString != '':

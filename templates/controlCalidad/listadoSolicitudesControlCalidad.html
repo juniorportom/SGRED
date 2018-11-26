@@ -6,8 +6,16 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h3 class="title"> Listado de Solicitudes de Calidad
+                            <a href="{% url 'QueVideo:listSolicitudControlCalidad' 'DONE'%}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Filtrar Completados </a>
+                            <a href="{% url 'QueVideo:listSolicitudControlCalidad' 'PROCESS'%}" class="btn btn-primary btn-sm rounded-s" id="crear_crudo"> Filtrar Pendientes </a>
                         </h3>
                         <p class="title" id="notify"></p>
+                        <form action="{% url 'QueVideo:listSolicitudControlCalidadCompleto' %}" method="get">
+                                {{ searchForm.as_p }}
+                                <input type="submit" value="Buscar">
+                            </form>
+                            <p id="list_description" class="title-description"> Muestra las solicitudes de control de calidad asociadas al producto del recurso:  </p> <span> {{ request.session.recurso_actual }}</span>
+                            <p id="status" class="title-description"> filtro aplicado  </p> <span> {{ filtro }}</span>
                     </div>
                 </div>
             </div>

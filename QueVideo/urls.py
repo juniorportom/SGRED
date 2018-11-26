@@ -40,6 +40,9 @@ urlpatterns = [
 
     url('entregablesRecurso', views.RecursosList.as_view(), name='entregablesRecurso'),
     url(r'^detalleEntregablesRecurso/(?P<recursoId>\d+)/$', views.entregablesRecursos, name='detalleEntregablesRecurso'),
+    url(r'^listadoComentarios/(?P<IdTicket>\d+)/$', views.listadoComentarios, name='listadoComentarios'),
+    url(r'^agregarComentario/(?P<IdTicket>\d+)/$', views.agregarComentario, name='agregarComentario'),
+
 
     url(r'^SolicitudControlCalidad/', views.SolicitudControlCalidad, name='SolicitudControlCalidad'),
     url(r'^listSolicitudControlCalidad/', views.ListarSolicitudesControlCalidad, name='listSolicitudControlCalidad'),

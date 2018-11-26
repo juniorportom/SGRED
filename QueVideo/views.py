@@ -14,7 +14,8 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, ticketSearchForm
+from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, \
+    ticketSearchForm, ComentarioForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
 from QueVideo.tables import SolicitudesTable
 from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable, \
@@ -581,7 +582,6 @@ class RecursosList(APIView):
 # ---------------------------- SGRD-74 -----------------------------
 # crear una solicitud de control de calidad
 
-
 def SolicitudControlCalidad(request):
     if request.method == 'POST':
         form = ticketCalidadForm(request.POST)
@@ -595,9 +595,9 @@ def SolicitudControlCalidad(request):
 
 
 def ListarSolicitudesControlCalidad(request):
-    sol = ticketCalidad.objects.filter(Responsable=request.user).order_by('IdTicket')
+    sol = ticketCalidad.objects.filter(Responsable=request.user)
     n = request.session.get('num_notif', '0')
-    context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n, 'option': 'controlCalidad'}
+    context = {'lista_solicitudes': sol, 'option': 'dashboard', 'n_number': n}
     return render(request, 'controlCalidad/listadoSolicitudesControlCalidad.html', context)
 
 
@@ -654,3 +654,25 @@ def add_comentario(request, id_ticket):
                   {'ticket': ticket,
                    'comentarios_list': comentarios_list,
                    'option': 'controlCalidad'})
+
+
+def listadoComentarios(request, IdTicket):
+    comentarios = comentarioTicket.objects.filter(Ticket=IdTicket)
+    ticket = ticketCalidad.objects.filter(IdTicket=IdTicket).first()
+    form = ComentarioForm()
+    context = {'option': 'controlCalidad', 'comentarios': comentarios,'ticket':ticket,'form': form}
+    return render(request, 'controlCalidad/listadoComentarios.html', context)
+
+
+def agregarComentario(request, IdTicket):
+    if request.method == 'POST':
+        now = datetime.now()
+        today = now.strftime("%A, %b %d, %Y")
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save()
+            messages.success(request, "Se Agrego el Comentario Correctamente", extra_tags="alert-success")
+    comentarios = comentarioTicket.objects.all();
+    form = ComentarioForm()
+    context = {'option': 'controlCalidad', 'comentarios': comentarios, 'form': form}
+    return render(request, 'controlCalidad/listadoComentarios.html', context)

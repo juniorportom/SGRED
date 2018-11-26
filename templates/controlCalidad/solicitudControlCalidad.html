@@ -1,0 +1,16 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+    <article class="content item-editor-page">
+        <div class="title-block">
+            <h3 id="quality_page_title" class="title"> Solicitud de Control de Calidad
+            </h3>
+                <span>{{ request.session.recurso_actual }}</span>
+                <span class="sparkline bar" data-type="bar"></span>
+                <form id="form_create" action="{% url 'QueVideo:SolicitudControlCalidad' %}" enctype="multipart/form-data" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    <input type="submit" class="btn btn-primary" style="margin-left: 16px" value="Guardar"  />
+                </form>
+        </div>
+    </article>
+{% endblock %}

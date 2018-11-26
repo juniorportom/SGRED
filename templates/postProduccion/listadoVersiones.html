@@ -1,0 +1,136 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+    <article class="content items-list-page">
+        <div class="title-search-block">
+            <div class="title-block">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3 class="title"> Listado de Versiones
+                        </h3>
+                        Se enumeran todas las versiones y se hace enfasis en la ultima version para ser revisada
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <h4 class="title"> Ultima version</h4>
+
+    <div class="card items">
+            <ul class="item-list striped" id="actividades_ul">
+                <li class="item item-list-header">
+                    <div class="item-row">
+                        <div class="item-col item-col-header item-col-check">
+                            <div>
+                                <span><strong>Numero de la version</strong></span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span><strong>Fecha Version</strong></span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span><strong>Comentario Version</strong></span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span><strong>Url</strong></span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="item">
+                    <div class="item-row">
+                        <div class="item-col item-col-header item-col-check text-warning">
+                            <div>
+                                <span>{{ultimoEntregable.Version}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title text-warning">
+                            <div>
+                                <span>{{ultimoEntregable.FechaModificacion}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title text-warning">
+                            <div>
+                                <span>{{ultimoEntregable.ComentarioVersion}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title text-warning">
+                            <div>
+                                <a href="{{ultimoEntregable.VideoURL}}">
+                                <span>{{ultimoEntregable.VideoURL}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+
+
+
+        <h4 class="title"> Versiones anteriores</h4>
+        <div class="card items">
+            <ul class="item-list striped" id="actividades_ul">
+                <li class="item item-list-header">
+                    <div class="item-row">
+                        <div class="item-col item-col-header item-col-check">
+                            <div>
+                                <span>Numero de la version</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>Fecha Version</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>Comentario Version</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>Url</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% for versionamela in lista%}
+                <li class="item">
+                    <div class="item-row">
+                        <div class="item-col item-col-header item-col-check">
+                            <div>
+                                <span>{{versionamela.Version}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>{{versionamela.FechaModificacion}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <span>{{versionamela.ComentarioVersion}}</span>
+                            </div>
+                        </div>
+                        <div class="item-col item-col-header item-col-title">
+                            <div>
+                                <a href="{{versionamela.VideoURL}}">
+                                <span>{{versionamela.VideoURL}}</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {% endfor%}
+            </ul>
+        </div>
+    </article>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'dashboard/base.html' %}
+{% block body %}
+    <article class="content item-editor-page">
+        <div class="title-block">
+            <h3 id="quality_page_title" class="title"> Genera una version del entregable
+            </h3>
+                <span>Asignale un nombre a tu version y un comentario para que pueda ser revisada </span>
+                <br/>
+                <span>Recurso Actual: {{ request.session.recurso_actual }}</span>
+                <span> </span>
+                <span class="sparkline bar" data-type="bar"></span>
+                <form id="form_create" action="{% url 'QueVideo:crearEntregable' %}" enctype="multipart/form-data" method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    <input type="submit" class="btn btn-primary" style="margin-left: 16px" value="Guardar"  />
+                </form>
+        </div>
+    </article>
+{% endblock %}

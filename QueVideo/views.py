@@ -77,12 +77,13 @@ def static_tables(request):
     return render(request, 'dashboard/static-tables.html', context)
 
 
+
 def entregablesRecursos(request, recursoId):
     crudosList = Crudo.objects.filter(recurso_id=recursoId)
     recurso = Recurso.objects.filter(idRecurso=recursoId).first()
-    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso}
+    entregable = Entregable.objects.filter(Recurso_id=recursoId).first()
+    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso,'entregable':entregable}
     return render(request, 'recursos/detalleEntregable.html', context)
-
 
 def crear_Recurso(request):
     context = {'option': 'recursos'}

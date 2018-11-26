@@ -14,7 +14,9 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, ticketSearchForm
+
+from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, \
+    ticketSearchForm, ComentarioForm, entregableForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
 from QueVideo.tables import SolicitudesTable
 from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable, \
@@ -41,9 +43,10 @@ def index(request):
     listNotif = notificationsBadge(False)
     # request.session['listNotif'] = listNotif
     request.session['num_notif'] = n
-    context = {'option': 'dashboard', 'n_number': n, 'listNotif': listNotif}
     # hard code el recurso actual para los demas requests
     # ver la documentacion de datos de sesiones en django: https://docs.djangoproject.com/en/2.1/topics/http/sessions/
+    listadoRecursos = Recurso.objects.all()
+    context = {'option': 'dashboard', 'n_number': n, 'listNotif': listNotif, 'listadoRecursos': listadoRecursos}
     recursoActual = Recurso.objects.first()
     if recursoActual is not None:
         request.session['recurso_actual'] = recursoActual.nombre
@@ -76,12 +79,13 @@ def static_tables(request):
     return render(request, 'dashboard/static-tables.html', context)
 
 
+
 def entregablesRecursos(request, recursoId):
     crudosList = Crudo.objects.filter(recurso_id=recursoId)
     recurso = Recurso.objects.filter(idRecurso=recursoId).first()
-    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso}
+    entregable = Entregable.objects.filter(Recurso_id=recursoId).first()
+    context = {'option': 'postproduccion', 'crudos': crudosList, 'recurso': recurso,'entregable':entregable}
     return render(request, 'recursos/detalleEntregable.html', context)
-
 
 def crear_Recurso(request):
     context = {'option': 'recursos'}
@@ -333,22 +337,6 @@ def solicitud_cambio_estado_list(request):
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
 
-        # solicitud_model = Solicitud_CambioEstado(
-        #                             solicitadoPor=solicitadoPor,
-        #                             aprobadoPor=aprobadoPor,
-        #                             fecha_solicitud=fecha_solicitud,
-        #                             fecha_aprobacion=fecha_aprobacion,
-        #                             )
-        # solicitud_model.save()
-        # return JsonResponse({"solicitadoPor":solicitadoPor,
-        #                         "aprobadoPor":aprobadoPor,
-        #                         "fecha_solicitud":fecha_solicitud,
-        #                         "fecha_aprobacion":fecha_aprobacion}, status=201)
-        #
-        # return HttpResponse(status=404)
-
-        ###########
-        # data = JSONParser().parse(request)
 
 
 # GET >> detail solicitud cambio estado
@@ -576,7 +564,7 @@ class RecursosList(APIView):
 
     def get(self, request):
         queryset = Recurso.objects.all().filter(estado='DONE')
-        return Response({'recursos': queryset})
+        return Response({'recursos': queryset,'option': 'CierredeProyecto'})
 
 # ---------------------------- SGRD-74 -----------------------------
 # crear una solicitud de control de calidad
@@ -618,7 +606,7 @@ def ListarSolicitudesControlCalidad(request, filtro="Completo"):
 def ListaControlCalidad(request, filtro="Completo"):
     tickets = ticketCalidad.objects.all()
     if filtro != "Completo":
-        tickets = ticketCalidad.objects.filter(Estado=filtro, Responsable=request.user)
+        tickets = ticketCalidad.objects.filter(Estado=filtro)
     # validate no query string has been sent
     queryString = request.GET.get('query', '')
     if queryString != '':
@@ -631,6 +619,43 @@ def ListaControlCalidad(request, filtro="Completo"):
                    'filtro': filtro,
                    'option': 'controlCalidad',
                    'searchForm': form})
+
+
+
+
+# ---------------------------- SGRD-68 -----------------------------
+#    Como miembro de grupo quiero poder guardar avance sobre el entregable
+#  y generar versión para indicar al equipo que se encuentra listo para revisión
+
+
+# crear un entregable
+
+def crearEntregable(request):
+    if request.method == 'POST':
+        form = entregableForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+        return HttpResponseRedirect(reverse('QueVideo:crearEntregable'))
+    else:
+        ultimoEntregable = Entregable.objects.latest('IdEntregable')
+        v=ultimoEntregable.Version+1
+        recurso = request.session['recurso_actual']
+        form = entregableForm(initial={ 'Version':v,'Recurso':recurso})
+        return render(request, 'postProduccion/crearEntregable.html', {'form': form, 'option': 'postproduccion'})
+
+def verVersiones(request):
+    lista=Entregable.objects.all()
+    ultimoEntregable = Entregable.objects.latest('IdEntregable')
+    n = request.session.get('num_notif', '0')
+    context = {'lista': lista, 'option': 'postproduccion', 'n_number': n,'ultimoEntregable':ultimoEntregable}
+
+    return render(request, 'postProduccion/listadoVersiones.html', context)
+
+def cerrarRecurso(request):
+
+
+    return  HttpResponseRedirect(reverse('QueVideo:index'))
 
 
 @csrf_exempt
@@ -651,6 +676,7 @@ def get_comentarios_solicitud(request, id_ticket):
     return HttpResponse(serializers.serialize("json", comentarios_list))
 
 
+
 @csrf_exempt
 def add_comentario(request, id_ticket):
     ticket = ticketCalidad.objects.get(pk=id_ticket)
@@ -668,3 +694,26 @@ def add_comentario(request, id_ticket):
                   {'ticket': ticket,
                    'comentarios_list': comentarios_list,
                    'option': 'controlCalidad'})
+
+
+def listadoComentarios(request, IdTicket):
+    comentarios = comentarioTicket.objects.filter(Ticket=IdTicket)
+    ticket = ticketCalidad.objects.filter(IdTicket=IdTicket).first()
+    form = ComentarioForm()
+    context = {'option': 'controlCalidad', 'comentarios': comentarios,'ticket':ticket,'form': form}
+    return render(request, 'controlCalidad/listadoComentarios.html', context)
+
+
+def agregarComentario(request, IdTicket):
+    if request.method == 'POST':
+        now = datetime.now()
+        today = now.strftime("%A, %b %d, %Y")
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save()
+            messages.success(request, "Se Agrego el Comentario Correctamente", extra_tags="alert-success")
+    comentarios = comentarioTicket.objects.all();
+    form = ComentarioForm()
+    context = {'option': 'controlCalidad', 'comentarios': comentarios, 'form': form}
+    return render(request, 'controlCalidad/listadoComentarios.html', context)
+

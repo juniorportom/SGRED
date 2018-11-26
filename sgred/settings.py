@@ -91,6 +91,8 @@ WSGI_APPLICATION = 'sgred.wsgi.application'
 
 
 DATABASES = {
+
+
     # 'default': {
     #     'ENGINE': 'django.db.backends.mysql',
     #     'NAME':'agilesproyectofinal',

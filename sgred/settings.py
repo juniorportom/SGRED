@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
     'rest_framework',
     'django_tables2',
     'bootstrap4',
@@ -90,6 +91,15 @@ WSGI_APPLICATION = 'sgred.wsgi.application'
 
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME':'agilesproyectofinal',
+    #     'USER':'root',
+    #     'PASSWORD':'root',
+    #     'HOST':'127.0.0.1',
+    #     'PORT':'3306',
+    # }
+
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('DATABASE_NAME'),

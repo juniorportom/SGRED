@@ -14,10 +14,11 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm
+from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, ticketSearchForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
 from QueVideo.tables import SolicitudesTable
-from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto
+from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable, \
+    ticketCalidad, comentarioTicket
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponseRedirect
 
@@ -29,6 +30,8 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.postgres.search import SearchQuery, SearchVector
 
 
 # ###################################################SGRED#######################################################
@@ -45,9 +48,26 @@ def index(request):
     if recursoActual is not None:
         request.session['recurso_actual'] = recursoActual.nombre
         request.session['recurso_actual_id'] = recursoActual.idRecurso
+
+        act = recursoActual.etapa.etapa_type
+        print act
+        if act == 'Pre':
+            request.session['etapa_recurso'] = 'Pre-Produccion'
+        elif act == 'Pro':
+            request.session['etapa_recurso'] = 'Produccion'
+        elif act == 'Pos':
+            request.session['etapa_recurso'] = 'Post-Produccion'
+        elif act == 'CC':
+            request.session['etapa_recurso'] = ' Control de calidad'
+        elif act == 'CP':
+            request.session['etapa_recurso'] = 'Cierre de proyecto'
+        elif act == 'SR':
+            request.session['etapa_recurso'] = 'Sistematización y resguardo'
+
     else:
         request.session['recurso_actual'] = ''
         request.session['recurso_actual_id'] = ''
+        request.session['etapa_recurso'] = ''
     return render(request, 'dashboard/index.html', context)
 
 
@@ -557,3 +577,94 @@ class RecursosList(APIView):
     def get(self, request):
         queryset = Recurso.objects.all().filter(estado='DONE')
         return Response({'recursos': queryset})
+
+# ---------------------------- SGRD-74 -----------------------------
+# crear una solicitud de control de calidad
+
+
+def SolicitudControlCalidad(request):
+    if request.method == 'POST':
+        form = ticketCalidadForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return HttpResponseRedirect(reverse('QueVideo:SolicitudControlCalidad'))
+    else:
+        ultimoEntregable = Entregable.objects.latest('IdEntregable')
+        form = ticketCalidadForm(initial={'Estado': 'PROCESS', 'Entregable': ultimoEntregable.IdEntregable})
+        return render(request, 'controlCalidad/solicitudControlCalidad.html', {'form': form, 'option': 'controlCalidad'})
+
+
+def ListarSolicitudesControlCalidad(request, filtro="Completo"):
+    sol = ticketCalidad.objects.filter(Responsable=request.user).order_by('IdTicket')
+    n = request.session.get('num_notif', '0')
+    if filtro != "Completo":
+        sol = ticketCalidad.objects.filter(Estado=filtro, Responsable=request.user)
+    # validate no query string has been sent
+    queryString = request.GET.get('query', '')
+    if queryString != '':
+        # this depends on database configs,
+        # see https://stackoverflow.com/questions/42421706/django-combining-unaccent-and-search-lookups
+        sol = sol.annotate(search=SearchVector('ComentarioApertura', config='unaccent')).filter(
+            search=SearchQuery(queryString, config='unaccent'))
+    form = ticketSearchForm()
+    context = {'lista_solicitudes': sol,
+               'n_number': n,
+               'searchForm': form,
+               'filtro': filtro,
+               'option': 'controlCalidad'}
+    return render(request, 'controlCalidad/listadoSolicitudesControlCalidad.html', context)
+
+
+def ListaControlCalidad(request, filtro="Completo"):
+    tickets = ticketCalidad.objects.all()
+    if filtro != "Completo":
+        tickets = ticketCalidad.objects.filter(Estado=filtro, Responsable=request.user)
+    # validate no query string has been sent
+    queryString = request.GET.get('query', '')
+    if queryString != '':
+        # this depends on database configs,
+        # see https://stackoverflow.com/questions/42421706/django-combining-unaccent-and-search-lookups
+        tickets = tickets.annotate(search=SearchVector('ComentarioApertura', config='unaccent')).filter(search=SearchQuery(queryString, config='unaccent'))
+    form = ticketSearchForm()
+    return render(request, 'controlCalidad/listaControlCalidad.html',
+                  {'ticket_list': tickets,
+                   'filtro': filtro,
+                   'option': 'controlCalidad',
+                   'searchForm': form})
+
+
+@csrf_exempt
+def get_solicitud_control_calidad(request, id_ticket):
+    ticket = ticketCalidad.objects.get(pk=id_ticket)
+    comentarios_list = comentarioTicket.objects.filter(Ticket=ticket).order_by('idComentario')
+    # return HttpResponse(serializers.serialize("json", ticket))
+    return render(request, 'controlCalidad/detalleSolicitudControlCalidad.html',
+                  {'ticket': ticket,
+                   'comentarios_list': comentarios_list,
+                   'option': 'controlCalidad'})
+
+
+@csrf_exempt
+def get_comentarios_solicitud(request, id_ticket):
+    ticket = ticketCalidad.objects.filter(pk=id_ticket)
+    comentarios_list = comentarioTicket.objects.filter(Ticket=ticket)
+    return HttpResponse(serializers.serialize("json", comentarios_list))
+
+
+@csrf_exempt
+def add_comentario(request, id_ticket):
+    ticket = ticketCalidad.objects.get(pk=id_ticket)
+    if request.method == 'POST':
+        print('json' + request.body)
+        json_comentario = json.loads(request.body)
+        texto = json_comentario['texto']
+        nombre = json_comentario['user']
+        usuario = User.objects.get(username=nombre)
+        comentario_model = comentarioTicket(Texto=texto, Autor=usuario, Ticket=ticket)
+        comentario_model.save()
+
+    comentarios_list = comentarioTicket.objects.filter(Ticket=ticket).order_by('idComentario')
+    return render(request, 'controlCalidad/detalleSolicitudControlCalidad.html',
+                  {'ticket': ticket,
+                   'comentarios_list': comentarios_list,
+                   'option': 'controlCalidad'})

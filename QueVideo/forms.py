@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from tagulous.forms import TagField
 
-from QueVideo.models import PlanLogistica, Artefacto, Actividad, Crudo, Recurso
+from QueVideo.models import PlanLogistica, Artefacto, Actividad, Crudo, Recurso, ticketCalidad
 from QueVideo.serializers import RecursoSerializer
 
 
@@ -80,7 +80,19 @@ class CrudoForm(ModelForm):
         }
         fields = ["Nombre", "Tipo", "Archivo", "etiqueta"]
 
+class ticketCalidadForm(ModelForm):
+    class Meta:
+        model = ticketCalidad
+        widgets = {
+            'Responsable': forms.Select(attrs={'class': 'form-control'}),
+            'Estado': forms.Select(attrs={'class': 'form-control'}),
+            'ComentarioApertura': forms.TextInput(attrs={'class': 'form-control'}),
+            'Entregable': forms.Select(attrs={'class': 'form-control'}),
+        }
+        fields = ["Responsable", "Estado", "ComentarioApertura", "Entregable"]
 
+class ticketSearchForm(forms.Form):
+    query = forms.CharField(label='Busqueda', max_length=250)
 
 class RecursoForm(APIView):
     renderer_classes = [TemplateHTMLRenderer]

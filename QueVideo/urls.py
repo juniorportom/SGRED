@@ -41,4 +41,12 @@ urlpatterns = [
     url('entregablesRecurso', views.RecursosList.as_view(), name='entregablesRecurso'),
     url(r'^detalleEntregablesRecurso/(?P<recursoId>\d+)/$', views.entregablesRecursos, name='detalleEntregablesRecurso'),
 
+    url(r'^SolicitudControlCalidad/', views.SolicitudControlCalidad, name='SolicitudControlCalidad'),
+    url(r'^listSolicitudControlCalidad/(?P<filtro>\w+)/$', views.ListarSolicitudesControlCalidad, name='listSolicitudControlCalidad'),
+    url(r'^listSolicitudControlCalidad/', views.ListarSolicitudesControlCalidad, name='listSolicitudControlCalidadCompleto'),
+    url(r'ListaControlCalidad/(?P<filtro>\w+)/$', views.ListaControlCalidad, name='ListaControlCalidadFiltrado'),
+    url('ListaControlCalidad/', views.ListaControlCalidad, name='ListaControlCalidadCompleto'),
+    url(r'^SolicitudControl/(?P<id_ticket>\d+)/$', views.get_solicitud_control_calidad, name='getSolicitudControl'),
+    url(r'^comentariosSolicitud/(?P<id_ticket>\d+)/$', views.get_comentarios_solicitud, name='comentariosSolicitud'),
+    url(r'^agregarComentario/(?P<id_ticket>\d+)/$', views.add_comentario, name='agregarComentario'),
 ]

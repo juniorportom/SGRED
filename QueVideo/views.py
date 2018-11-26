@@ -653,7 +653,9 @@ def verVersiones(request):
     return render(request, 'postProduccion/listadoVersiones.html', context)
 
 def cerrarRecurso(request):
-
+    recursoActual = Recurso.objects.first()
+    recursoActual.estado='DONE'
+    recursoActual.save()
 
     return  HttpResponseRedirect(reverse('QueVideo:index'))
 

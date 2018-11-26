@@ -44,5 +44,8 @@ urlpatterns = [
     url(r'^SolicitudControlCalidad/', views.SolicitudControlCalidad, name='SolicitudControlCalidad'),
     url(r'^listSolicitudControlCalidad/', views.ListarSolicitudesControlCalidad, name='listSolicitudControlCalidad'),
     url(r'ListaControlCalidad/(?P<filtro>\w+)/$', views.ListaControlCalidad, name='ListaControlCalidadFiltrado'),
-    url('ListaControlCalidad/', views.ListaControlCalidad, name='ListaControlCalidadCompleto')
+    url('ListaControlCalidad/', views.ListaControlCalidad, name='ListaControlCalidadCompleto'),
+    url(r'^SolicitudControl/(?P<id_ticket>\d+)/$', views.get_solicitud_control_calidad, name='getSolicitudControl'),
+    url(r'^comentariosSolicitud/(?P<id_ticket>\d+)/$', views.get_comentarios_solicitud, name='comentariosSolicitud'),
+    url(r'^agregarComentario/(?P<id_ticket>\d+)/$', views.add_comentario, name='agregarComentario'),
 ]

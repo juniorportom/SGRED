@@ -57,6 +57,6 @@ urlpatterns = [
 
     url(r'^SolicitudControl/(?P<id_ticket>\d+)/$', views.get_solicitud_control_calidad, name='getSolicitudControl'),
     url(r'^comentariosSolicitud/(?P<id_ticket>\d+)/$', views.get_comentarios_solicitud, name='comentariosSolicitud'),
-    url(r'^agregarComentario/(?P<id_ticket>\d+)/$', views.add_comentario, name='agregarComentario'),
+    url(r'^addComentario/(?P<id_ticket>\d+)/$', views.add_comentario, name='add_comentario'),
 
 ]

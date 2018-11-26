@@ -6,7 +6,7 @@
             $.ajax(
                 {
                     type: "POST",
-                    url:  "../../agregarComentario/" + {{ ticket.IdTicket }} + "/",
+                    url:  "../../addComentario/" + {{ ticket.IdTicket }} + "/",
                     data: JSON.stringify(
                         {
                             texto: $('#textoComentario').val(), user: "{{ user.get_username }}"

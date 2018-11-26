@@ -681,6 +681,7 @@ def get_comentarios_solicitud(request, id_ticket):
 
 @csrf_exempt
 def add_comentario(request, id_ticket):
+    print 'entra add comentario'
     ticket = ticketCalidad.objects.get(pk=id_ticket)
     if request.method == 'POST':
         print('json' + request.body)
@@ -698,6 +699,7 @@ def add_comentario(request, id_ticket):
                    'option': 'controlCalidad'})
 
 
+@csrf_exempt
 def listadoComentarios(request, IdTicket):
     comentarios = comentarioTicket.objects.filter(Ticket=IdTicket)
     ticket = ticketCalidad.objects.filter(IdTicket=IdTicket).first()
@@ -706,6 +708,7 @@ def listadoComentarios(request, IdTicket):
     return render(request, 'controlCalidad/listadoComentarios.html', context)
 
 
+@csrf_exempt
 def agregarComentario(request, IdTicket):
     if request.method == 'POST':
         now = datetime.now()

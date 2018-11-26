@@ -637,6 +637,7 @@ def get_comentarios_solicitud(request, id_ticket):
     return HttpResponse(serializers.serialize("json", comentarios_list))
 
 
+
 @csrf_exempt
 def add_comentario(request, id_ticket):
     ticket = ticketCalidad.objects.get(pk=id_ticket)

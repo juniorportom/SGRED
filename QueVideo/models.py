@@ -149,7 +149,7 @@ class ArchivoArtefacto(models.Model):
 class Entregable (models.Model):
     IdEntregable = models.AutoField(primary_key=True)
     Nombre = models.CharField(max_length=255)
-    Version = models.IntegerField()
+    Version = models.IntegerField(default=0)
     ComentarioVersion = models.CharField(max_length=255)
     VideoURL = models.URLField()
     FechaModificacion = models.DateTimeField(default=datetime.now)

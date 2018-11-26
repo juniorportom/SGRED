@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from QueVideo.models import Recurso, Etapa, Solicitud_CambioEstado
+from QueVideo.models import Recurso, Etapa, Solicitud_CambioEstado, Entregable
 
 
 class RecursoSerializer(serializers.HyperlinkedModelSerializer):
@@ -19,3 +19,8 @@ class Solicitud_CambioEstado_Serializer(serializers.ModelSerializer):
     class Meta:
         model = Solicitud_CambioEstado
         fields = ('idSolicitud', 'solicitadoPor', 'aprobadoPor', 'fecha_solicitud', 'fecha_aprobacion')
+
+class EntregableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Entregable
+        fields = ('IdEntregable', 'Nombre', 'Version', 'ComentarioVersion', 'VideoURL','FechaModificacion','Recurso')

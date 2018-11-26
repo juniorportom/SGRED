@@ -9,6 +9,7 @@
 
     <link rel="stylesheet" href="{% static 'dashboard/font-awesome/css/font-awesome.css' %}">
     <link rel="stylesheet" href="{% static 'dashboard/css/vendor.css' %}">
+    <link rel="stylesheet" href="{% static 'dashboard/css/popUp.css' %}">
     <!-- Theme initialization -->
     <link rel="stylesheet" id="theme-style" href="{% static 'dashboard/css/app-custom.css' %}">
 
@@ -246,7 +247,12 @@
                             </a>
                             <ul class="sidebar-nav">
                                 <li>
-                                    <a href="{% url 'QueVideo:entregablesRecurso' %}"> Entregables </a>
+                                    <a href="{% url 'QueVideo:crearEntregable' %}"> Crear Version </a>
+                                </li>
+                            </ul>
+                             <ul class="sidebar-nav">
+                                <li>
+                                    <a href="{% url 'QueVideo:verVersiones' %}"> Listado Versiones </a>
                                 </li>
                             </ul>
                         </li>
@@ -272,6 +278,22 @@
                                 </li>
                             </ul>
                         </li>
+
+                    <li {% if option == 'CierredeProyecto' %}class="active open"{% endif %}>
+                            <a href="">
+                                <i class="fa fa-flag-o"></i> <span id="controlCalidadSpan">Cierre de Proyecto</span>
+                                <i class="fa arrow"></i>
+                            </a>
+                            <ul class="sidebar-nav">
+                                <li>
+                                    <a href="{% url 'QueVideo:entregablesRecurso' %}"> Entregables </a>
+                                </li>
+                            </ul>
+                        </li>
+
+
+
+
 
                         <!--li>
                             <a href="forms.html">
@@ -615,5 +637,6 @@
 </div>
 <script src="{% static 'dashboard/js/vendor.js' %}"></script>
 <script src="{% static 'dashboard/js/app.js' %}"></script>
+<script src="{% static 'dashboard/js/popUp.js' %}"></script>
 </body>
 </html>

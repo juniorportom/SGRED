@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from tagulous.forms import TagField
 
-from QueVideo.models import PlanLogistica, Artefacto, Actividad, Crudo, Recurso, ticketCalidad
+from QueVideo.models import PlanLogistica, Artefacto, Actividad, Crudo, Recurso, ticketCalidad, Entregable
 from QueVideo.serializers import RecursoSerializer
 
 
@@ -110,3 +110,16 @@ class RecursoForm(APIView):
             return Response({'serializer': serializer, 'recurso': recurso})
         serializer.save()
         return redirect('profile-list')
+
+
+class entregableForm(ModelForm):
+    class Meta:
+        model = Entregable
+        widgets = {
+            'Nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'Version': forms.NumberInput(attrs={'class': 'form-control','readonly':True}),
+            'ComentarioVersion': forms.TextInput(attrs={'class': 'form-control'}),
+            'VideoURL': forms.URLInput(attrs={'class': 'form-control'}),
+            'Recurso': forms.Select(attrs={'class': 'form-control'}),
+        }
+        fields = ["Nombre", "Version", "ComentarioVersion", "VideoURL","Recurso"]

@@ -14,7 +14,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, ticketSearchForm
+from QueVideo.forms import PlanLogisticaForm, ArtefactoRecursoForm, ActividadEditForm, CrudoForm, ticketCalidadForm, ticketSearchForm, entregableForm
 from QueVideo.serializers import RecursoSerializer, Solicitud_CambioEstado_Serializer, EtapaSerializer
 from QueVideo.tables import SolicitudesTable
 from .models import PlanLogistica, Actividad, Etapa, Solicitud_CambioEstado, Crudo, Recurso, Artefacto, Entregable, ticketCalidad
@@ -40,9 +40,10 @@ def index(request):
     listNotif = notificationsBadge(False)
     # request.session['listNotif'] = listNotif
     request.session['num_notif'] = n
-    context = {'option': 'dashboard', 'n_number': n, 'listNotif': listNotif}
     # hard code el recurso actual para los demas requests
     # ver la documentacion de datos de sesiones en django: https://docs.djangoproject.com/en/2.1/topics/http/sessions/
+    listadoRecursos = Recurso.objects.all()
+    context = {'option': 'dashboard', 'n_number': n, 'listNotif': listNotif, 'listadoRecursos': listadoRecursos}
     recursoActual = Recurso.objects.first()
     if recursoActual is not None:
         request.session['recurso_actual'] = recursoActual.nombre
@@ -332,22 +333,6 @@ def solicitud_cambio_estado_list(request):
             return JSONResponse(serializer.data, status=201)
         return JSONResponse(serializer.errors, status=400)
 
-        # solicitud_model = Solicitud_CambioEstado(
-        #                             solicitadoPor=solicitadoPor,
-        #                             aprobadoPor=aprobadoPor,
-        #                             fecha_solicitud=fecha_solicitud,
-        #                             fecha_aprobacion=fecha_aprobacion,
-        #                             )
-        # solicitud_model.save()
-        # return JsonResponse({"solicitadoPor":solicitadoPor,
-        #                         "aprobadoPor":aprobadoPor,
-        #                         "fecha_solicitud":fecha_solicitud,
-        #                         "fecha_aprobacion":fecha_aprobacion}, status=201)
-        #
-        # return HttpResponse(status=404)
-
-        ###########
-        # data = JSONParser().parse(request)
 
 
 # GET >> detail solicitud cambio estado
@@ -575,7 +560,7 @@ class RecursosList(APIView):
 
     def get(self, request):
         queryset = Recurso.objects.all().filter(estado='DONE')
-        return Response({'recursos': queryset})
+        return Response({'recursos': queryset,'option': 'CierredeProyecto'})
 
 # ---------------------------- SGRD-74 -----------------------------
 # crear una solicitud de control de calidad
@@ -614,4 +599,40 @@ def ListaControlCalidad(request, filtro="Completo"):
                    'filtro': filtro,
                    'option': 'controlCalidad',
                    'searchForm': form})
+
+
+
+# ---------------------------- SGRD-68 -----------------------------
+#    Como miembro de grupo quiero poder guardar avance sobre el entregable
+#  y generar versión para indicar al equipo que se encuentra listo para revisión
+
+
+# crear un entregable
+
+def crearEntregable(request):
+    if request.method == 'POST':
+        form = entregableForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+        return HttpResponseRedirect(reverse('QueVideo:crearEntregable'))
+    else:
+        ultimoEntregable = Entregable.objects.latest('IdEntregable')
+        v=ultimoEntregable.Version+1
+        recurso = request.session['recurso_actual']
+        form = entregableForm(initial={ 'Version':v,'Recurso':recurso})
+        return render(request, 'postProduccion/crearEntregable.html', {'form': form, 'option': 'postproduccion'})
+
+def verVersiones(request):
+    lista=Entregable.objects.all()
+    ultimoEntregable = Entregable.objects.latest('IdEntregable')
+    n = request.session.get('num_notif', '0')
+    context = {'lista': lista, 'option': 'postproduccion', 'n_number': n,'ultimoEntregable':ultimoEntregable}
+
+    return render(request, 'postProduccion/listadoVersiones.html', context)
+
+def cerrarRecurso(request):
+
+
+    return  HttpResponseRedirect(reverse('QueVideo:index'))
 

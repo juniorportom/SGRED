@@ -28,7 +28,7 @@ SECRET_KEY = '&@d0t(@ounwd!-=3h=@v4-_66q0u#9tb)!si8(ta^zc6sig%7x'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 'sgred.herokuapp.com','localhost'
+    '127.0.0.1', 'sgred.herokuapp.com','localhost','sgrd-grupo01.herokuapp.com'
 ]
 
 # Application definition
